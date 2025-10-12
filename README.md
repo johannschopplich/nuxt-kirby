@@ -23,7 +23,7 @@
 > [📖 Read the documentation](https://nuxt-kirby.byjohann.dev)
 
 ```bash
-npx nuxi@latest module add kirby
+npx nuxt@latest module add kirby
 ```
 
 ## Basic Usage

@@ -9,7 +9,7 @@ Want to jump right in? Choose one of the [Starter Kits](/essentials/starter-kits
 ## Step 1: Install Nuxt Kirby
 
 ```bash
-npx nuxi@latest module add kirby
+npx nuxt@latest module add kirby
 ```
 
 ## Step 2: Add the Module
