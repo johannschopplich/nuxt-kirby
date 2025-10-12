@@ -146,8 +146,8 @@ function sidebarMain(): DefaultTheme.SidebarItem[] {
       text: 'Digging Deeper',
       items: [
         { text: 'CORS Issues', link: '/advanced/cors-issues' },
-        { text: 'What is KQL?', link: '/advanced/what-is-kql' },
-        { text: 'How does it work?', link: '/advanced/how-does-it-work' },
+        { text: 'What Is KQL?', link: '/advanced/what-is-kql' },
+        { text: 'How Does It Work?', link: '/advanced/how-does-it-work' },
       ],
     },
     { text: 'Migration', link: '/advanced/migration' },
