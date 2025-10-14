@@ -7,7 +7,7 @@ Nuxt Kirby provides seamless integration with multi-language Kirby sites using [
 Install the official [Nuxt i18n](https://i18n.nuxtjs.org) module before proceeding:
 
 ```bash
-npx nuxt@latest module add i18n
+npx nuxt module add i18n
 ```
 
 ## Basic Usage
