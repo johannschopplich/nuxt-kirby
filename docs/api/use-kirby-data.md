@@ -93,7 +93,7 @@ export default defineNuxtConfig({
 })
 ```
 
-Now, every `useKirbyData` call will be directly use the Kirby instance by sending requests from the client:
+Now, every `useKirbyData` call will directly use the Kirby instance by sending requests from the client:
 
 ```ts{3}
 const { data } = await useKirbyData('api/my-path')

@@ -113,7 +113,7 @@ const { data } = await useKirbyData('api/pages/blog')
 
 ## Next Steps
 
-- **Understand the differences:** Read about [Data Fetching Methods](/essentials/data-fetching-methods) to choose the best approach for your project..
+- **Understand the differences:** Read about [Data Fetching Methods](/essentials/data-fetching-methods) to choose the best approach for your project.
 - **Explore examples:** Browse the [API documentation](/api/) and [Starter Kits](/essentials/starter-kits).
 
 Enjoy your journey with Nuxt Kirby. 🎬

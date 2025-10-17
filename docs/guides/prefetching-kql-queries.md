@@ -1,8 +1,8 @@
 # Prefetching KQL Queries
 
-Nuxt Kirby allows you to prefetch custom queries **at build-time** (during development and in production). This is recommended for infrequently changing data to improve performance in production. You can prefetch as many queries as you like. The query results as well as their inferred TypeScript type can be imported from `#nuxt-kirby`.
+Prefetch custom queries **at build-time** to improve performance for static content. Query results and their TypeScript types can be imported from `#nuxt-kirby`.
 
-To get started, add a `prefetch` object to the `kirby` configuration in your `nuxt.config.ts` file. Each key in the object represents a query that should be prefetched. The value is an object containing the actual KQL query and an optional `select` array to limit the returned fields.
+Add a `prefetch` object to your `kirby` configuration in `nuxt.config.ts`. Each key represents a query to prefetch.
 
 ```ts
 // `nuxt.config.ts`

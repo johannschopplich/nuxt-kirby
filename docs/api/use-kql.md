@@ -80,7 +80,7 @@ export default defineNuxtConfig({
 })
 ```
 
-Now, every `useKql` call will be directly use the Kirby instance by sending requests from the client:
+Now, every `useKql` call will directly use the Kirby instance by sending requests from the client:
 
 ```ts{3}
 const { data } = await useKql(query)

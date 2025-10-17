@@ -1,6 +1,6 @@
 # Multi-Language Sites
 
-Nuxt Kirby provides seamless integration with multi-language Kirby sites using [Nuxt i18n](https://i18n.nuxtjs.org). This guide shows you how to set up and handle translated content effectively.
+Nuxt Kirby integrates seamlessly with multi-language Kirby sites using [Nuxt i18n](https://i18n.nuxtjs.org).
 
 ## Prerequisites
 

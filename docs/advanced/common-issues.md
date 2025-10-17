@@ -6,17 +6,15 @@ Solutions to frequently encountered problems when using Nuxt Kirby.
 
 ### Can I Encounter CORS Issues?
 
-**tl;dr**: No, since Nuxt will proxy requests to Kirby through its own server.
+**No** – with default configuration, Nuxt proxies all requests to Kirby through its server.
 
-With the default module configuration, you will not have to deal with CORS issues. [`useKql`](/api/use-kql), [`useKirbyData`](/api/use-kirby-data), [`$kql`](/api/kql), and [`$kirby`](/api/kirby) pass a given request to the internal Nuxt server route `/api/__kirby__` set up by the module.
-
-On the server, the request is forwarded to the Kirby instance, and the response is sent back to the client. Since the request is made server-side, CORS is not an issue.
+All composables ([`useKql`](/api/use-kql), [`useKirbyData`](/api/use-kirby-data), [`$kql`](/api/kql), and [`$kirby`](/api/kirby)) send requests to the internal Nuxt server route `/api/__kirby__`, which forwards them to your Kirby instance. Since requests are made server-side, CORS is not an issue.
 
 ### What if I Enable Client-Side Requests?
 
-If you enable `client: true` in your configuration, requests go directly from the browser to Kirby, which may encounter CORS issues depending on your Kirby setup.
+If you enable `client: true` in your configuration, requests go directly from the browser to Kirby, which may cause CORS issues depending on your Kirby setup.
 
-**Solution**: Configure CORS headers in your Kirby installation:
+**Solution** – Configure CORS headers in your Kirby installation:
 
 ```php
 // site/config/config.php
@@ -40,14 +38,15 @@ return [
 
 ## Authentication Issues
 
-**Check your environment variables**:
+**Check your environment variables** – Ensure they're set correctly:
 
 ```bash
-# Make sure these are set correctly
+# For bearer token authentication
 KIRBY_BASE_URL=https://your-kirby-site.com
 KIRBY_API_TOKEN=your-secret-token
 
-# Or for basic auth:
+# For basic authentication
+KIRBY_BASE_URL=https://your-kirby-site.com
 KIRBY_API_USERNAME=your-username
 KIRBY_API_PASSWORD=your-password
 ```
@@ -57,9 +56,9 @@ KIRBY_API_PASSWORD=your-password
 For **bearer token** authentication:
 - Ensure the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/) is installed
 - Verify the token matches in both applications
-- Check that the endpoint is `api/kql` not `api/query`
+- Confirm the endpoint is `api/kql`, not `api/query`
 
 For **basic authentication**:
-- Ensure `basicAuth` is enabled in Kirby's config
-- Check that the endpoint is `api/query` not `api/kql`
+- Ensure `basicAuth` is enabled in Kirby's `config.php`
+- Confirm the endpoint is `api/query`, not `api/kql`
 - Verify username and password are correct

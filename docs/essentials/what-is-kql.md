@@ -70,5 +70,5 @@ By default, the official KQL API endpoint is located at `/api/query`. An example
 ```
 
 ::: tip
-Nuxt Kirby provides a custom API endpoint for KQL requests `/api/kql` that enables bearer token authentication. Check out the [Authentication guide](/essentials/authentication) for more information.
+The [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/) provides a custom KQL endpoint `/api/kql` that enables bearer token authentication. Nuxt Kirby works seamlessly with this endpoint. Check out the [Authentication guide](/essentials/authentication) for more information.
 :::

@@ -1,6 +1,6 @@
 # Caching Strategies
 
-Nuxt Kirby provides multiple layers of caching to optimize your application's performance. Understanding these strategies will help you build faster, more efficient Nuxt applications.
+Nuxt Kirby provides multiple caching layers to optimize performance.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Data Fetching Methods
 
-Nuxt Kirby offers two complementary approaches to fetch data from your Kirby CMS. Understanding when to use each method will help you build more efficient and maintainable applications.
+Nuxt Kirby offers two approaches to fetch data from your Kirby CMS. Choose the right method for your use case.
 
 ::: tip
 In most cases, KQL queries with `useKql` and `$kql` are preferred for their flexibility and type safety. However, `useKirbyData` and `$kirby` are excellent for simple data fetching and direct API access.
@@ -17,7 +17,7 @@ Access your Kirby CMS data using either KQL or direct API access:
 
 ## Composables Comparison
 
-In you Vue components, you can choose between reactive data fetching with `useKirbyData` / `useKql` or programmatic one-time actions with `$kirby` / `$kql`.
+In your Vue components, you can choose between reactive data fetching with `useKirbyData` / `useKql` or programmatic one-time actions with `$kirby` / `$kql`.
 
 | Feature | **`useKirbyData` / `useKql`** | **`$kirby` / `$kql`** |
 |---------|---------------------------|-------------------|
@@ -53,21 +53,20 @@ const { data } = await useKql({
 
 ## Method 2: Direct Kirby API Access
 
-Use `useKirbyData` and `$kirby` to access Kirby's REST API directly. This method is ideal when you need to fetch simple data or interact with custom endpoints.
+Use `useKirbyData` and `$kirby` to access Kirby's REST API directly. This method is ideal when you need to fetch simple data, download files, or interact with custom endpoints.
 
 A common example is a Nuxt plugin that fetches site-wide settings once and stores them in a global state for easy access across your application:
 
 ```ts
 import type { FetchError } from 'ofetch'
-import { siteQuery } from '~/queries'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   const site = useState('site', () => ({}))
 
-  // Fetch site data once and store it in the payload for client-side hydration
+  // Fetch site data once from a custom API endpoint
   if (import.meta.server) {
     try {
-      const data = await $kql(siteQuery)
+      const data = await $kirby('api/site')
       site.value = data?.result || {}
     }
     catch (e) {
@@ -75,4 +74,30 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
   }
 })
+```
+
+## Batching KQL Queries
+
+Fetching multiple KQL queries in a single request can significantly improve performance by reducing the number of HTTP requests made to the server. Nuxt Kirby supports batching multiple queries into a single request using the [`useKql`](/api/use-kql) composable.
+
+To batch multiple queries, pass an object to the `select` property. Each key represents a separate query:
+
+```ts
+// Optional: DRY up your queries by defining them in a separate file
+import { articlesQuery, navigationQuery, siteQuery } from '~/queries'
+
+// Batch multiple KQL queries in a single request
+const { data } = await useKql({
+  query: 'site',
+  select: {
+    site: siteQuery,
+    articles: articlesQuery,
+    navigation: navigationQuery
+  }
+})
+
+// Access the results of each query
+const site = computed(() => data.value?.result.site)
+const articles = computed(() => data.value?.result.articles)
+const navigation = computed(() => data.value?.result.navigation)
 ```

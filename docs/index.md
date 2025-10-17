@@ -22,22 +22,22 @@ hero:
 features:
   - title: Multiple Data Fetching Methods
     icon: 🔄
-    details: Choose between KQL for content queries or direct API access for custom endpoints.
+    details: KQL for complex queries or direct API access for custom endpoints.
     link: /essentials/data-fetching-methods
     linkText: Learn More
   - title: Protected Credentials
     icon: 🔒
-    details: Server-side proxy keeps your Kirby credentials safe. No CORS issues, no exposed tokens.
+    details: Server-side proxy keeps credentials safe. No CORS issues, no exposed tokens.
     link: /essentials/what-is-nuxt-kirby
     linkText: How It Works
   - title: Familiar Developer Experience
     icon: 🤹
-    details: Handle requests just like Nuxt's <code>useFetch</code> composable. Fully typed with caching included.
+    details: Works like Nuxt's <code>useFetch</code> composable. Fully typed with caching included.
     link: /api/
     linkText: Get Started
   - title: Multiple Starter Kits
     icon: 🦦
-    details: Not sure where to start? Choose from multiple starter kits and deployment examples.
+    details: Jump-start your project with ready-made starter kits and deployment examples.
     link: /essentials/starter-kits
     linkText: Browse Kits
 ---

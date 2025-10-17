@@ -1,6 +1,6 @@
 # Authentication
 
-Nuxt Kirby supports multiple authentication methods to work with different Kirby setups. Choose the method that best fits your project requirements.
+Nuxt Kirby supports multiple authentication methods. Choose the one that fits your Kirby setup.
 
 ::: tip
 For new projects, we recommend using **token-based authentication** with the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/). It includes secure token-based authentication and a custom KQL endpoint `api/kql` that works out of the box with any Kirby installation.
@@ -46,7 +46,7 @@ Ensure that you set the same token as the `KIRBY_HEADLESS_API_TOKEN` environment
 
 ## Basic Authentication
 
-If you do not want to build your KQL API using [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/), you can use basic authentication. However, this method is not recommended for production environments due to security concerns.
+If you do not want to use the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/), you can use basic authentication with the default KQL endpoint. While this works, it's less secure because credentials are transmitted with every request (even though they're base64-encoded, not encrypted). Token-based authentication is preferred for production.
 
 ::: tip
 The default KQL endpoint `/api/query` [requires authentication](https://getkirby.com/docs/guide/api/authentication). You have to enable HTTP basic authentication in your Kirby project's `config.php` file:
