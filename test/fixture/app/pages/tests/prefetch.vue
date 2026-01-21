@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useKql, useTestResult } from '#imports'
 
-const { data } = await useKql({
+const { data, status } = await useKql({
   query: 'site',
   select: {
     title: true,
@@ -12,5 +12,5 @@ const { data } = await useKql({
   },
 })
 
-useTestResult(data.value)
+useTestResult({ data: data.value, status: status.value })
 </script>
