@@ -87,20 +87,22 @@ describe('nuxt-kirby', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/with-headers')
 
       expect(result.status).toBe('success')
-      expect(result.data?.result).toBeDefined()
+      expect(result.receivedHeader).toBe('test-value')
     })
 
     it('supports query parameters', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/with-query')
 
       expect(result.status).toBe('success')
-      expect(result.data?.result).toBeDefined()
+      expect(result.receivedQuery).toEqual({ select: 'title' })
     })
 
     it('supports POST with body', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/with-body')
 
       expect(result.status).toBe('success')
+      expect(result.receivedMethod).toBe('POST')
+      expect(result.receivedBody).toEqual({ test: 'data' })
     })
 
     it('supports language option', async () => {

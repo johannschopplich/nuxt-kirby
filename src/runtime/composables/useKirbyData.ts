@@ -96,6 +96,10 @@ export function useKirbyData<T = any>(
 
       return $kirby(_path.value, {
         ...fetchOptions,
+        method,
+        headers,
+        query,
+        body,
         signal: controller.signal,
         language: _language.value,
         cache,
