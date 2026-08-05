@@ -19,7 +19,7 @@ export async function prefetchQueries(
     return results
   }
 
-  // Validate prefetch query keys to prevent naming conflicts
+  // Validate prefetch query keys to prevent naming conflicts.
   for (const key of Object.keys(options.prefetch)) {
     if (key === pascalCase(key)) {
       logger.error(`Prefetch query key "${key}" conflicts with its PascalCase type name. Please use a different key (e.g., "${key.charAt(0).toLowerCase() + key.slice(1)}")`)

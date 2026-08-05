@@ -96,7 +96,7 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
       return response
     })
     .catch((error) => {
-      // Invalidate cache if request fails
+      // Invalidate cache if request fails.
       nuxt.payload.data[_key] = undefined
       throw error
     })

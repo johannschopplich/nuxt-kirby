@@ -7,10 +7,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
 
   kirby: {
-    // Enable token-based authentication
     auth: 'bearer',
 
-    // Prefetch queries at build-time
     prefetch: {
       site: {
         query: 'site',

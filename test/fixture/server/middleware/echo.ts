@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<ServerFetchOptions>(event)
 
-  // Only handle requests intended for the echo endpoint
+  // Only handle requests intended for the echo endpoint.
   if (!body.path?.includes('__echo__'))
     return
 

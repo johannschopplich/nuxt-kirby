@@ -27,14 +27,14 @@ const KIRBY_TYPES_PKG_EXPORT_NAMES = [
 // #region options
 export interface ModuleOptions {
   /**
-   * Kirby base URL, like `https://kirby.example.com`
+   * Kirby base URL, like `https://kirby.example.com`.
    *
    * @default process.env.KIRBY_BASE_URL
    */
   url?: string
 
   /**
-   * Kirby KQL API endpoint path
+   * Kirby KQL API endpoint path.
    *
    * @default 'api/query' // for `basic` authentication
    * @default 'api/kql' // for `bearer` authentication
@@ -42,33 +42,33 @@ export interface ModuleOptions {
   kqlPath?: string
 
   /**
-   * Kirby KQL API route path
+   * Kirby KQL API route path.
    *
-   * @deprecated Use `kqlPath` instead
+   * @deprecated Use `kqlPath` instead.
    * @default 'api/query' // for `basic` authentication
    * @default 'api/kql' // for `bearer` authentication
    */
   prefix?: string
 
   /**
-   * Kirby API authentication method
+   * Kirby API authentication method.
    *
    * @remarks
-   * Set to `none` to disable authentication
+   * Set to `none` to disable authentication.
    *
    * @default 'basic'
    */
   auth?: 'basic' | 'bearer' | 'none'
 
   /**
-   * Token for bearer authentication
+   * Token for bearer authentication.
    *
    * @default process.env.KIRBY_API_TOKEN
    */
   token?: string
 
   /**
-   * Username/password pair for basic authentication
+   * Username/password pair for basic authentication.
    *
    * @default { username: process.env.KIRBY_API_USERNAME, password: process.env.KIRBY_API_PASSWORD }
    */
@@ -78,11 +78,11 @@ export interface ModuleOptions {
   }
 
   /**
-   * Send client-side requests instead of using the server-side proxy
+   * Send client-side requests instead of using the server-side proxy.
    *
    * @remarks
    * By default, data from Kirby is fetched safely with a server-side proxy.
-   * If enabled, query requests will be be sent directly from the client.
+   * If enabled, query requests will be sent directly from the client.
    * Note: This means your token or user credentials will be publicly visible.
    * If Nuxt SSR is disabled, this option is enabled by default.
    *
@@ -91,7 +91,7 @@ export interface ModuleOptions {
   client?: boolean
 
   /**
-   * Prefetch custom KQL queries at build-time
+   * Prefetch custom KQL queries at build-time.
    *
    * @remarks
    * The queries will be fully typed and importable from `#nuxt-kirby`.
@@ -103,19 +103,16 @@ export interface ModuleOptions {
     KirbyQueryRequest | { query: KirbyQueryRequest, language: string }
   >
 
-  /**
-   * Server-side features
-   */
   server?: {
     /**
-     * Enable server-side caching of queries using the Nitro cache API
+     * Enable server-side caching of queries using the Nitro cache API.
      *
      * @see https://nitro.unjs.io/guide/cache
      */
     cache?: boolean
 
     /**
-     * Name of the storage mountpoint to use for caching
+     * Name of the storage mountpoint to use for caching.
      *
      * @see https://nitro.unjs.io/guide/cache
      * @default 'cache'
@@ -123,7 +120,7 @@ export interface ModuleOptions {
     storage?: string
 
     /**
-     * Enable stale-while-revalidate behavior (cache is returned while it is being updated)
+     * Enable stale-while-revalidate behavior (cache is returned while it is being updated).
      *
      * @see https://nitro.unjs.io/guide/cache#options
      * @default false
@@ -131,7 +128,7 @@ export interface ModuleOptions {
     swr?: boolean
 
     /**
-     * Number of seconds to cache the query response
+     * Number of seconds to cache the query response.
      *
      * @see https://nitro.unjs.io/guide/cache#options
      * @default 1
@@ -139,7 +136,7 @@ export interface ModuleOptions {
     maxAge?: number
 
     /**
-     * Log verbose errors to the console if a query fails
+     * Log verbose errors to the console if a query fails.
      *
      * @remarks
      * This will log the full query to the console. Depending on the content of the query, this could be a security risk.
@@ -192,14 +189,13 @@ export default defineNuxtModule<ModuleOptions>({
     if (!options.url)
       logger.error('Missing `KIRBY_BASE_URL` environment variable')
 
-    // Make sure authentication credentials are set
     if (options.auth === 'basic' && (!options.credentials || !options.credentials.username || !options.credentials.password))
       logger.error('Missing `KIRBY_API_USERNAME` and `KIRBY_API_PASSWORD` environment variable for basic authentication')
 
     if (options.auth === 'bearer' && !options.token)
       logger.error('Missing `KIRBY_API_TOKEN` environment variable for bearer authentication')
 
-    // Handle deprecated `prefix` option and prefer `kqlPath`
+    // Handle deprecated `prefix` option and prefer `kqlPath`.
     if (options.prefix && !options.kqlPath) {
       logger.warn('The `prefix` option is deprecated. Please use `kqlPath` instead.')
       options.kqlPath = options.prefix
@@ -218,18 +214,17 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     if (options.server) {
-      // The Nitro storage mountpoint requires a leading slash
+      // The Nitro storage mountpoint requires a leading slash.
       options.server.storage ||= 'cache'
       options.server.storage = withLeadingSlash(options.server.storage)
     }
 
-    // Private runtime config
     nuxt.options.runtimeConfig.kirby = defu(
       nuxt.options.runtimeConfig.kirby,
       options,
     )
 
-    // Write data to public runtime config if client requests are enabled
+    // Write data to public runtime config if client requests are enabled.
     nuxt.options.runtimeConfig.public.kirby = defu(
       nuxt.options.runtimeConfig.public.kirby as Required<ModuleOptions>,
       options.client
@@ -237,18 +232,16 @@ export default defineNuxtModule<ModuleOptions>({
         : { client: false },
     )
 
-    // Transpile runtime
     const { resolve } = createResolver(import.meta.url)
     nuxt.options.build.transpile.push(resolve('runtime'))
 
-    // Add Kirby proxy endpoint to send queries server-side
+    // Add Kirby proxy endpoint to send queries server-side.
     addServerHandler({
       route: '/api/__kirby__/:key',
       handler: resolve('runtime/server/handler'),
       method: 'post',
     })
 
-    // Add Kirby composables
     addImports(
       ['$kirby', '$kql', 'useKirbyData', 'useKql'].map(name => ({
         name,
@@ -264,7 +257,7 @@ export default defineNuxtModule<ModuleOptions>({
       config.externals.inline ||= []
       config.externals.inline.push(resolve('runtime/utils'))
 
-      // Add Nitro auto-imports for composables
+      // Add Nitro auto-imports for composables.
       config.imports = defu(config.imports, {
         presets: [{
           from: resolve('runtime/server/imports'),
@@ -273,16 +266,13 @@ export default defineNuxtModule<ModuleOptions>({
       })
     })
 
-    // Add `#nuxt-kirby` module alias
+    // Add `#nuxt-kirby` module alias.
     nuxt.options.alias[`#${moduleName}`] = join(nuxt.options.buildDir, `module/${moduleName}`)
-    // TODO: Remove deprecated `#nuxt-kql` module alias
+    // TODO: Remove deprecated `#nuxt-kql` module alias.
     nuxt.options.alias['#nuxt-kql'] = join(nuxt.options.buildDir, `module/${moduleName}`)
 
-    // Prefetch custom KQL queries at build-time
     const prefetchedQueries = await prefetchQueries(options)
 
-    // Add `#nuxt-kirby` module templates
-    // (1) Generate module entry point
     addTemplate({
       filename: `module/${moduleName}.mjs`,
       write: true,
@@ -295,7 +285,6 @@ export const ${key} = ${JSON.stringify(response?.result || null, undefined, 2)}
       },
     })
 
-    // (2) Generate type definitions
     addTemplate({
       filename: `module/${moduleName}.d.ts`,
       write: true,

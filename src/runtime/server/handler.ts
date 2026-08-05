@@ -13,7 +13,7 @@ const EXCLUDED_HEADERS = new Set([
   // https://github.com/h3js/h3/blob/fe9800bbbe9bda2972cc5d11db7353f4ab70f0ba/src/utils/proxy.ts#L97
   'content-encoding',
   'content-length',
-  // Reduce information leakage
+  // Reduce information leakage.
   'server',
   'x-powered-by',
 ])
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   const isQueryRequest = key.startsWith('$kql')
 
   // Always give `event` as first argument to make sure cached functions
-  // are working as expected in edge workers
+  // are working as expected in edge workers.
   const fetcher = async (event: H3Event, {
     key,
     query,
@@ -56,7 +56,6 @@ export default defineEventHandler(async (event) => {
       },
     })
 
-    // Serialize the response data
     const dataArray = new Uint8Array(response._data ?? [])
     const data = uint8ArrayToBase64(dataArray)
 
@@ -85,7 +84,7 @@ export default defineEventHandler(async (event) => {
     }
   }
   else {
-    // Check if the path is an absolute URL
+    // Check if the path is an absolute URL.
     if (body.path && new URL(body.path, 'http://localhost').origin !== 'http://localhost') {
       throw createError({
         statusCode: 400,

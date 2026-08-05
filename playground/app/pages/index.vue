@@ -2,7 +2,6 @@
 import type { KirbyQueryRequest, KirbyQueryResponse } from '#nuxt-kirby'
 import { ref, useKql } from '#imports'
 
-// Typed response
 interface KirbySite {
   title: string
   children: {

@@ -111,7 +111,7 @@ export function $kirby<T = any>(
       return response
     })
     .catch((error) => {
-      // Invalidate cache if request fails
+      // Invalidate cache if request fails.
       nuxt.payload.data[_key] = undefined
       throw error
     })
