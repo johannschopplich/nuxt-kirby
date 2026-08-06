@@ -4,7 +4,7 @@ import type { ModuleOptions } from '../../module'
 import { useRuntimeConfig } from '#imports'
 import { createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
 
-export type KirbyFetchOptions = Omit<
+export type ServerKirbyFetchOptions = Omit<
   NitroFetchOptions<string>,
   'baseURL'
 > & {
@@ -18,7 +18,7 @@ export type KirbyFetchOptions = Omit<
   language?: string
 }
 
-export type KqlFetchOptions = Pick<
+export type ServerKqlFetchOptions = Pick<
   NitroFetchOptions<string>,
   | 'onRequest'
   | 'onRequestError'
@@ -43,7 +43,7 @@ export type KqlFetchOptions = Pick<
 
 export function $kirby<T = any>(
   path: string,
-  opts: KirbyFetchOptions = {},
+  opts: ServerKirbyFetchOptions = {},
 ): Promise<T> {
   const { headers, language, ...fetchOptions } = opts
   const kirby = useRuntimeConfig().kirby as Required<ModuleOptions>
@@ -61,7 +61,7 @@ export function $kirby<T = any>(
 
 export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
   query: KirbyQueryRequest,
-  opts: KqlFetchOptions = {},
+  opts: ServerKqlFetchOptions = {},
 ): Promise<T> {
   const { headers, language, ...fetchOptions } = opts
   const kirby = useRuntimeConfig().kirby as Required<ModuleOptions>
