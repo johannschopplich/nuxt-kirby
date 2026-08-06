@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
 import { destr } from 'destr'
 import { describe, expect, it } from 'vitest'
 
@@ -59,11 +59,19 @@ describe('nuxt-kirby', async () => {
       })
     })
 
-    it('resolves the query result for a language option', async () => {
+    it('sends the language option as X-Language', async () => {
       const result = await fetchTestResult('/tests/use-kql/language')
 
       expect(result.status).toBe('success')
-      expect(result.data?.result).toHaveProperty('title')
+      expect(result.receivedLanguage).toBe('en')
+    })
+
+    it('reports status error and the upstream status code for an empty query', async () => {
+      const result = await fetchTestResult('/tests/use-kql/error')
+
+      expect(result.status).toBe('error')
+      expect(result.data).toBeUndefined()
+      expect(result.statusCode).toBe(400)
     })
 
     it('exposes data and status when lazy', async () => {
@@ -147,6 +155,30 @@ describe('nuxt-kirby', async () => {
       expect(result.afterExecute.status).toBe('success')
       expect(result.afterExecute.data).toBeDefined()
     })
+
+    it('reports status error and the upstream status code for an unknown path', async () => {
+      const result = await fetchTestResult('/tests/use-kirby-data/error')
+
+      expect(result.status).toBe('error')
+      expect(result.data).toBeUndefined()
+      expect(result.statusCode).toBe(404)
+    })
+  })
+
+  describe('proxy handler', () => {
+    it('rejects a KQL request without a query with 400', async () => {
+      const response = await postToProxy('$kql-test', { query: {} })
+
+      expect(response.status).toBe(400)
+      expect(await response.json()).toMatchObject({ statusMessage: 'KQL query is empty' })
+    })
+
+    it('rejects an absolute path with 400', async () => {
+      const response = await postToProxy('$kirby-test', { path: 'https://example.com/api/site' })
+
+      expect(response.status).toBe(400)
+      expect(await response.json()).toMatchObject({ statusMessage: 'Absolute URLs are not allowed' })
+    })
   })
 
   describe('prefetch', () => {
@@ -168,4 +200,13 @@ async function fetchTestResult<T = any>(path: string): Promise<T> {
   const html = await $fetch<string>(path)
   const content = html.match(/<script\s+type="text\/test-result">(.*?)<\/script>/s)?.[1]
   return destr(content)
+}
+
+/** Addresses the proxy route directly, since a composable would swallow the status code. */
+function postToProxy(key: string, body: Record<string, unknown>): Promise<Response> {
+  return fetch(`/api/__kirby__/${encodeURIComponent(key)}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ cache: false, ...body }),
+  })
 }

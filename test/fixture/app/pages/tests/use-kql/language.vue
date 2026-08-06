@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useKql, useTestResult } from '#imports'
 
-const { data, status } = await useKql(
-  {
-    query: 'site',
-    select: ['title'],
-  },
+const { data, status } = await useKql<any>(
+  { query: '__echo__' },
   { language: 'en' },
 )
 
-useTestResult({ data: data.value, status: status.value })
+useTestResult({
+  status: status.value,
+  receivedLanguage: data.value?.result?.headers?.['x-language'],
+})
 </script>
