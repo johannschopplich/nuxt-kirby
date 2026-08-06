@@ -72,10 +72,9 @@ export function $kirby<T = any>(
   if (promiseMap.has(_key))
     return promiseMap.get(_key)!
 
-  const sharedHeaders = {
-    ...headersToObject(headers),
-    ...(language && { 'X-Language': language }),
-  }
+  const sharedHeaders = headersToObject(headers)
+  if (language)
+    sharedHeaders['x-language'] = language
 
   const _serverFetchOptions: NitroFetchOptions<string> = {
     method: 'POST',

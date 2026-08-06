@@ -10,7 +10,7 @@ describe('nuxt-kirby', async () => {
   })
 
   describe('$kql', () => {
-    it('fetches KQL queries', async () => {
+    it('returns the query result alongside its status code', async () => {
       const result = await fetchTestResult('/tests/$kql')
 
       expect(result).toMatchObject({
@@ -25,7 +25,7 @@ describe('nuxt-kirby', async () => {
   })
 
   describe('$kirby', () => {
-    it('fetches Kirby API endpoints', async () => {
+    it('returns the response body of a REST path', async () => {
       const result = await fetchTestResult('/tests/$kirby')
 
       expect(result.result).toHaveProperty('title')
@@ -33,7 +33,7 @@ describe('nuxt-kirby', async () => {
   })
 
   describe('useKql', () => {
-    it('fetches data with status', async () => {
+    it('resolves the query result and reports status success', async () => {
       const result = await fetchTestResult('/tests/use-kql/basic')
 
       expect(result.status).toBe('success')
@@ -45,27 +45,27 @@ describe('nuxt-kirby', async () => {
       })
     })
 
-    it('supports language option', async () => {
+    it('resolves the query result for a language option', async () => {
       const result = await fetchTestResult('/tests/use-kql/language')
 
       expect(result.status).toBe('success')
       expect(result.data?.result).toHaveProperty('title')
     })
 
-    it('supports lazy loading', async () => {
+    it('exposes data and status when lazy', async () => {
       const result = await fetchTestResult('/tests/use-kql/lazy')
 
       expect(result).toHaveProperty('data')
       expect(result).toHaveProperty('status')
     })
 
-    it('skips SSR with server: false', async () => {
+    it('leaves data undefined with server: false', async () => {
       const result = await fetchTestResult('/tests/use-kql/server-false')
 
       expect(result.data).toBeUndefined()
     })
 
-    it('defers execution with immediate: false', async () => {
+    it('defers the request until execute with immediate: false', async () => {
       const result = await fetchTestResult('/tests/use-kql/immediate-false')
 
       expect(result.beforeExecute.status).toBe('idle')
@@ -76,28 +76,28 @@ describe('nuxt-kirby', async () => {
   })
 
   describe('useKirbyData', () => {
-    it('fetches data with status', async () => {
+    it('resolves the response body and reports status success', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/basic')
 
       expect(result.status).toBe('success')
       expect(result.data?.result).toHaveProperty('title')
     })
 
-    it('supports custom headers', async () => {
+    it('sends the headers option upstream', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/with-headers')
 
       expect(result.status).toBe('success')
       expect(result.receivedHeader).toBe('test-value')
     })
 
-    it('supports query parameters', async () => {
+    it('sends the query option upstream', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/with-query')
 
       expect(result.status).toBe('success')
       expect(result.receivedQuery).toEqual({ select: 'title' })
     })
 
-    it('supports POST with body', async () => {
+    it('sends the body option with method POST', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/with-body')
 
       expect(result.status).toBe('success')
@@ -105,26 +105,27 @@ describe('nuxt-kirby', async () => {
       expect(result.receivedBody).toEqual({ test: 'data' })
     })
 
-    it('supports language option', async () => {
+    it('sends the language option as X-Language', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/language')
 
-      expect(result).toHaveProperty('data')
+      expect(result.status).toBe('success')
+      expect(result.receivedLanguage).toBe('en')
     })
 
-    it('supports lazy loading', async () => {
+    it('exposes data and status when lazy', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/lazy')
 
       expect(result).toHaveProperty('data')
       expect(result).toHaveProperty('status')
     })
 
-    it('skips SSR with server: false', async () => {
+    it('leaves data undefined with server: false', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/server-false')
 
       expect(result.data).toBeUndefined()
     })
 
-    it('defers execution with immediate: false', async () => {
+    it('defers the request until execute with immediate: false', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/immediate-false')
 
       expect(result.beforeExecute.status).toBe('idle')
@@ -135,7 +136,7 @@ describe('nuxt-kirby', async () => {
   })
 
   describe('prefetch', () => {
-    it('uses prefetched KQL queries', async () => {
+    it('resolves a prefetched query from the payload', async () => {
       const result = await fetchTestResult('/tests/prefetch')
 
       expect(result.status).toBe('success')
