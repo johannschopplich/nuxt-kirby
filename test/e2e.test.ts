@@ -24,11 +24,25 @@ describe('nuxt-kirby', async () => {
     })
   })
 
-  describe('$kirby', () => {
+  describe('$kirby (composable)', () => {
     it('returns the response body of a REST path', async () => {
       const result = await fetchTestResult('/tests/$kirby')
 
       expect(result.result).toHaveProperty('title')
+    })
+  })
+
+  describe('$kirby (server import)', () => {
+    it('sends the language option as X-Language', async () => {
+      const { requestedLanguage } = await $fetch<{ requestedLanguage: string }>('/tests/server-imports/language')
+
+      expect(requestedLanguage).toBe('en')
+    })
+
+    it('leaves the path unprefixed for a language option', async () => {
+      const { requestedPath } = await $fetch<{ requestedPath: string }>('/tests/server-imports/language')
+
+      expect(requestedPath).toBe('api/__template__/__site__')
     })
   })
 
