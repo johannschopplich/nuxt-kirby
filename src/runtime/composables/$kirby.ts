@@ -2,7 +2,6 @@ import type { NitroFetchOptions } from 'nitropack'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions } from '../types'
 import { hash } from 'ohash'
-import { joinURL } from 'ufo'
 import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
 import { buildApiProxyPath, createAuthHeader, headersToObject } from '../utils'
 
@@ -59,9 +58,6 @@ export function $kirby<T = any>(
   } = opts
   const kirby = useRuntimeConfig().public.kirby as Required<ModuleOptions>
 
-  if (language)
-    path = joinURL(language, path)
-
   const _key = key || `$kirby${hash([
     path,
     method,
@@ -76,7 +72,10 @@ export function $kirby<T = any>(
   if (promiseMap.has(_key))
     return promiseMap.get(_key)!
 
-  const sharedHeaders = headersToObject(headers)
+  const sharedHeaders = {
+    ...headersToObject(headers),
+    ...(language && { 'X-Language': language }),
+  }
 
   const _serverFetchOptions: NitroFetchOptions<string> = {
     method: 'POST',

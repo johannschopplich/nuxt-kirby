@@ -2,7 +2,6 @@ import type { NitroFetchOptions } from 'nitropack'
 import type { AsyncData, AsyncDataOptions, NuxtError } from 'nuxt/app'
 import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
-import { joinURL } from 'ufo'
 import { computed, toValue } from 'vue'
 import { useAsyncData } from '#imports'
 import { $kirby } from './$kirby'
@@ -63,17 +62,15 @@ export function useKirbyData<T = any>(
   } = opts
 
   const _language = computed(() => toValue(language))
-  const _path = computed(() => {
-    const value = toValue(path).replace(/^\//, '')
-    return _language.value ? joinURL(_language.value, value) : value
-  })
+  const _path = computed(() => toValue(path).replace(/^\//, ''))
   const key = computed(() => `$kirby${hash([
     _path.value,
+    _language.value,
     query,
     method,
   ])}`)
 
-  if (!_path.value || (_language.value && !_path.value.replace(new RegExp(`^${_language.value}/`), '')))
+  if (!_path.value)
     console.warn('[useKirbyData] Empty Kirby path')
 
   const asyncDataOptions: AsyncDataOptions<T> = {
