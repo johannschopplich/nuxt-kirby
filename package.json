@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "@nuxt/kit": "^4.5.2",
-    "@vueuse/core": "^14.4.0",
     "defu": "^6.1.7",
     "kirby-types": "^1.6.0",
     "ofetch": "^1.5.1",

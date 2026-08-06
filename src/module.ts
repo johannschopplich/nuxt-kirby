@@ -42,15 +42,6 @@ export interface ModuleOptions {
   kqlPath?: string
 
   /**
-   * Kirby KQL API route path.
-   *
-   * @deprecated Use `kqlPath` instead.
-   * @default 'api/query' // for `basic` authentication
-   * @default 'api/kql' // for `bearer` authentication
-   */
-  prefix?: string
-
-  /**
    * Kirby API authentication method.
    *
    * @remarks
@@ -165,7 +156,6 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     url: process.env.KIRBY_BASE_URL || '',
     kqlPath: '',
-    prefix: '',
     auth: 'basic',
     token: process.env.KIRBY_API_TOKEN || '',
     credentials: {
@@ -194,12 +184,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (options.auth === 'bearer' && !options.token)
       logger.error('Missing `KIRBY_API_TOKEN` environment variable for bearer authentication')
-
-    // Handle deprecated `prefix` option and prefer `kqlPath`.
-    if (options.prefix && !options.kqlPath) {
-      logger.warn('The `prefix` option is deprecated. Please use `kqlPath` instead.')
-      options.kqlPath = options.prefix
-    }
 
     if (!options.kqlPath) {
       if (options.auth === 'basic')
@@ -268,8 +252,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Add `#nuxt-kirby` module alias.
     nuxt.options.alias[`#${moduleName}`] = join(nuxt.options.buildDir, `module/${moduleName}`)
-    // TODO: Remove deprecated `#nuxt-kql` module alias.
-    nuxt.options.alias['#nuxt-kql'] = join(nuxt.options.buildDir, `module/${moduleName}`)
 
     const prefetchedQueries = await prefetchQueries(options)
 
