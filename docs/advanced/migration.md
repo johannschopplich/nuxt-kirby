@@ -8,7 +8,7 @@
 
 Nothing changes for a multi-language Kirby that resolves the language from the header. Drop the workaround if you were stripping the prefix on the Kirby side.
 
-If you fetch a page by its own path rather than through the API – with the `headless.globalRoutes` option of [Kirby Headless](https://github.com/johannschopplich/kirby-headless) – the header reaches the page from v9 on. On earlier versions the language belongs in the path you request:
+If you fetch a page by its own path rather than through the API – with the `headless.globalRoutes` option of [Kirby Headless](https://github.com/johannschopplich/kirby-headless) – the header reaches the page from 8.1 on. On earlier versions the language belongs in the path you request:
 
 ```ts
 const { data } = await useKirbyData(`${locale.value}/about`)
