@@ -113,7 +113,8 @@ const { data } = await useKirbyData('api/pages/blog')
 
 ## Next Steps
 
-- **Understand the differences:** Read about [Data Fetching Methods](/essentials/data-fetching-methods) to choose the best approach for your project.
-- **Explore examples:** Browse the [API documentation](/api/) and [Starter Kits](/essentials/starter-kits).
-
-Enjoy your journey with Nuxt Kirby. 🎬
+- [Data Fetching Methods](/essentials/data-fetching-methods) – Choose between KQL and the REST API.
+- [Multi-Language Sites](/guides/multi-language-sites) – Fetch content per locale.
+- [Typed Query Results](/guides/typed-query-results) – Annotate a query so `data` carries its shape.
+- [Starter Kits](/essentials/starter-kits) – Ready-made templates to build on.
+- [API Reference](/api/) – Every composable and type.
