@@ -1,6 +1,6 @@
 # Multi-Language Sites
 
-Nuxt Kirby integrates seamlessly with multi-language Kirby sites using [Nuxt i18n](https://i18n.nuxtjs.org).
+A multi-language Kirby pairs with [Nuxt i18n](https://i18n.nuxtjs.org): the locale i18n resolves is the language you pass to a query.
 
 ## Prerequisites
 

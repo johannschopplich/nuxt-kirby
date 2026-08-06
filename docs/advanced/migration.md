@@ -56,8 +56,8 @@ Please follow these steps to migrate your existing Nuxt KQL v2 project to Nuxt K
 To keep breaking changes to a minimum, the import alias `#nuxt-kql` has been kept for now. If you are using it to import any Kirby types, you can keep using it. For future-proofing your code, please consider changing it to `#nuxt-kirby` instead. For example, change this:
 
 ```ts
-import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 import type { KirbyQueryRequest } from '#nuxt-kirby' // [!code ++]
+import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 
 const query = ref<KirbyQueryRequest>({
   query: 'page("notes/across-the-ocean")',

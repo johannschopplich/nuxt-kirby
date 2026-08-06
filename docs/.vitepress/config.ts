@@ -70,7 +70,7 @@ function nav(): DefaultTheme.NavItem[] {
       activeMatch: '^/essentials/',
       items: [
         { text: 'What is Nuxt Kirby?', link: '/essentials/what-is-nuxt-kirby' },
-        { text: 'What Is KQL?', link: '/essentials/what-is-kql' },
+        { text: 'What is KQL?', link: '/essentials/what-is-kql' },
         { text: 'Getting Started', link: '/essentials/getting-started' },
         { text: 'Data Fetching Methods', link: '/essentials/data-fetching-methods' },
         { text: 'Authentication', link: '/essentials/authentication' },
@@ -94,7 +94,7 @@ function nav(): DefaultTheme.NavItem[] {
       items: [
         { text: 'Overview', link: '/api/' },
         { text: 'Module Configuration', link: '/api/module-configuration' },
-        { text: 'Types', link: '/api/types' },
+        { text: 'Using Types', link: '/api/types' },
         {
           text: 'KQL Queries',
           items: [
@@ -127,7 +127,7 @@ function sidebarMain(): DefaultTheme.SidebarItem[] {
       text: 'Essentials',
       items: [
         { text: 'What is Nuxt Kirby?', link: '/essentials/what-is-nuxt-kirby' },
-        { text: 'What Is KQL?', link: '/essentials/what-is-kql' },
+        { text: 'What is KQL?', link: '/essentials/what-is-kql' },
         { text: 'Getting Started', link: '/essentials/getting-started' },
         { text: 'Data Fetching Methods', link: '/essentials/data-fetching-methods' },
         { text: 'Authentication', link: '/essentials/authentication' },
@@ -147,7 +147,7 @@ function sidebarMain(): DefaultTheme.SidebarItem[] {
     {
       text: 'Advanced',
       items: [
-        { text: 'How Does It Work?', link: '/advanced/how-does-it-work' },
+        { text: 'How It Works', link: '/advanced/how-does-it-work' },
         { text: 'Common Issues', link: '/advanced/common-issues' },
       ],
     },

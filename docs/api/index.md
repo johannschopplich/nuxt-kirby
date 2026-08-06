@@ -1,6 +1,6 @@
-# API Reference
+# Overview
 
-Nuxt Kirby provides powerful composables for fetching data from your Kirby CMS and a set of types for type-safe queries and responses.
+Four composables for fetching from Kirby, and a set of types for the queries and responses that travel between.
 
 ## Composables
 
@@ -8,16 +8,16 @@ Nuxt Kirby provides powerful composables for fetching data from your Kirby CMS a
 All composables are [auto-imported](https://nuxt.com/docs/guide/concepts/auto-imports) by Nuxt and available globally in your project.
 :::
 
-### KQL (Kirby Query Language)
+### KQL
 
-Ideal for content queries with relationships and filtering:
+For content queries that follow relationships and filter:
 
 - **[`useKql`](/api/use-kql)** – Reactive KQL queries with caching
 - **[`$kql`](/api/kql)** – Direct KQL calls for programmatic use
 
-### Direct Kirby API Access
+### Kirby REST API
 
-Perfect for simple data fetching, file handling, and custom endpoints:
+For plain requests, file handling and endpoints of your own:
 
 - **[`useKirbyData`](/api/use-kirby-data)** – Reactive data fetching with caching
 - **[`$kirby`](/api/kirby)** – Direct API calls for programmatic use
@@ -37,13 +37,13 @@ const { data } = await useKirbyData('api/pages/about')
 
 ## Type Safety
 
-Nuxt Kirby includes TypeScript types for KQL queries and responses to enhance developer experience and catch errors early. The core types are:
+Three type families cover a query's round trip:
 
 - [Query Types](/api/types-query) – To build type-safe KQL queries
 - [Request Types](/api/types-request) – For typing request payloads
 - [Response Types](/api/types-response) – For typing response data
 
-You can use these types to ensure your queries and responses are correctly typed. Here's an example of a type-safe KQL query:
+Annotating the composable call carries the shape through to `data`:
 
 ```ts
 import type { KirbyQueryRequest, KirbyQueryResponse } from '#nuxt-kirby'

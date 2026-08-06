@@ -1,7 +1,7 @@
-# What Is KQL?
+# What is KQL?
 
 ::: info
-You may visit the [KQL documentation](https://github.com/getkirby/kql) for a comprehensive introduction.
+The [KQL documentation](https://github.com/getkirby/kql) is the full introduction.
 :::
 
 Kirby's Query Language API combines the flexibility of Kirby's data structures, the power of GraphQL and the simplicity of REST.
@@ -70,5 +70,5 @@ By default, the official KQL API endpoint is located at `/api/query`. An example
 ```
 
 ::: tip
-The [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/) provides a custom KQL endpoint `/api/kql` that enables bearer token authentication. Nuxt Kirby works seamlessly with this endpoint. Check out the [Authentication guide](/essentials/authentication) for more information.
+The [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/) adds a KQL endpoint at `/api/kql` that accepts a bearer token. See [Authentication](/essentials/authentication).
 :::

@@ -1,6 +1,6 @@
 # Using Types
 
-Nuxt Kirby provides comprehensive TypeScript types for full type safety when working with Kirby CMS data and queries.
+The types Nuxt Kirby ships for Kirby data and queries, and where each one applies.
 
 ::: info
 Types are re-exported from the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package and available globally in your Nuxt project via the `#nuxt-kirby` path alias.

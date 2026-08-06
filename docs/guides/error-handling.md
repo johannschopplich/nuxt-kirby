@@ -1,6 +1,6 @@
 # Error Handling
 
-Nuxt Kirby provides comprehensive error handling that preserves Kirby API error details while keeping credentials secure through the [server proxy](/advanced/how-does-it-work).
+The [server proxy](/advanced/how-does-it-work) passes Kirby's error through untouched, so status code, message and body all reach your app while the credentials stay behind.
 
 ## Error Types
 
