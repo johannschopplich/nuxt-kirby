@@ -6,6 +6,13 @@ export function headersToObject(headers: HeadersInit = {}): Record<string, strin
   return Object.fromEntries(new Headers(headers))
 }
 
+/**
+ * Builds the credentials header, lowercased for the same reason as the language
+ * header: a caller-supplied `Authorization` would otherwise survive as a second
+ * key and `Headers` would join both values into `Bearer caller, Bearer config`.
+ * Landing on one key lets the configured credentials overwrite what a caller
+ * sent, which is what keeps a browser from choosing the upstream credentials.
+ */
 export function createAuthHeader({
   auth,
   token,
@@ -19,11 +26,11 @@ export function createAuthHeader({
     const { username, password } = credentials
     const encoded = globalThis.btoa(`${username}:${password}`)
 
-    return { Authorization: `Basic ${encoded}` }
+    return { authorization: `Basic ${encoded}` }
   }
 
   if (auth === 'bearer')
-    return { Authorization: `Bearer ${token}` }
+    return { authorization: `Bearer ${token}` }
 }
 
 /**
