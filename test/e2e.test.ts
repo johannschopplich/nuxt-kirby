@@ -74,6 +74,13 @@ describe('nuxt-kirby', async () => {
       expect(result.statusCode).toBe(400)
     })
 
+    it('resolves from getCachedData instead of sending the query', async () => {
+      const result = await fetchTestResult('/tests/use-kql/get-cached-data')
+
+      expect(result.status).toBe('success')
+      expect(result.title).toBe('from getCachedData')
+    })
+
     it('exposes data and status when lazy', async () => {
       const result = await fetchTestResult('/tests/use-kql/lazy')
 
