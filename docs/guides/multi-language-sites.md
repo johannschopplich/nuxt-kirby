@@ -34,7 +34,15 @@ const { data } = await useKirbyData('api/__sitemap__', {
 
 ## Fetching Content Outside the API
 
-Kirby only reads `X-Language` for requests below `/api`. If you enable the `headless.globalRoutes` option of [Kirby Headless](https://github.com/johannschopplich/kirby-headless) and fetch a page by its own path, the language is part of that path instead, and `language` has nothing to act on:
+Kirby itself reads `X-Language` only for requests below `/api`. [Kirby Headless](https://github.com/johannschopplich/kirby-headless) v9 extends it to the `headless.globalRoutes` catch-all, so a page fetched by its own path honors `language` too – as long as the path carries no language prefix of its own:
+
+```ts
+const { data } = await useKirbyData('about', {
+  language: locale.value
+})
+```
+
+Everywhere else the language belongs in the path, and `language` has nothing to act on:
 
 ```ts
 // Resolves to `/de/about` on the Kirby side
