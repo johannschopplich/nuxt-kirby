@@ -51,6 +51,8 @@ const { data, error, status } = await useKql({
 </template>
 ```
 
+The [documentation](https://nuxt-kirby.byjohann.dev) covers authentication, multi-language sites and every module option.
+
 ## 💻 Development
 
 1. Clone this repository
