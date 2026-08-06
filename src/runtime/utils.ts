@@ -7,11 +7,8 @@ export function headersToObject(headers: HeadersInit = {}): Record<string, strin
 }
 
 /**
- * Builds the credentials header, lowercased for the same reason as the language
- * header: a caller-supplied `Authorization` would otherwise survive as a second
- * key and `Headers` would join both values into `Bearer caller, Bearer config`.
- * Landing on one key lets the configured credentials overwrite what a caller
- * sent, which is what keeps a browser from choosing the upstream credentials.
+ * Builds the credentials header, lowercased so that it overwrites a caller's own
+ * `Authorization` instead of being joined with it into one comma-separated value.
  */
 export function createAuthHeader({
   auth,
@@ -34,9 +31,8 @@ export function createAuthHeader({
 }
 
 /**
- * Builds the header Kirby reads the language from, lowercased so that it lands on
- * the same key as a `X-Language` header the caller passed through `headersToObject`
- * rather than travelling alongside it as a second value.
+ * Builds the header Kirby reads the language from, lowercased so that it overwrites
+ * a caller's own `X-Language` instead of travelling alongside it as a second value.
  */
 export function createLanguageHeader(language: string | undefined) {
   return language ? { 'x-language': language } : undefined
