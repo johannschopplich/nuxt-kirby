@@ -11,7 +11,7 @@
 
 - 🔒 Protected Kirby credentials when sending queries
 - 🪢 Supports token-based authentication with the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/) (recommended)
-- 🍱 Handle request just like with the [`useFetch`](https://nuxt.com/docs/getting-started/data-fetching) composable
+- 🍱 Handle requests just like with the [`useFetch`](https://nuxt.com/docs/getting-started/data-fetching) composable
 - 🦦 [Multiple starter kits](https://nuxt-kirby.byjohann.dev/essentials/starter-kits) available
 - 🗃 Cached query responses
 - 🤹 No CORS issues!
@@ -19,19 +19,13 @@
 
 ## Setup
 
-> [!TIP]
-> [📖 Read the documentation](https://nuxt-kirby.byjohann.dev)
-
 ```bash
 npx nuxt module add kirby
 ```
 
 ## Basic Usage
 
-> [!TIP]
-> [📖 Read the documentation](https://nuxt-kirby.byjohann.dev)
-
-Add the Nuxt Kirby module to your Nuxt config:
+Add Nuxt Kirby to your Nuxt configuration:
 
 ```ts
 // `nuxt.config.ts`
