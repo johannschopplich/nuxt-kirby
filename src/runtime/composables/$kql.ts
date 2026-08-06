@@ -2,8 +2,8 @@ import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
 import type { NitroFetchOptions } from 'nitropack'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions } from '../types'
-import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
 import { hash } from 'ohash'
+import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
 import { buildApiProxyPath, createAuthHeader, headersToObject } from '../utils'
 
 // #region options

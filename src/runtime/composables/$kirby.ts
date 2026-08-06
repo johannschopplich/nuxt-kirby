@@ -1,9 +1,9 @@
 import type { NitroFetchOptions } from 'nitropack'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions } from '../types'
-import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
 import { hash } from 'ohash'
 import { joinURL } from 'ufo'
+import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
 import { buildApiProxyPath, createAuthHeader, headersToObject } from '../utils'
 
 // #region options

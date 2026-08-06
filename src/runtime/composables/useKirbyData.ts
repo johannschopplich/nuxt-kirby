@@ -1,10 +1,10 @@
 import type { NitroFetchOptions } from 'nitropack'
 import type { AsyncData, AsyncDataOptions, NuxtError } from 'nuxt/app'
 import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
-import { useAsyncData } from '#imports'
 import { hash } from 'ohash'
 import { joinURL } from 'ufo'
 import { computed, toValue } from 'vue'
+import { useAsyncData } from '#imports'
 import { $kirby } from './$kirby'
 
 // #region options
