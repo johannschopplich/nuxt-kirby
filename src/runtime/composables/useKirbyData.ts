@@ -3,7 +3,7 @@ import type { AsyncData, AsyncDataOptions, NuxtError } from 'nuxt/app'
 import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
 import { computed, toValue } from 'vue'
-import { useAsyncData } from '#imports'
+import { useFetch } from '#imports'
 import { $kirby } from './$kirby'
 
 // #region options
@@ -20,7 +20,6 @@ export type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
   | 'retry'
   | 'retryDelay'
   | 'retryStatusCodes'
-  | 'timeout'
 > & {
   /**
    * Language code to fetch data for in multi-language Kirby setups.
@@ -48,65 +47,29 @@ export function useKirbyData<T = any>(
   path: MaybeRefOrGetter<string>,
   opts: UseKirbyDataOptions<T> = {},
 ) {
-  const {
-    server,
-    lazy,
-    default: defaultFn,
-    transform,
-    pick,
-    watch: watchSources,
-    immediate,
-    method,
-    headers,
-    query,
-    body,
-    language,
-    cache = true,
-    ...fetchOptions
-  } = opts
+  const { language, cache = true, ...fetchOptions } = opts
 
   const _language = computed(() => toValue(language))
   const _path = computed(() => toValue(path).replace(/^\//, ''))
   const key = computed(() => `$kirby${hash([
     _path.value,
     _language.value,
-    query,
-    method,
+    toValue(fetchOptions.query),
+    toValue(fetchOptions.method),
+    toValue(fetchOptions.body),
   ])}`)
 
   if (!_path.value)
     console.warn('[useKirbyData] Empty Kirby path')
 
-  const asyncDataOptions: AsyncDataOptions<T> = {
-    server,
-    lazy,
-    default: defaultFn,
-    transform,
-    pick,
-    watch: watchSources === false ? [] : [...(watchSources || []), key],
-    immediate,
-  }
-
-  let controller: AbortController | undefined
-
-  return useAsyncData<T, unknown>(
-    watchSources === false ? key.value : key,
-    () => {
-      controller?.abort?.()
-      controller = new AbortController()
-
-      return $kirby(_path.value, {
-        ...fetchOptions,
-        method,
-        headers,
-        query,
-        body,
-        signal: controller.signal,
-        language: _language.value,
-        cache,
-        key: key.value,
-      })
-    },
-    asyncDataOptions,
-  ) as AsyncData<T | undefined, NuxtError>
+  return useFetch(_path, {
+    ...fetchOptions,
+    key,
+    $fetch: ((_request: string, options) => $kirby(_path.value, {
+      ...options,
+      language: _language.value,
+      cache,
+      key: key.value,
+    })) as typeof globalThis.$fetch,
+  }) as AsyncData<T | undefined, NuxtError>
 }

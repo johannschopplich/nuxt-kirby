@@ -4,7 +4,7 @@ import type { AsyncData, AsyncDataOptions, NuxtError } from 'nuxt/app'
 import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
 import { computed, toValue } from 'vue'
-import { useAsyncData } from '#imports'
+import { useFetch } from '#imports'
 import { $kql } from './$kql'
 
 // #region options
@@ -18,7 +18,6 @@ export type UseKqlOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
   | 'retry'
   | 'retryDelay'
   | 'retryStatusCodes'
-  | 'timeout'
 > & {
   /**
    * Language code to fetch data for in multi-language Kirby setups.
@@ -42,19 +41,7 @@ export function useKql<
   ResT extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse,
   ReqT extends KirbyQueryRequest = KirbyQueryRequest,
 >(query: MaybeRefOrGetter<ReqT>, opts: UseKqlOptions<ResT> = {}) {
-  const {
-    server,
-    lazy,
-    default: defaultFn,
-    transform,
-    pick,
-    watch: watchSources,
-    immediate,
-    headers,
-    language,
-    cache = true,
-    ...fetchOptions
-  } = opts
+  const { language, cache = true, ...fetchOptions } = opts
 
   const _query = computed(() => toValue(query))
   const _language = computed(() => toValue(language))
@@ -63,32 +50,15 @@ export function useKql<
   if (Object.keys(_query.value).length === 0 || !_query.value.query)
     console.error('[useKql] Empty KQL query')
 
-  const asyncDataOptions: AsyncDataOptions<ResT> = {
-    server,
-    lazy,
-    default: defaultFn,
-    transform,
-    pick,
-    watch: watchSources === false ? [] : [...(watchSources || []), key],
-    immediate,
-  }
-
-  let controller: AbortController | undefined
-
-  return useAsyncData<ResT, unknown>(
-    watchSources === false ? key.value : key,
-    () => {
-      controller?.abort?.()
-      controller = new AbortController()
-
-      return $kql(_query.value, {
-        ...fetchOptions,
-        signal: controller.signal,
-        language: _language.value,
-        cache,
-        key: key.value,
-      })
-    },
-    asyncDataOptions,
-  ) as AsyncData<ResT | undefined, NuxtError>
+  // A KQL request has no path of its own, so the cache key stands in as the request identity.
+  return useFetch(key, {
+    ...fetchOptions,
+    key,
+    $fetch: ((_request: string, options) => $kql(_query.value, {
+      ...options,
+      language: _language.value,
+      cache,
+      key: key.value,
+    })) as typeof globalThis.$fetch,
+  }) as AsyncData<ResT | undefined, NuxtError>
 }
