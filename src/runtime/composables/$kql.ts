@@ -25,10 +25,10 @@ export type KqlOptions = Pick<
    */
   language?: string
   /**
-   * Cache the response between function calls for the same query.
+   * Serve a repeated request from the Nuxt payload instead of sending it again.
    * @default true
    */
-  cache?: boolean
+  payloadCache?: boolean
   /**
    * By default, a cache key will be generated from the request options.
    * With this option, you can provide a custom cache key.
@@ -49,14 +49,14 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
   const {
     headers,
     language,
-    cache = true,
+    payloadCache = true,
     key,
     ...fetchOptions
   } = opts
 
   const _key = key || `$kql${hash([query, language])}`
 
-  if ((nuxt.isHydrating || cache) && nuxt.payload.data[_key])
+  if ((nuxt.isHydrating || payloadCache) && nuxt.payload.data[_key])
     return Promise.resolve(nuxt.payload.data[_key])
 
   if (promiseMap.has(_key))
@@ -72,7 +72,6 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
     body: {
       query,
       headers: sharedHeaders,
-      cache,
     } satisfies ServerFetchOptions,
   }
 
@@ -91,7 +90,7 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
     ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
   })
     .then((response) => {
-      if (import.meta.server || cache)
+      if (import.meta.server || payloadCache)
         nuxt.payload.data[_key] = response
       return response
     })

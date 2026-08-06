@@ -30,10 +30,10 @@ export type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
    */
   language?: MaybeRefOrGetter<string>
   /**
-   * Cache the response between function calls for the same path.
+   * Serve a repeated request from the Nuxt payload instead of sending it again.
    * @default true
    */
-  cache?: boolean
+  payloadCache?: boolean
   /**
    * Watch an array of reactive sources and auto-refresh the fetch result when they change.
    * Path and language are watched by default. You can completely ignore reactive sources by using `watch: false`.
@@ -47,7 +47,7 @@ export function useKirbyData<T = any>(
   path: MaybeRefOrGetter<string>,
   opts: UseKirbyDataOptions<T> = {},
 ) {
-  const { language, cache = true, ...fetchOptions } = opts
+  const { language, payloadCache = true, ...fetchOptions } = opts
 
   const _language = computed(() => toValue(language))
   const _path = computed(() => toValue(path).replace(/^\//, ''))
@@ -68,7 +68,7 @@ export function useKirbyData<T = any>(
     $fetch: ((_request: string, options) => $kirby(_path.value, {
       ...options,
       language: _language.value,
-      cache,
+      payloadCache,
       key: key.value,
     })) as typeof globalThis.$fetch,
   }) as AsyncData<T | undefined, NuxtError>

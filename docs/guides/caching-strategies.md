@@ -6,13 +6,13 @@ Nuxt Kirby provides multiple caching layers to optimize performance.
 
 | Cache Type | Location | Scope | Persistence | Best For |
 |------------|----------|-------|-------------|----------|
-| [**Client-side**](#client-side-caching) | Browser memory | Per session | Until page reload | Frequent queries |
+| [**Payload**](#payload-caching) | Nuxt payload | Per session | Until page reload | Frequent queries |
 | [**Server-side**](#server-side-caching) | Nitro cache | Cross-request | Configurable TTL | Expensive operations |
 | [**Build-time**](/guides/prefetching-kql-queries) | Static files | Permanent | Until rebuild | Stable content |
 
-## Client-Side Caching
+## Payload Caching
 
-All composables (`useKql`, `useKirbyData`, `$kql`, `$kirby`) cache responses by default to avoid duplicate requests.
+All composables (`useKql`, `useKirbyData`, `$kql`, `$kirby`) store their response in the Nuxt payload by default, so a repeated request resolves without a round trip.
 
 ### Caching Behavior
 
@@ -30,21 +30,20 @@ const { data: secondCall } = await useKql({
 })
 ```
 
-Nuxt Kirby generates unique cache keys for each query based on its parameters. This ensures that different queries are cached separately. The cache key includes:
+Nuxt Kirby generates a unique cache key per request, so different requests are cached separately. The key covers:
 
 - Query content (for KQL)
-- Path and parameters (for direct API)
+- Path, method, query parameters and body (for direct API)
 - Language setting
-- Request headers
 
-### Disabling Client-Side Caching
+### Disabling Payload Caching
 
-You can disable the client-side cache by setting the `cache` option to `false`. This is useful for real-time data that changes frequently.
+Set the `payloadCache` option to `false`. This is useful for real-time data that changes frequently.
 
 ```ts
 // Disable caching for real-time data
 const { data } = await useKql(query, {
-  cache: false
+  payloadCache: false
 })
 ```
 

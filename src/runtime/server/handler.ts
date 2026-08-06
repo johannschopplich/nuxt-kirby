@@ -94,7 +94,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = kirby.server.cache && body.cache
+    const response = kirby.server.cache
       ? await cachedFetcher(event, { key, ...body })
       : await fetcher(event, { key, ...body })
 

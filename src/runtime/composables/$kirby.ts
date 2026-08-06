@@ -31,10 +31,10 @@ export type KirbyFetchOptions = Pick<
    */
   language?: string
   /**
-   * Cache the response between function calls for the same path.
+   * Serve a repeated request from the Nuxt payload instead of sending it again.
    * @default true
    */
-  cache?: boolean
+  payloadCache?: boolean
   /**
    * By default, a cache key will be generated from the request options.
    * With this option, you can provide a custom cache key.
@@ -56,7 +56,7 @@ export function $kirby<T = any>(
     query,
     body,
     language,
-    cache = true,
+    payloadCache = true,
     key,
     ...fetchOptions
   } = opts
@@ -70,7 +70,7 @@ export function $kirby<T = any>(
     language,
   ])}`
 
-  if ((nuxt.isHydrating || cache) && nuxt.payload.data[_key])
+  if ((nuxt.isHydrating || payloadCache) && nuxt.payload.data[_key])
     return Promise.resolve(nuxt.payload.data[_key])
 
   if (promiseMap.has(_key))
@@ -89,7 +89,6 @@ export function $kirby<T = any>(
       query,
       body,
       headers: sharedHeaders,
-      cache,
     } satisfies ServerFetchOptions,
   }
 
@@ -109,7 +108,7 @@ export function $kirby<T = any>(
     ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
   })
     .then((response) => {
-      if (import.meta.server || cache)
+      if (import.meta.server || payloadCache)
         nuxt.payload.data[_key] = response
       return response
     })

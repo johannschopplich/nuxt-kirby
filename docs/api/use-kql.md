@@ -22,11 +22,11 @@ By default, Nuxt waits until a `refresh` is finished before it can be executed a
 
 ## Caching
 
-By default, a [unique key is generated](/guides/caching-strategies) based in input parameters for each request to ensure that data fetching can be properly de-duplicated across requests. To disable caching, set the `cache` option to `false`:
+By default, a [unique key is generated](/guides/caching-strategies) from the input parameters of each request, so data fetching is de-duplicated across requests. To disable payload caching, set the `payloadCache` option to `false`:
 
 ```ts
 const { data } = await useKql({ query: 'site' }, {
-  cache: false
+  payloadCache: false
 })
 ```
 

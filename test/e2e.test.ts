@@ -214,6 +214,6 @@ function postToProxy(key: string, body: Record<string, unknown>): Promise<Respon
   return fetch(`/api/__kirby__/${encodeURIComponent(key)}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ cache: false, ...body }),
+    body: JSON.stringify(body),
   })
 }

@@ -2,6 +2,31 @@
 
 ## v4.0.0
 
+### Nuxt 4 Is Required
+
+The module no longer supports Nuxt 3.
+
+### `cache` Is Now `payloadCache`
+
+The option that controls whether a response is kept in the Nuxt payload is named for what it does, so `cache` is free for its `RequestInit` meaning:
+
+```ts
+const { data } = await useKql(query, {
+  cache: false, // [!code --]
+  payloadCache: false // [!code ++]
+})
+```
+
+It is a compile error either way, so the rename surfaces on upgrade. The same rename applies to `useKirbyData`, `$kql` and `$kirby`.
+
+### The Server Cache Is No Longer Switchable Per Call
+
+A request used to carry its `cache` value to the proxy route, where it gated the Nitro cache alongside the [`server.cache`](/guides/caching-strategies#server-side-caching) module option. A caller could therefore bypass your server cache. The module option decides alone now, and `payloadCache` only concerns the client.
+
+### `useKql` and `useKirbyData` Forward Every Async Data Option
+
+Both composables used to hand-pick which options reached `useAsyncData`, so `deep`, `dedupe`, `getCachedData`, `pick` and `transform` type-checked but did nothing. They now work as documented for Nuxt's own composables.
+
 ### `language` Travels as a Header, Not a Path Prefix
 
 `useKirbyData` and `$kirby` used to prepend the language code to the path, so `useKirbyData('api/notes', { language: 'de' })` requested `de/api/notes`. Both now send the code as the `X-Language` header instead, which is what Kirby reads on API routes, and the path is left as written. `useKql` and `$kql` already sent the header and are unaffected.

@@ -7,5 +7,4 @@ export interface ServerFetchOptions extends Pick<
 > {
   query?: Partial<KirbyQueryRequest> // Either a KQL query.
   path?: string // Or a Kirby path.
-  cache?: boolean
 }
