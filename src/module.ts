@@ -214,7 +214,6 @@ export default defineNuxtModule<ModuleOptions>({
     addImports(
       ['$kirby', '$kql', 'useKirbyData', 'useKql'].map(name => ({
         name,
-        as: name,
         from: resolve(`runtime/composables/${name}`),
       })),
     )
