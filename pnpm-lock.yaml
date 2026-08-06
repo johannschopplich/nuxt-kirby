@@ -11,9 +11,15 @@ importers:
       '@nuxt/kit':
         specifier: ^4.5.2
         version: 4.5.2(magic-string@1.1.0)(magicast@0.5.4)(rolldown@1.2.2)(unplugin@3.3.0(esbuild@0.28.1)(rolldown@1.2.2)(rollup@4.62.4)(vite@8.2.0(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.1)(yaml@2.9.0)))
+      consola:
+        specifier: ^3.4.2
+        version: 3.4.2
       defu:
         specifier: ^6.1.7
         version: 6.1.7
+      destr:
+        specifier: ^2.0.5
+        version: 2.0.5
       kirby-types:
         specifier: ^1.6.0
         version: 1.6.0(vue@3.5.41(typescript@6.0.3))
@@ -54,9 +60,6 @@ importers:
       bumpp:
         specifier: ^12.2.0
         version: 12.2.0
-      destr:
-        specifier: ^2.0.5
-        version: 2.0.5
       eslint:
         specifier: ^10.8.0
         version: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
