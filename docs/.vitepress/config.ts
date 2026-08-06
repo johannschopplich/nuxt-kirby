@@ -115,7 +115,7 @@ function nav(): DefaultTheme.NavItem[] {
       text: `v${version}`,
       items: [
         { text: 'Release Notes ', link: releases },
-        { text: 'Migration Guide', link: '/advanced/migration' },
+        { text: 'Migration', link: '/advanced/migration' },
       ],
     },
   ]
