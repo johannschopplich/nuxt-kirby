@@ -1,12 +1,12 @@
 import type { H3Event } from 'h3'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions } from '../types'
-import { useRuntimeConfig } from '#imports'
 import { consola } from 'consola'
 import { destr } from 'destr'
 import { createError, defineEventHandler, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
-import { defineCachedFunction } from 'nitropack/runtime/internal/cache'
+import { defineCachedFunction } from 'nitropack/runtime'
 import { base64ToUint8Array, uint8ArrayToBase64, uint8ArrayToString } from 'uint8array-extras'
+import { useRuntimeConfig } from '#imports'
 import { createAuthHeader } from '../utils'
 
 const EXCLUDED_HEADERS = new Set([
