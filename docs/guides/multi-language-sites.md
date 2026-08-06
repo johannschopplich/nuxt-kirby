@@ -24,6 +24,23 @@ const { data } = await useKql(
 )
 ```
 
+The `language` option travels as the `X-Language` header, which Kirby reads on every API route. `useKirbyData` and `$kirby` accept it too:
+
+```ts
+const { data } = await useKirbyData('api/__sitemap__', {
+  language: locale.value
+})
+```
+
+## Fetching Content Outside the API
+
+Kirby only reads `X-Language` for requests below `/api`. If you enable the `headless.globalRoutes` option of [Kirby Headless](https://github.com/johannschopplich/kirby-headless) and fetch a page by its own path, the language is part of that path instead, and `language` has nothing to act on:
+
+```ts
+// Resolves to `/de/about` on the Kirby side
+const { data } = await useKirbyData(`${locale.value}/about`)
+```
+
 ## Handling Dynamic Routes
 
 For dynamic routes like `pages/[...slug].vue`, you will need to handle both the language code and the page slug. With prefixed routes (e.g., `/en/about`, `/de/about`), the locale code is part of the URL.

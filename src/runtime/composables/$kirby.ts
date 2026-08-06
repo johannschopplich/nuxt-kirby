@@ -24,6 +24,10 @@ export type KirbyFetchOptions = Pick<
 > & {
   /**
    * Language code to fetch data for in multi-language Kirby setups.
+   *
+   * @remarks
+   * Travels as the `X-Language` header, which Kirby reads for API routes only.
+   * A page fetched by its own path carries the language in that path instead.
    */
   language?: string
   /**
