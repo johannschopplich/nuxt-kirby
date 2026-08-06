@@ -4,7 +4,7 @@
 Types are re-exported from the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package and available globally in your Nuxt project via the `#nuxt-kirby` path alias.
 :::
 
-### `KirbyQueryRequest`
+## `KirbyQueryRequest`
 
 Represents a structured request to the Kirby API using the Kirby Query Language (KQL). It includes the main query, optional field selections, and pagination settings.
 

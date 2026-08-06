@@ -4,7 +4,7 @@
 Types are re-exported from the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package and available globally in your Nuxt project via the `#nuxt-kirby` path alias.
 :::
 
-### `KirbyApiResponse`
+## `KirbyApiResponse`
 
 Represents the standard structure of a response from the Kirby API. It includes the HTTP status code, a status message, and an optional result payload.
 
@@ -38,7 +38,7 @@ export interface KirbyApiResponse<T = any> {
 }
 ```
 
-### `KirbyQueryResponse`
+## `KirbyQueryResponse`
 
 Represents the response structure for queries made using Kirby Query Language (KQL). It extends `KirbyApiResponse` and can optionally include pagination information.
 
