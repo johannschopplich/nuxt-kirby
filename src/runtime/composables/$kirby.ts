@@ -3,7 +3,7 @@ import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions } from '../types'
 import { hash } from 'ohash'
 import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
-import { buildApiProxyPath, createAuthHeader, headersToObject } from '../utils'
+import { buildApiProxyPath, createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
 
 // #region options
 export type KirbyFetchOptions = Pick<
@@ -76,9 +76,10 @@ export function $kirby<T = any>(
   if (promiseMap.has(_key))
     return promiseMap.get(_key)!
 
-  const sharedHeaders = headersToObject(headers)
-  if (language)
-    sharedHeaders['x-language'] = language
+  const sharedHeaders = {
+    ...headersToObject(headers),
+    ...createLanguageHeader(language),
+  }
 
   const _serverFetchOptions: NitroFetchOptions<string> = {
     method: 'POST',

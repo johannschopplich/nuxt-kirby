@@ -4,7 +4,7 @@ import type { ModuleOptions } from './module'
 import { ofetch } from 'ofetch'
 import { pascalCase } from 'scule'
 import { logger } from './kit'
-import { createAuthHeader } from './runtime/utils'
+import { createAuthHeader, createLanguageHeader } from './runtime/utils'
 
 export async function prefetchQueries(
   options: ModuleOptions,
@@ -44,8 +44,8 @@ export async function prefetchQueries(
           method: 'POST',
           body: language ? query.query : query,
           headers: {
+            ...createLanguageHeader(language),
             ...createAuthHeader(options),
-            ...(language && { 'X-Language': language }),
           },
         }),
       )
