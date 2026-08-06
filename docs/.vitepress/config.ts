@@ -1,4 +1,5 @@
 import type { DefaultTheme } from 'vitepress'
+import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vitepress'
 import { description, version } from '../../package.json'
 import {
@@ -10,6 +11,10 @@ import {
 } from './meta'
 
 export default defineConfig({
+  vite: {
+    plugins: [UnoCSS()],
+  },
+
   lang: 'en-US',
   title: name,
   description,

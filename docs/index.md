@@ -1,6 +1,6 @@
 ---
 layout: home
-titleTemplate: Complete Kirby CMS Integration for Nuxt
+titleTemplate: Kirby CMS Integration for Nuxt
 hero:
   name: Nuxt Kirby
   text: Kirby CMS Integration for Nuxt
@@ -21,23 +21,23 @@ hero:
 
 features:
   - title: Multiple Data Fetching Methods
-    icon: 🔄
+    icon: <span class="i-carbon:data-share"></span>
     details: KQL for complex queries or direct API access for custom endpoints.
     link: /essentials/data-fetching-methods
     linkText: Learn More
-  - title: Protected Credentials
-    icon: 🔒
-    details: Server-side proxy keeps credentials safe. No CORS issues, no exposed tokens.
+  - title: Credentials Stay on the Server
+    icon: <span class="i-carbon:ibm-cloud-hyper-protect-dbaas"></span>
+    details: A server-side proxy sends every query, so your token never reaches the browser and CORS never applies.
     link: /essentials/what-is-nuxt-kirby
     linkText: How It Works
-  - title: Familiar Developer Experience
-    icon: 🤹
-    details: Works like Nuxt's <code>useFetch</code> composable. Fully typed with caching included.
+  - title: Familiar Data Handling
+    icon: <span class="i-carbon:noodle-bowl"></span>
+    details: Queries behave like Nuxt's own <code>useFetch</code>, typed and cached in the payload.
     link: /api/
-    linkText: Get Started
-  - title: Multiple Starter Kits
-    icon: 🦦
-    details: Jump-start your project with ready-made starter kits and deployment examples.
+    linkText: API Reference
+  - title: Starter Kits
+    icon: <span class="i-carbon:rocket"></span>
+    details: Ready-made Kirby and Nuxt setups, including deployment examples.
     link: /essentials/starter-kits
     linkText: Browse Kits
 ---
