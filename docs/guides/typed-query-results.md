@@ -2,7 +2,7 @@
 
 For better TypeScript support, define custom response types for [`useKql`](/api/use-kql) to catch errors in your templates.
 
-The [`KirbyQueryResponse<T = any, Pagination extends boolean = false>`](/api/types) accepts a generic type parameter `T` for the query result.
+The [`KirbyQueryResponse<T = any, Pagination extends boolean = false>`](/api/types-response#kirbyqueryresponse) accepts a generic type parameter `T` for the query result.
 
 ```ts
 // Extend the default response type with the result we expect from the query response

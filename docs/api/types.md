@@ -23,60 +23,10 @@ import type {
 } from '#nuxt-kirby'
 ```
 
-## Typed Query Results
+Each type is documented on the page for its area:
 
-For the best TypeScript experience, define the expected result type of your queries to get full type safety and IDE support.
+- [Query Types](/api/types-query) – the shape of a query and the models it may address.
+- [Request Types](/api/types-request) – what you hand to `useKql` and `$kql`.
+- [Response Types](/api/types-response) – what comes back, including pagination.
 
-The [`KirbyQueryResponse`](/api/types-response#kirbyqueryresponse) accepts the generic type parameter `T` used for the query result type.
-
-```ts
-// Extend the default response type with the result we expect from the query response
-await useKql<KirbyQueryResponse<{ title: string }>>({
-  query: 'site',
-  select: ['title'],
-})
-```
-
-**Example:**
-
-First, create an `KirbySite` interface that matches the expected structure of the query result.
-
-Then, pass it as a generic type parameter to `useKql`. The `data` object will now be strongly typed, and your IDE will provide autocompletion and type checking.
-
-```vue
-<script setup lang="ts">
-import type { KirbyQueryResponse } from '#nuxt-kirby'
-
-// Define the expected response structure
-export interface KirbySite {
-  title: string
-  children: {
-    id: string
-    title: string
-    isListed: boolean
-  }[]
-}
-
-// `data` will be of type `KirbyQueryResponse<KirbySite>`
-const { data } = await useKql<KirbyQueryResponse<KirbySite>>({
-  query: 'site',
-  select: {
-    title: true,
-    children: {
-      query: 'site.children',
-      select: {
-        id: true,
-        title: true,
-        isListed: true
-      }
-    }
-  }
-})
-</script>
-
-<template>
-  <div>
-    <h1>{{ data?.result.title }}</h1>
-  </div>
-</template>
-```
+To type the result of a query rather than the envelope around it, see [Typed Query Results](/guides/typed-query-results).
