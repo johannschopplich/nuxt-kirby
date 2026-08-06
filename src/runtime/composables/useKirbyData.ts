@@ -7,7 +7,7 @@ import { useAsyncData } from '#imports'
 import { $kirby } from './$kirby'
 
 // #region options
-type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
+export type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
   NitroFetchOptions<string>,
   | 'onRequest'
   | 'onRequestError'
