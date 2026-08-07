@@ -25,7 +25,7 @@ describe('server cache', async () => {
     },
   })
 
-  it('serves each query its own result when two share a route key', async () => {
+  it('serves each query its own result when both travel under one route key', async () => {
     const site = await postQuery({ query: 'site', select: { title: true } })
     const children = await postQuery({ query: 'site.children', select: { id: true } })
 
