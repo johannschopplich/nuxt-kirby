@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import type { ModuleOptions } from '../../module'
-import type { ServerFetchOptions } from '../types'
+import type { ServerFetchOptions, ServerFetchRequest } from '../types'
 import { consola } from 'consola'
 import { destr } from 'destr'
 import { createError, defineEventHandler, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     headers,
     method,
     body,
-  }: { isQueryRequest: boolean } & ServerFetchOptions) => {
+  }: ServerFetchRequest) => {
     const response = await globalThis.$fetch.raw<ArrayBuffer>(isQueryRequest ? kirby.kqlPath : path!, {
       responseType: 'arrayBuffer',
       ignoreResponseError: true,
@@ -71,10 +71,8 @@ export default defineEventHandler(async (event) => {
     base: kirby.server.storage,
     swr: kirby.server.swr,
     maxAge: kirby.server.maxAge,
-    // The key stands for the request, so the server derives it from the request.
-    // Reading the caller's `key` instead would let one visitor place a response
-    // of their choosing under the key another visitor reads.
-    getKey: (event: H3Event, options: { isQueryRequest: boolean } & ServerFetchOptions) => hash(options),
+    // Reading the caller's `key` instead would let one visitor plant a response under the key another reads.
+    getKey: (event: H3Event, options: ServerFetchRequest) => hash(options),
   })
 
   if (isQueryRequest) {
