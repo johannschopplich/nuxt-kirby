@@ -10,7 +10,6 @@ export interface ServerFetchOptions extends Pick<
   path?: string
 }
 
-/** What the proxy route sends on, and what its cache key is hashed from. */
 export interface ServerFetchRequest extends ServerFetchOptions {
   isQueryRequest: boolean
 }
