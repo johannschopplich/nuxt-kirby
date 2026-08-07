@@ -22,6 +22,19 @@ describe('nuxt-kirby', async () => {
         },
       })
     })
+
+    it('serves a repeated query from the payload', async () => {
+      const result = await fetchTestResult<{ firstHits: number, secondHits: number }>('/tests/$kql/payload-cache')
+
+      expect(result.firstHits).toBeGreaterThan(0)
+      expect(result.secondHits).toBe(result.firstHits)
+    })
+
+    it('sends the query again with payloadCache: false', async () => {
+      const result = await fetchTestResult<{ firstHits: number, uncachedHits: number }>('/tests/$kql/payload-cache')
+
+      expect(result.uncachedHits).toBe(result.firstHits + 1)
+    })
   })
 
   describe('$kirby (composable)', () => {
