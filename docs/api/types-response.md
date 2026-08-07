@@ -45,7 +45,7 @@ Represents the response structure for queries made using Kirby Query Language (K
 **Examples:**
 
 ```ts
-import type { KirbyQueryResponse } from '#nuxt-kirby'
+import type { KirbyQueryResponse } from 'kirby-types'
 
 // Define the expected response structure
 export interface KirbySite {

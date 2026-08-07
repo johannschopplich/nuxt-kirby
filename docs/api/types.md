@@ -3,7 +3,7 @@
 The types Nuxt Kirby ships for Kirby data and queries, and where each one applies.
 
 ::: info
-Types are re-exported from the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package and available globally in your Nuxt project via the `#nuxt-kirby` path alias.
+These types belong to the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package, which Nuxt Kirby installs for you – import them from there. The `#nuxt-kirby` alias re-exports the same names next to your [prefetched queries](/guides/prefetching-kql-queries), so both paths resolve to the same types.
 :::
 
 ```ts
@@ -20,7 +20,7 @@ import type {
   KirbyQueryRequest,
   KirbyQueryResponse,
   KirbyQuerySchema,
-} from '#nuxt-kirby'
+} from 'kirby-types'
 ```
 
 Each type is documented on the page for its area:

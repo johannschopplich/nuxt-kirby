@@ -8,7 +8,7 @@ Responses are cached by default between function calls for the same path based o
 
 ```vue
 <script setup lang="ts">
-import type { KirbyApiResponse } from '#nuxt-kirby'
+import type { KirbyApiResponse } from 'kirby-types'
 
 interface KirbySitemapItem {
   url: string

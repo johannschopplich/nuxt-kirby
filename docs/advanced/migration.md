@@ -62,12 +62,15 @@ It was deprecated in v3.0.1 and warned at build time. A `prefix` left in place i
 
 ### The `#nuxt-kql` Import Alias Is Gone
 
-The back-compat alias kept through v3 has been removed. Import from `#nuxt-kirby`:
+The back-compat alias kept through v3 has been removed. Types come from [`kirby-types`](/api/types), which the module installs for you:
 
 ```ts
-import type { KirbyQueryRequest } from '#nuxt-kirby' // [!code ++]
+import type { KirbyQueryRequest } from 'kirby-types' // [!code ++]
 import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 ```
+
+`#nuxt-kirby` is the alias for [prefetched queries](/guides/prefetching-kql-queries) and re-exports the same types, so it works here as well.
+
 
 ## v3.0.0
 
@@ -106,10 +109,10 @@ Please follow these steps to migrate your existing Nuxt KQL v2 project to Nuxt K
    })
    ```
 
-To keep breaking changes to a minimum, v3 kept the import alias `#nuxt-kql` alongside the new one. [v4 removed it](#the-nuxt-kql-import-alias-is-gone), so change it to `#nuxt-kirby`:
+To keep breaking changes to a minimum, v3 kept the import alias `#nuxt-kql` alongside the new one. [v4 removed it](#the-nuxt-kql-import-alias-is-gone), so import the types from `kirby-types` instead:
 
 ```ts
-import type { KirbyQueryRequest } from '#nuxt-kirby' // [!code ++]
+import type { KirbyQueryRequest } from 'kirby-types' // [!code ++]
 import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 
 const query = ref<KirbyQueryRequest>({

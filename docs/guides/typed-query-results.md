@@ -18,7 +18,7 @@ By creating a custom `KirbySite` type for the expected response result and passe
 
 ```vue
 <script setup lang="ts">
-import type { KirbyQueryResponse } from '#nuxt-kirby'
+import type { KirbyQueryResponse } from 'kirby-types'
 
 // Create an interface for the query result, respectively the data returned by the API
 export interface KirbySite {

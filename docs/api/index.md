@@ -50,7 +50,7 @@ Three type families cover a query's round trip:
 Annotating the composable call carries the shape through to `data`:
 
 ```ts
-import type { KirbyQueryRequest, KirbyQueryResponse } from '#nuxt-kirby'
+import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
 
 interface BlogPost {
   title: string

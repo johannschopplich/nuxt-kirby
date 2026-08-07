@@ -39,7 +39,7 @@ async function invalidateAndRefresh() {
 
 ```vue
 <script setup lang="ts">
-import type { KirbyApiResponse } from '#nuxt-kirby'
+import type { KirbyApiResponse } from 'kirby-types'
 
 interface KirbySitemapItem {
   url: string
