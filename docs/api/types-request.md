@@ -53,7 +53,7 @@ const arrayRequest: KirbyQueryRequest = {
 }
 ```
 
-**Type Declaration:**
+**Type Declarations**
 
 ```ts
 export interface KirbyQuerySchema {

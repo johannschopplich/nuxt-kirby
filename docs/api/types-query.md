@@ -27,7 +27,7 @@ const filtered: KirbyQuery = 'page.children.filterBy("status", "published")'
 const complex: KirbyQuery = 'site("home").children.sortBy("date", "desc").limit(10)'
 ```
 
-**Type Declaration:**
+**Type Declarations**
 
 ```ts
 /**

@@ -28,7 +28,7 @@ const error: KirbyApiResponse = {
 }
 ```
 
-**Type Declaration:**
+**Type Declarations**
 
 ```ts
 export interface KirbyApiResponse<T = any> {
@@ -74,7 +74,7 @@ const { data } = await useKql<KirbyQueryResponse<KirbySite>>({
 })
 ```
 
-**Type Declaration:**
+**Type Declarations**
 
 ```ts
 export type KirbyQueryResponse<
