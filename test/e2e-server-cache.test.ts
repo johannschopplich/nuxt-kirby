@@ -1,9 +1,8 @@
 import type { KirbyQueryResponse } from 'kirby-types'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
 
-// The route key is the caller's to choose, so both requests below travel under the same one.
 const route = `/api/__kirby__/${encodeURIComponent('$kqlshared')}`
 
 function postQuery(query: Record<string, unknown>) {
@@ -16,7 +15,7 @@ function postQuery(query: Record<string, unknown>) {
 describe('server cache', async () => {
   await setup({
     server: true,
-    rootDir: fileURLToPath(new URL('./fixture', import.meta.url)),
+    rootDir: join(import.meta.dirname, 'fixture'),
     nuxtConfig: {
       kirby: {
         server: {

@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
 import { destr } from 'destr'
 import { describe, expect, it } from 'vitest'
@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 describe('nuxt-kirby', async () => {
   await setup({
     server: true,
-    rootDir: fileURLToPath(new URL('./fixture', import.meta.url)),
+    rootDir: join(import.meta.dirname, 'fixture'),
   })
 
   describe('$kql', () => {
