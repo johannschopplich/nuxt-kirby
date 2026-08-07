@@ -1,7 +1,6 @@
 import type { H3Event } from 'h3'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions, ServerFetchRequest } from '../types'
-import { consola } from 'consola'
 import { destr } from 'destr'
 import { createError, defineEventHandler, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
 import { defineCachedFunction } from 'nitropack/runtime'
@@ -26,8 +25,6 @@ interface ProxyResponse {
   data: Uint8Array
 }
 
-// Always give `event` as first argument to make sure cached functions
-// are working as expected in edge workers.
 async function fetchFromKirby(event: H3Event, {
   isQueryRequest,
   query,
@@ -68,6 +65,8 @@ async function fetchFromKirby(event: H3Event, {
 
 function createCachedFetcher(kirby: Required<ModuleOptions>) {
   return defineCachedFunction(
+    // Nitro reads the event from the first argument only, and hands the cache write to
+    // `event.waitUntil()` – without it an edge worker is torn down before the entry reaches storage.
     async (event: H3Event, options: ServerFetchRequest) => {
       const { data, ...rest } = await fetchFromKirby(event, options)
       // The cache stores the value as JSON, which a `Uint8Array` does not survive.
@@ -84,13 +83,8 @@ function createCachedFetcher(kirby: Required<ModuleOptions>) {
   )
 }
 
-/**
- * Built once, on the first cached request.
- *
- * @remarks
- * Nitro keeps the map of requests it already has in flight inside this closure, so a fresh instance
- * per request would send every concurrent caller of one cold key on to Kirby.
- */
+// Nitro keeps the map of requests it already has in flight inside this closure, so a fresh instance
+// per request would send every concurrent caller of one cold key on to Kirby.
 let cachedFetcher: ReturnType<typeof createCachedFetcher> | undefined
 
 export default defineEventHandler(async (event) => {
@@ -133,14 +127,14 @@ export default defineEventHandler(async (event) => {
 
     if (response.status >= 400 && response.status < 600) {
       if (isQueryRequest) {
-        consola.error(`Failed KQL query "${body.query?.query}" (...) with status code ${response.status}:\n`, destr(
+        console.error(`[nuxt-kirby] Failed KQL query "${body.query?.query}" (...) with status code ${response.status}:\n`, destr(
           uint8ArrayToString(dataArray),
         ))
         if (kirby.server.verboseErrors)
-          consola.log('Full KQL query request:', body.query)
+          console.error('[nuxt-kirby] Full KQL query request:', body.query)
       }
       else {
-        consola.error(`Failed ${(body.method || 'get').toUpperCase()} request to "${body.path}"`)
+        console.error(`[nuxt-kirby] Failed ${(body.method || 'get').toUpperCase()} request to "${body.path}"`)
       }
     }
 
@@ -165,7 +159,7 @@ export default defineEventHandler(async (event) => {
     return dataArray
   }
   catch (error) {
-    consola.error(error)
+    console.error('[nuxt-kirby]', error)
 
     throw createError({
       statusCode: 503,
