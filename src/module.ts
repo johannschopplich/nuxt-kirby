@@ -159,7 +159,6 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const moduleName = name
 
-    // Make sure Kirby URL and KQL endpoint are set
     if (!options.url)
       logger.error('Missing `KIRBY_BASE_URL` environment variable')
 
@@ -203,7 +202,6 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
     nuxt.options.build.transpile.push(resolve('runtime'))
 
-    // Add Kirby proxy endpoint to send queries server-side.
     addServerHandler({
       route: '/api/__kirby__/:key',
       handler: resolve('runtime/server/handler'),
@@ -218,13 +216,11 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     nuxt.hooks.hook('nitro:config', (config) => {
-      // Inline local server handler dependencies into Nitro bundle
-      // Needed to circumvent "cannot find module" error in `server.ts` for the `utils` import
+      // Inlined because Nitro would otherwise fail to resolve the `utils` import from `server.ts`.
       config.externals ||= {}
       config.externals.inline ||= []
       config.externals.inline.push(resolve('runtime/utils'))
 
-      // Add Nitro auto-imports for composables.
       config.imports = defu(config.imports, {
         presets: [{
           from: resolve('runtime/server/imports'),
@@ -233,7 +229,6 @@ export default defineNuxtModule<ModuleOptions>({
       })
     })
 
-    // Add `#nuxt-kirby` module alias.
     nuxt.options.alias[`#${moduleName}`] = join(nuxt.options.buildDir, `module/${moduleName}`)
 
     const prefetchedQueries = await prefetchQueries(options)
