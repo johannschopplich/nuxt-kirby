@@ -5,6 +5,7 @@ import { consola } from 'consola'
 import { destr } from 'destr'
 import { createError, defineEventHandler, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
 import { defineCachedFunction } from 'nitropack/runtime'
+import { hash } from 'ohash'
 import { base64ToUint8Array, uint8ArrayToBase64, uint8ArrayToString } from 'uint8array-extras'
 import { useRuntimeConfig } from '#imports'
 import { createAuthHeader } from '../utils'
@@ -27,15 +28,13 @@ export default defineEventHandler(async (event) => {
   // Always give `event` as first argument to make sure cached functions
   // are working as expected in edge workers.
   const fetcher = async (event: H3Event, {
-    key,
+    isQueryRequest,
     query,
     path,
     headers,
     method,
     body,
-  }: { key: string } & ServerFetchOptions) => {
-    const isQueryRequest = key.startsWith('$kql')
-
+  }: { isQueryRequest: boolean } & ServerFetchOptions) => {
     const response = await globalThis.$fetch.raw<ArrayBuffer>(isQueryRequest ? kirby.kqlPath : path!, {
       responseType: 'arrayBuffer',
       ignoreResponseError: true,
@@ -72,7 +71,10 @@ export default defineEventHandler(async (event) => {
     base: kirby.server.storage,
     swr: kirby.server.swr,
     maxAge: kirby.server.maxAge,
-    getKey: (event: H3Event, { key }: { key: string } & ServerFetchOptions) => key,
+    // The key stands for the request, so the server derives it from the request.
+    // Reading the caller's `key` instead would let one visitor place a response
+    // of their choosing under the key another visitor reads.
+    getKey: (event: H3Event, options: { isQueryRequest: boolean } & ServerFetchOptions) => hash(options),
   })
 
   if (isQueryRequest) {
@@ -95,8 +97,8 @@ export default defineEventHandler(async (event) => {
 
   try {
     const response = kirby.server.cache
-      ? await cachedFetcher(event, { key, ...body })
-      : await fetcher(event, { key, ...body })
+      ? await cachedFetcher(event, { isQueryRequest, ...body })
+      : await fetcher(event, { isQueryRequest, ...body })
 
     const dataArray = base64ToUint8Array(response.data)
 
