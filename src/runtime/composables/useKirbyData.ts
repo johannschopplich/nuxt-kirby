@@ -25,8 +25,8 @@ export type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
    * Language code to fetch data for in multi-language Kirby setups.
    *
    * @remarks
-   * Travels as the `X-Language` header, which Kirby reads for API routes only.
-   * A page fetched by its own path carries the language in that path instead.
+   * Travels as the `X-Language` header, which Kirby reads on API routes. Kirby Headless 8.1 also
+   * reads it on the global-routes catch-all, but only for a path that names no language itself.
    */
   language?: MaybeRefOrGetter<string>
   /**

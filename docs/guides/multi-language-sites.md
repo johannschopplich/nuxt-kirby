@@ -24,7 +24,7 @@ const { data } = await useKql(
 )
 ```
 
-The `language` option travels as the `X-Language` header, which Kirby reads on every API route. `useKirbyData` and `$kirby` accept it too:
+The `language` option travels as the `X-Language` header, which Kirby reads on every API route – a code no language matches falls back to the default language instead of erroring. `useKirbyData` and `$kirby` accept it too:
 
 ```ts
 const { data } = await useKirbyData('api/__sitemap__', {
@@ -41,6 +41,8 @@ const { data } = await useKirbyData('about', {
   language: locale.value
 })
 ```
+
+Two conditions hold there and nowhere else. The request has to arrive at the language Kirby serves from the root, since a prefixed URL has already named its language and keeps that authority – on a site that prefixes every language, the header never gets a say. And a code no language matches is ignored rather than falling back to the default, because a catch-all answering in an unasked-for language is worse than answering in the one the URL named.
 
 Everywhere else the language belongs in the path, and `language` has nothing to act on:
 
