@@ -54,7 +54,7 @@ export function useKirbyData<T = any>(
   ])}`)
 
   if (!_path.value)
-    console.warn('[useKirbyData] Empty Kirby path')
+    console.warn('[nuxt-kirby] Empty Kirby path')
 
   return useFetch(_path, {
     ...fetchOptions,

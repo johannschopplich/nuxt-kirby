@@ -42,7 +42,7 @@ export function useKql<
   const key = computed(() => `$kql${hash([_query.value, _language.value])}`)
 
   if (Object.keys(_query.value).length === 0 || !_query.value.query)
-    console.error('[useKql] Empty KQL query')
+    console.error('[nuxt-kirby] Empty KQL query')
 
   // A KQL request has no path of its own, so the key stands in as the request identity.
   return useFetch(key, {
