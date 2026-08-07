@@ -21,8 +21,7 @@ export interface ModuleOptions {
   /**
    * Kirby KQL API endpoint path.
    *
-   * @default 'api/query' // for `basic` authentication
-   * @default 'api/kql' // for `bearer` authentication
+   * @default 'api/query' for `basic` authentication, 'api/kql' for `bearer`
    */
   kqlPath?: string
 
