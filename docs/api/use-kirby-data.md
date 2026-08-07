@@ -22,13 +22,7 @@ By default, Nuxt waits until a `refresh` is finished before it can be executed a
 
 ## Caching
 
-By default, a [unique key is generated](/guides/caching-strategies) from the input parameters of each request, so data fetching is de-duplicated across requests. To disable payload caching, set the `payloadCache` option to `false`:
-
-```ts
-const { data } = await useKirbyData('api/my-path', {
-  payloadCache: false
-})
-```
+A [unique key is generated](/guides/caching-strategies) from the input parameters of each request, so two call sites asking for the same path share one entry and one round trip.
 
 Clear the cache for a specific path by calling the `clear` function. This will remove the cached data for the path and allow the next request to fetch the data from the server:
 

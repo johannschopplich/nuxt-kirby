@@ -12,9 +12,7 @@ Nuxt Kirby provides multiple caching layers to optimize performance.
 
 ## Payload Caching
 
-All composables (`useKql`, `useKirbyData`, `$kql`, `$kirby`) store their response in the Nuxt payload by default, so a repeated request resolves without a round trip.
-
-### Caching Behavior
+`useKql` and `useKirbyData` derive their async data key from the request, so two call sites asking for the same thing share one entry and one round trip:
 
 ```ts
 // First call - fetches from Kirby
@@ -23,26 +21,23 @@ const { data: firstCall } = await useKql({
   select: ['title']
 })
 
-// Second call - returns cached data instantly
+// Second call - resolves from the entry the first one filled
 const { data: secondCall } = await useKql({
   query: 'site',
   select: ['title']
 })
 ```
 
-Nuxt Kirby generates a unique cache key per request, so different requests are cached separately. The key covers:
+The key covers:
 
 - Query content (for KQL)
 - Path, method, query parameters and body (for direct API)
 - Language setting
 
-### Disabling Payload Caching
-
-Set the `payloadCache` option to `false`. This is useful for real-time data that changes frequently.
+`$kql` and `$kirby` have no async data around them, so they keep a payload cache of their own. Set their `payloadCache` option to `false` for real-time data that changes frequently:
 
 ```ts
-// Disable caching for real-time data
-const { data } = await useKql(query, {
+const site = await $kql(query, {
   payloadCache: false
 })
 ```

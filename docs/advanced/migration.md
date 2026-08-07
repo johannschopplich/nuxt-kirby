@@ -11,17 +11,21 @@ The module no longer supports Nuxt 3.
 The option that controls whether a response is kept in the Nuxt payload is named for what it does, so `cache` is free for its `RequestInit` meaning:
 
 ```ts
-const { data } = await useKql(query, {
+const site = await $kql(query, {
   cache: false, // [!code --]
   payloadCache: false // [!code ++]
 })
 ```
 
-It is a compile error either way, so the rename surfaces on upgrade. The same rename applies to `useKirbyData`, `$kql` and `$kirby`.
+It is a compile error either way, so the rename surfaces on upgrade. The same rename applies to `$kirby`. `useKql` and `useKirbyData` lose the option altogether, see below.
+
+### `useKql` and `useKirbyData` Have No `payloadCache` Option
+
+Both composables cached a response under the same key Nuxt stores its own result under, which meant a refresh was answered with the previous result – and, where a `transform` was set, with a result that had already been transformed once. Nuxt's async data owns the entry now: the key still comes from the request, so two call sites asking for the same thing continue to share one round trip, and `refresh()` sends the request again. Drop the option; `$kql` and `$kirby` keep it.
 
 ### The Server Cache Is No Longer Switchable Per Call
 
-A request used to carry its `cache` value to the proxy route, where it gated the Nitro cache alongside the [`server.cache`](/guides/caching-strategies#server-side-caching) module option. A caller could therefore bypass your server cache. The module option decides alone now, and `payloadCache` only concerns the client.
+A request used to carry its `cache` value to the proxy route, where it gated the Nitro cache alongside the [`server.cache`](/guides/caching-strategies#server-side-caching) module option. A caller could therefore bypass your server cache. The module option decides alone now, and `payloadCache` reaches no further than the Nuxt payload.
 
 ### `useKql` and `useKirbyData` Forward Every Async Data Option
 
