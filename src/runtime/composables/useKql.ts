@@ -24,11 +24,6 @@ export type UseKqlOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
    */
   language?: MaybeRefOrGetter<string>
   /**
-   * Serve a repeated request from the Nuxt payload instead of sending it again.
-   * @default true
-   */
-  payloadCache?: boolean
-  /**
    * Watch an array of reactive sources and auto-refresh the fetch result when they change.
    * Query and language are watched by default. You can completely ignore reactive sources by using `watch: false`.
    * @default undefined
@@ -41,7 +36,7 @@ export function useKql<
   ResT extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse,
   ReqT extends KirbyQueryRequest = KirbyQueryRequest,
 >(query: MaybeRefOrGetter<ReqT>, opts: UseKqlOptions<ResT> = {}) {
-  const { language, payloadCache = true, ...fetchOptions } = opts
+  const { language, ...fetchOptions } = opts
 
   const _query = computed(() => toValue(query))
   const _language = computed(() => toValue(language))
@@ -57,7 +52,8 @@ export function useKql<
     $fetch: ((_request: string, options) => $kql(_query.value, {
       ...options,
       language: _language.value,
-      payloadCache,
+      // Nuxt stores its own result under this very key, and its own is the transformed one.
+      payloadCache: false,
       key: key.value,
     })) as typeof globalThis.$fetch,
   }) as AsyncData<ResT | undefined, NuxtError>

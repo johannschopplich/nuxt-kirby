@@ -56,7 +56,7 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
 
   const _key = key || `$kql${hash([query, language])}`
 
-  if ((nuxt.isHydrating || payloadCache) && nuxt.payload.data[_key])
+  if (payloadCache && nuxt.payload.data[_key])
     return Promise.resolve(nuxt.payload.data[_key])
 
   if (promiseMap.has(_key))
@@ -90,13 +90,14 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
     ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
   })
     .then((response) => {
-      if (import.meta.server || payloadCache)
+      if (payloadCache)
         nuxt.payload.data[_key] = response
       return response
     })
     .catch((error) => {
       // Invalidate cache if request fails.
-      nuxt.payload.data[_key] = undefined
+      if (payloadCache)
+        nuxt.payload.data[_key] = undefined
       throw error
     })
     .finally(() => {

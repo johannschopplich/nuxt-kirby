@@ -74,6 +74,20 @@ describe('nuxt-kirby', async () => {
       expect(result.statusCode).toBe(400)
     })
 
+    it('sends a single query when two call sites ask for the same one', async () => {
+      const result = await fetchTestResult('/tests/use-kql/shared-request')
+
+      expect(result.firstHits).toBeGreaterThan(0)
+      expect(result.secondHits).toBe(result.firstHits)
+    })
+
+    it('sends the query again on refresh instead of transforming its own result twice', async () => {
+      const result = await fetchTestResult('/tests/use-kql/refresh')
+
+      expect(result.initialCount).toBe(1)
+      expect(result.refreshedCount).toBe(1)
+    })
+
     it('resolves from getCachedData instead of sending the query', async () => {
       const result = await fetchTestResult('/tests/use-kql/get-cached-data')
 
