@@ -3,7 +3,7 @@
   "type": "module",
   "version": "4.0.0",
   "packageManager": "pnpm@11.20.0",
-  "description": "Query and update your Kirby CMS without exposing your credentials",
+  "description": "Kirby CMS data in Nuxt, via KQL or the REST API",
   "author": "Johann Schopplich <hello@johannschopplich.com>",
   "license": "MIT",
   "homepage": "https://nuxt-kirby.byjohann.dev",
