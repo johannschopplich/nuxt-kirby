@@ -3,7 +3,7 @@ layout: home
 titleTemplate: Kirby CMS Integration for Nuxt
 hero:
   name: Nuxt Kirby
-  text: Kirby CMS Integration for Nuxt
+  text: Talk to Kirby from Nuxt
   tagline: Fetch content with KQL queries or plain API requests to your Kirby CMS.
   image:
     src: /logo-shadow.svg
