@@ -3,7 +3,8 @@ import type { NitroFetchOptions } from 'nitropack'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions } from '../types'
 import { hash } from 'ohash'
-import { useNuxtApp, useRequestFetch, useRuntimeConfig } from '#imports'
+import { useRequestFetch, useRuntimeConfig } from '#imports'
+import { sendCachedRequest } from '../cache'
 import { buildApiProxyPath, createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
 
 // #region options
@@ -42,37 +43,10 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
   query: KirbyQueryRequest,
   opts: KqlOptions = {},
 ): Promise<T> {
-  const nuxt = useNuxtApp()
-  const promiseMap = (nuxt._pendingRequests ||= new Map()) as Map<string, Promise<T>>
-
   const { payloadCache = true, ...requestOptions } = opts
   const key = opts.key || `$kql${hash([query, opts.language])}`
 
-  if (payloadCache && nuxt.payload.data[key])
-    return Promise.resolve(nuxt.payload.data[key])
-
-  if (promiseMap.has(key))
-    return promiseMap.get(key)!
-
-  const request = sendKqlRequest<T>(query, { ...requestOptions, key })
-    .then((response) => {
-      if (payloadCache)
-        nuxt.payload.data[key] = response
-      return response
-    })
-    .catch((error) => {
-      // Invalidate cache if request fails.
-      if (payloadCache)
-        nuxt.payload.data[key] = undefined
-      throw error
-    })
-    .finally(() => {
-      promiseMap.delete(key)
-    }) as Promise<T>
-
-  promiseMap.set(key, request)
-
-  return request
+  return sendCachedRequest(key, payloadCache, () => sendKqlRequest<T>(query, { ...requestOptions, key }))
 }
 
 /** Sends the query with nothing cached in front of it. */
