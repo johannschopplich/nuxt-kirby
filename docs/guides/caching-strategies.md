@@ -44,16 +44,10 @@ const site = await $kql(query, {
 
 ### Custom Cache Management
 
-In some cases, you might want to manually control when to refresh or clear the cache. You can use the `refresh` and `clear` methods provided by the composables.
+`refresh` sends the query again and replaces the stored result, `clear` empties it without fetching:
 
 ```ts
-// Custom cache management
 const { data, refresh, clear } = await useKql(query)
-
-async function updateData() {
-  clear()
-  await refresh()
-}
 ```
 
 ## Server-Side Caching

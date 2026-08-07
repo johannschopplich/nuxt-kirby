@@ -23,6 +23,10 @@ It is a compile error either way, so the rename surfaces on upgrade. The same re
 
 Both composables cached a response under the same key Nuxt stores its own result under, which meant a refresh was answered with the previous result – and, where a `transform` was set, with a result that had already been transformed once. Nuxt's async data owns the entry now: the key still comes from the request, so two call sites asking for the same thing continue to share one round trip, and `refresh()` sends the request again. Drop the option; `$kql` and `$kirby` keep it.
 
+### `$kql` and `$kirby` Cache Under Their Own Key
+
+Both used to read the entry `useKql` and `useKirbyData` fill, which holds whatever their `transform` returned – so the same query could come back in a shape the return type does not describe. They keep their own entry now. A query shared with a composable costs one more round trip in return.
+
 ### The Server Cache Is No Longer Switchable Per Call
 
 A request used to carry its `cache` value to the proxy route, where it gated the Nitro cache alongside the [`server.cache`](/guides/caching-strategies#server-side-caching) module option. A caller could therefore bypass your server cache. The module option decides alone now, and `payloadCache` reaches no further than the Nuxt payload.
