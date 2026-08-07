@@ -4,7 +4,7 @@ import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
 import { computed, toValue } from 'vue'
 import { useFetch } from '#imports'
-import { $kirby } from './$kirby'
+import { sendKirbyRequest } from './$kirby'
 
 // #region options
 export type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
@@ -60,11 +60,9 @@ export function useKirbyData<T = any>(
   return useFetch(_path, {
     ...fetchOptions,
     key,
-    $fetch: ((_request: string, options) => $kirby(_path.value, {
+    $fetch: ((_request: string, options) => sendKirbyRequest(_path.value, {
       ...options,
       language: _language.value,
-      // Nuxt stores its own result under this very key, and its own is the transformed one.
-      payloadCache: false,
       key: key.value,
     })) as typeof globalThis.$fetch,
   }) as AsyncData<T | undefined, NuxtError>

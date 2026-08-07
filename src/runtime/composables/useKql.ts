@@ -5,7 +5,7 @@ import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
 import { computed, toValue } from 'vue'
 import { useFetch } from '#imports'
-import { $kql } from './$kql'
+import { sendKqlRequest } from './$kql'
 
 // #region options
 export type UseKqlOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
@@ -45,15 +45,13 @@ export function useKql<
   if (Object.keys(_query.value).length === 0 || !_query.value.query)
     console.error('[useKql] Empty KQL query')
 
-  // A KQL request has no path of its own, so the cache key stands in as the request identity.
+  // A KQL request has no path of its own, so the key stands in as the request identity.
   return useFetch(key, {
     ...fetchOptions,
     key,
-    $fetch: ((_request: string, options) => $kql(_query.value, {
+    $fetch: ((_request: string, options) => sendKqlRequest(_query.value, {
       ...options,
       language: _language.value,
-      // Nuxt stores its own result under this very key, and its own is the transformed one.
-      payloadCache: false,
       key: key.value,
     })) as typeof globalThis.$fetch,
   }) as AsyncData<ResT | undefined, NuxtError>

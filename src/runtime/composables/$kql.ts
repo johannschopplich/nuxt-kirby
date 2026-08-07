@@ -44,23 +44,50 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
 ): Promise<T> {
   const nuxt = useNuxtApp()
   const promiseMap = (nuxt._pendingRequests ||= new Map()) as Map<string, Promise<T>>
+
+  const { payloadCache = true, ...requestOptions } = opts
+  const key = opts.key || `$kql${hash([query, opts.language])}`
+
+  if (payloadCache && nuxt.payload.data[key])
+    return Promise.resolve(nuxt.payload.data[key])
+
+  if (promiseMap.has(key))
+    return promiseMap.get(key)!
+
+  const request = sendKqlRequest<T>(query, { ...requestOptions, key })
+    .then((response) => {
+      if (payloadCache)
+        nuxt.payload.data[key] = response
+      return response
+    })
+    .catch((error) => {
+      // Invalidate cache if request fails.
+      if (payloadCache)
+        nuxt.payload.data[key] = undefined
+      throw error
+    })
+    .finally(() => {
+      promiseMap.delete(key)
+    }) as Promise<T>
+
+  promiseMap.set(key, request)
+
+  return request
+}
+
+/** Sends the query with nothing cached in front of it. */
+export function sendKqlRequest<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
+  query: KirbyQueryRequest,
+  opts: Omit<KqlOptions, 'payloadCache'> & { key: string },
+): Promise<T> {
   const kirby = useRuntimeConfig().public.kirby as Required<ModuleOptions>
 
   const {
     headers,
     language,
-    payloadCache = true,
     key,
     ...fetchOptions
   } = opts
-
-  const _key = key || `$kql${hash([query, language])}`
-
-  if (payloadCache && nuxt.payload.data[_key])
-    return Promise.resolve(nuxt.payload.data[_key])
-
-  if (promiseMap.has(_key))
-    return promiseMap.get(_key)!
 
   const sharedHeaders = {
     ...headersToObject(headers),
@@ -85,26 +112,8 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
     body: query,
   }
 
-  const request = useRequestFetch()(kirby.client ? kirby.kqlPath : buildApiProxyPath(_key), {
+  return useRequestFetch()(kirby.client ? kirby.kqlPath : buildApiProxyPath(key), {
     ...fetchOptions,
     ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
-  })
-    .then((response) => {
-      if (payloadCache)
-        nuxt.payload.data[_key] = response
-      return response
-    })
-    .catch((error) => {
-      // Invalidate cache if request fails.
-      if (payloadCache)
-        nuxt.payload.data[_key] = undefined
-      throw error
-    })
-    .finally(() => {
-      promiseMap.delete(_key)
-    }) as Promise<T>
-
-  promiseMap.set(_key, request)
-
-  return request
+  }) as Promise<T>
 }
