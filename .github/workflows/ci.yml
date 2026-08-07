@@ -47,5 +47,6 @@ jobs:
           cache: pnpm
       - run: cp playground/.env.example playground/.env
       - run: pnpm install
+      - run: pnpm exec playwright-core install --with-deps chromium
       - run: pnpm run dev:prepare
       - run: pnpm run test

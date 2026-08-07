@@ -1,11 +1,12 @@
 import { join } from 'node:path'
-import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch, createPage, fetch, setup } from '@nuxt/test-utils/e2e'
 import { destr } from 'destr'
 import { describe, expect, it } from 'vitest'
 
 describe('nuxt-kirby', async () => {
   await setup({
     server: true,
+    browser: true,
     rootDir: join(import.meta.dirname, 'fixture'),
   })
 
@@ -34,6 +35,14 @@ describe('nuxt-kirby', async () => {
       const result = await fetchTestResult<{ firstHits: number, uncachedHits: number }>('/tests/$kql/payload-cache')
 
       expect(result.uncachedHits).toBe(result.firstHits + 1)
+    })
+
+    it('hydrates from the payload with payloadCache: false', async () => {
+      const page = await createPage('/tests/$kql/hydration')
+
+      await expect.poll(() => page.getByTestId('client-hits').textContent())
+        .toBe(await page.getByTestId('server-hits').textContent())
+      await page.close()
     })
   })
 
