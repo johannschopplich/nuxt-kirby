@@ -21,7 +21,7 @@ export interface ModuleOptions {
   /**
    * Kirby KQL API endpoint path.
    *
-   * @default 'api/query' for `basic` authentication, 'api/kql' for `bearer`
+   * @default 'api/kql' for `bearer` authentication, 'api/query' otherwise
    */
   kqlPath?: string
 
@@ -165,12 +165,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (options.auth === 'bearer' && !options.token)
       logger.error('Missing `KIRBY_API_TOKEN` environment variable for bearer authentication')
 
-    if (!options.kqlPath) {
-      if (options.auth === 'basic')
-        options.kqlPath = 'api/query'
-      else if (options.auth === 'bearer')
-        options.kqlPath = 'api/kql'
-    }
+    options.kqlPath ||= options.auth === 'bearer' ? 'api/kql' : 'api/query'
 
     if (!nuxt.options.ssr) {
       logger.info('Kirby requests are client-only because SSR is disabled')

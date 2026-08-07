@@ -47,7 +47,7 @@ Username and password pair for `auth: 'basic'`. Ignored for the other methods.
 
 Path KQL queries are sent to, relative to `url`. Set it if your instance exposes KQL somewhere other than the default for your authentication method.
 
-**Default Value**: `'api/query'` for `auth: 'basic'`, `'api/kql'` for `auth: 'bearer'`
+**Default Value**: `'api/kql'` for `auth: 'bearer'`, `'api/query'` otherwise
 
 ## `kirby.client`
 
