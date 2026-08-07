@@ -67,7 +67,7 @@ import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 
 ## v3.0.0
 
-### Renamed from Nuxt KQL to Nuxt Kirby
+### Renamed From Nuxt KQL to Nuxt Kirby
 
 [Matt Lenz](https://github.com/mattlenz) kindly provided the `nuxt-kirby` npm package name and has transferred the ownership of the package to me. Therefore, the module name has changed from `nuxt-kql` to `nuxt-kirby`. This better reflects the purpose of the module, which is to integrate [Kirby CMS](https://getkirby.com/) with Nuxt – not only for KQL queries.
 
