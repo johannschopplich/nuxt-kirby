@@ -31,9 +31,7 @@ export type KqlOptions = Pick<
    */
   payloadCache?: boolean
   /**
-   * By default, a cache key will be generated from the request options.
-   * With this option, you can provide a custom cache key.
-   * @default undefined
+   * Cache key, generated from the request options by default.
    */
   key?: string
 }

@@ -26,7 +26,6 @@ export type UseKqlOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
   /**
    * Watch an array of reactive sources and auto-refresh the fetch result when they change.
    * Query and language are watched by default. You can completely ignore reactive sources by using `watch: false`.
-   * @default undefined
    */
   watch?: MultiWatchSources | false
 }
