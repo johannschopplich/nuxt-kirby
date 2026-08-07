@@ -87,14 +87,14 @@ describe('nuxt-kirby', async () => {
       expect(result.statusCode).toBe(400)
     })
 
-    it('sends a single query when two call sites ask for the same one', async () => {
+    it('sends a single request for two call sites with the same query', async () => {
       const result = await fetchTestResult('/tests/use-kql/shared-request')
 
       expect(result.firstHits).toBeGreaterThan(0)
       expect(result.secondHits).toBe(result.firstHits)
     })
 
-    it('sends the query again on refresh instead of transforming its own result twice', async () => {
+    it('transforms each response exactly once', async () => {
       const result = await fetchTestResult('/tests/use-kql/refresh')
 
       expect(result.initialCount).toBe(1)
@@ -108,7 +108,7 @@ describe('nuxt-kirby', async () => {
       expect(result.title).toBe('from getCachedData')
     })
 
-    it('exposes data and status when lazy', async () => {
+    it('exposes data and status with lazy: true', async () => {
       const result = await fetchTestResult('/tests/use-kql/lazy')
 
       expect(result).toHaveProperty('data')
@@ -168,7 +168,7 @@ describe('nuxt-kirby', async () => {
       expect(result.receivedLanguage).toBe('en')
     })
 
-    it('exposes data and status when lazy', async () => {
+    it('exposes data and status with lazy: true', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/lazy')
 
       expect(result).toHaveProperty('data')
