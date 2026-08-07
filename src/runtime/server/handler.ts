@@ -19,61 +19,85 @@ const EXCLUDED_HEADERS = new Set([
   'x-powered-by',
 ])
 
+interface ProxyResponse {
+  status: number
+  statusText: string
+  headers: [string, string][]
+  data: Uint8Array
+}
+
+// Always give `event` as first argument to make sure cached functions
+// are working as expected in edge workers.
+async function fetchFromKirby(event: H3Event, {
+  isQueryRequest,
+  query,
+  path,
+  headers,
+  method,
+  body,
+}: ServerFetchRequest): Promise<ProxyResponse> {
+  const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
+
+  const response = await globalThis.$fetch.raw<ArrayBuffer>(isQueryRequest ? kirby.kqlPath : path!, {
+    responseType: 'arrayBuffer',
+    ignoreResponseError: true,
+    baseURL: kirby.url,
+    ...(isQueryRequest
+      ? {
+          method: 'POST',
+          body: query,
+        }
+      : {
+          method,
+          query,
+          body,
+        }),
+    headers: {
+      ...headers,
+      ...createAuthHeader(kirby),
+    },
+  })
+
+  return {
+    status: response.status,
+    statusText: response.statusText,
+    headers: [...response.headers.entries()],
+    data: new Uint8Array(response._data ?? []),
+  }
+}
+
+function createCachedFetcher(kirby: Required<ModuleOptions>) {
+  return defineCachedFunction(
+    async (event: H3Event, options: ServerFetchRequest) => {
+      const { data, ...rest } = await fetchFromKirby(event, options)
+      // The cache stores the value as JSON, which a `Uint8Array` does not survive.
+      return { ...rest, data: uint8ArrayToBase64(data) }
+    },
+    {
+      name: 'nuxt-kirby',
+      base: kirby.server.storage,
+      swr: kirby.server.swr,
+      maxAge: kirby.server.maxAge,
+      // Reading the caller's `key` instead would let one visitor plant a response under the key another reads.
+      getKey: (event: H3Event, options: ServerFetchRequest) => hash(options),
+    },
+  )
+}
+
+/**
+ * Built once, on the first cached request.
+ *
+ * @remarks
+ * Nitro keeps the map of requests it already has in flight inside this closure, so a fresh instance
+ * per request would send every concurrent caller of one cold key on to Kirby.
+ */
+let cachedFetcher: ReturnType<typeof createCachedFetcher> | undefined
+
 export default defineEventHandler(async (event) => {
   const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
   const body = await readBody<ServerFetchOptions>(event)
   const key = decodeURIComponent(getRouterParam(event, 'key')!)
   const isQueryRequest = key.startsWith('$kql')
-
-  // Always give `event` as first argument to make sure cached functions
-  // are working as expected in edge workers.
-  const fetcher = async (event: H3Event, {
-    isQueryRequest,
-    query,
-    path,
-    headers,
-    method,
-    body,
-  }: ServerFetchRequest) => {
-    const response = await globalThis.$fetch.raw<ArrayBuffer>(isQueryRequest ? kirby.kqlPath : path!, {
-      responseType: 'arrayBuffer',
-      ignoreResponseError: true,
-      baseURL: kirby.url,
-      ...(isQueryRequest
-        ? {
-            method: 'POST',
-            body: query,
-          }
-        : {
-            method,
-            query,
-            body,
-          }),
-      headers: {
-        ...headers,
-        ...createAuthHeader(kirby),
-      },
-    })
-
-    const dataArray = new Uint8Array(response._data ?? [])
-    const data = uint8ArrayToBase64(dataArray)
-
-    return {
-      status: response.status,
-      statusText: response.statusText,
-      headers: [...response.headers.entries()],
-      data,
-    }
-  }
-
-  const cachedFetcher = defineCachedFunction(fetcher, {
-    name: 'nuxt-kirby',
-    base: kirby.server.storage,
-    swr: kirby.server.swr,
-    maxAge: kirby.server.maxAge,
-    // Reading the caller's `key` instead would let one visitor plant a response under the key another reads.
-    getKey: (event: H3Event, options: ServerFetchRequest) => hash(options),
-  })
 
   if (isQueryRequest) {
     if (!body.query?.query) {
@@ -94,11 +118,18 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = kirby.server.cache
-      ? await cachedFetcher(event, { isQueryRequest, ...body })
-      : await fetcher(event, { isQueryRequest, ...body })
+    let response: ProxyResponse
 
-    const dataArray = base64ToUint8Array(response.data)
+    if (kirby.server.cache) {
+      cachedFetcher ??= createCachedFetcher(kirby)
+      const cached = await cachedFetcher(event, { isQueryRequest, ...body })
+      response = { ...cached, data: base64ToUint8Array(cached.data) }
+    }
+    else {
+      response = await fetchFromKirby(event, { isQueryRequest, ...body })
+    }
+
+    const dataArray = response.data
 
     if (response.status >= 400 && response.status < 600) {
       if (isQueryRequest) {
