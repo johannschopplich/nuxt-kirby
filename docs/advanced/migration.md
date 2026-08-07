@@ -2,10 +2,6 @@
 
 ## v4.0.0
 
-### Nuxt 4 Is Required
-
-The module no longer supports Nuxt 3.
-
 ### `cache` Is Now `payloadCache`
 
 The option that controls whether a response is kept in the Nuxt payload is named for what it does, so `cache` is free for its `RequestInit` meaning:
