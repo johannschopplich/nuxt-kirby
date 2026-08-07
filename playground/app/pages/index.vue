@@ -11,7 +11,6 @@ interface KirbySite {
   }[]
 }
 
-const refreshIndex = ref(0)
 const query = ref<KirbyQueryRequest>({
   query: 'site',
   select: {
@@ -56,7 +55,6 @@ function updateQuery() {
     <pre>{{ JSON.stringify(query, undefined, 2) }}</pre>
     <h2>Response</h2>
     <pre>{{ JSON.stringify(data?.result, undefined, 2) }}</pre>
-    <p>Refreshed: {{ refreshIndex }} times</p>
     <button @click="updateQuery()">
       Change query and refresh
     </button>

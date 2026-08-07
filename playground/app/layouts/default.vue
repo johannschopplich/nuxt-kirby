@@ -14,10 +14,6 @@
       <NuxtLink to="/prefetched-queries">
         <span>Prefetched Queries</span>
       </NuxtLink>
-      /
-      <NuxtLink to="/client-query">
-        <span>Client-side Query</span>
-      </NuxtLink>
     </header>
 
     <main>

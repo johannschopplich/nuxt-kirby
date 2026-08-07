@@ -1,8 +1,8 @@
 import { defineNuxtConfig } from 'nuxt/config'
-import NuxtKql from '../src/module'
+import NuxtKirby from '../src/module'
 
 export default defineNuxtConfig({
-  modules: [NuxtKql],
+  modules: [NuxtKirby],
 
   compatibilityDate: '2025-01-01',
 
