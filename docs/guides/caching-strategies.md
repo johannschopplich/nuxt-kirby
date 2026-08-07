@@ -42,6 +42,8 @@ const site = await $kql(query, {
 })
 ```
 
+The option governs repeated calls within one environment, not the handover between them. A response fetched during SSR always travels to the client in the payload, and the hydrating call reads it there – otherwise every query would cost a second round trip in the browser for no gain. Caching stops after that: the next call sends the query again.
+
 ### Custom Cache Management
 
 `refresh` sends the query again and replaces the stored result, `clear` empties it without fetching:

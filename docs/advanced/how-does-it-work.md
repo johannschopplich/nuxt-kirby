@@ -11,7 +11,7 @@ This server route fetches data from your Kirby instance using your configuration
 During server-side rendering, calls to `/api/__kirby__` directly invoke the relevant function (no HTTP overhead), so only the Nuxt-to-Kirby request is made.
 
 ::: info
-Responses are cached client-side by default. Subsequent calls will return cached responses, saving duplicated requests. Read more in the [Caching Strategies guide](/guides/caching-strategies).
+A repeated request usually costs nothing: `useKql` and `useKirbyData` derive their async data key from the request, so two call sites asking for the same thing share one entry, and `$kql` and `$kirby` keep a payload cache of their own. Read more in the [Caching Strategies guide](/guides/caching-strategies).
 :::
 
 ::: tip
