@@ -39,7 +39,7 @@ async function invalidateAndRefresh() {
 
 ```vue
 <script setup lang="ts">
-import type { KirbyApiResponse } from 'kirby-types'
+import type { KirbyApiResponse } from '#nuxt-kirby'
 
 interface KirbySitemapItem {
   url: string
@@ -87,9 +87,9 @@ export default defineNuxtConfig({
 })
 ```
 
-Now, every `useKirbyData` call will directly use the Kirby instance by sending requests from the client:
+Now, every `useKirbyData` call reaches your Kirby instance directly, sent from the client:
 
-```ts{3}
+```ts
 const { data } = await useKirbyData('api/my-path')
 ```
 

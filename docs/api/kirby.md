@@ -8,7 +8,7 @@ Responses are cached by default between function calls for the same path based o
 
 ```vue
 <script setup lang="ts">
-import type { KirbyApiResponse } from 'kirby-types'
+import type { KirbyApiResponse } from '#nuxt-kirby'
 
 interface KirbySitemapItem {
   url: string
@@ -56,7 +56,7 @@ export default defineNuxtConfig({
 })
 ```
 
-Now, every `$kirby` call will be directly use the Kirby instance by sending requests from the client:
+Now, every `$kirby` call reaches your Kirby instance directly, sent from the client:
 
 ```ts
 const data = await $kirby('api/my-path')

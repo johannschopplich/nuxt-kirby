@@ -56,9 +56,9 @@ export default defineNuxtConfig({
 })
 ```
 
-Now, every `$kql` call will be directly use the Kirby instance by sending requests from the client:
+Now, every `$kql` call reaches your Kirby instance directly, sent from the client:
 
-```ts{3}
+```ts
 const data = await $kql(query)
 ```
 
