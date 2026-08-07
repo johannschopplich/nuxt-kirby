@@ -67,7 +67,6 @@
     "@nuxt/test-utils": "^4.1.0",
     "@types/node": "^26.1.2",
     "bumpp": "^12.2.0",
-    "destr": "^2.0.5",
     "eslint": "^10.8.0",
     "nuxt": "^4.5.2",
     "typescript": "^6.0.3",

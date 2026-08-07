@@ -32,7 +32,7 @@ export function createAuthHeader({
 
 /**
  * Builds the header Kirby reads the language from, lowercased so that it overwrites
- * a caller's own `X-Language` instead of travelling alongside it as a second value.
+ * a caller's own `X-Language` instead of traveling alongside it as a second value.
  */
 export function createLanguageHeader(language: string | undefined) {
   return language ? { 'x-language': language } : undefined

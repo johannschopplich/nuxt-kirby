@@ -28,9 +28,6 @@ export interface ModuleOptions {
   /**
    * Kirby API authentication method.
    *
-   * @remarks
-   * Set to `none` to disable authentication.
-   *
    * @default 'basic'
    */
   auth?: 'basic' | 'bearer' | 'none'
@@ -216,7 +213,7 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     nuxt.hooks.hook('nitro:config', (config) => {
-      // Inlined because Nitro would otherwise fail to resolve the `utils` import from `server.ts`.
+      // Inlined because Nitro would otherwise fail to resolve the `utils` import from the server handler.
       config.externals ||= {}
       config.externals.inline ||= []
       config.externals.inline.push(resolve('runtime/utils'))
