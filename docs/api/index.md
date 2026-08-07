@@ -1,6 +1,6 @@
 # Overview
 
-Four composables for fetching from Kirby, and a set of types for the queries and responses that travel between.
+Four composables for fetching from Kirby, two server-side counterparts, and a set of types for the queries and responses that travel between.
 
 ## Composables
 
@@ -21,6 +21,10 @@ For plain requests, file handling and endpoints of your own:
 
 - **[`useKirbyData`](/api/use-kirby-data)** – Reactive data fetching with caching
 - **[`$kirby`](/api/kirby)** – Direct API calls for programmatic use
+
+### Nitro
+
+`$kql` and `$kirby` are auto-imported in server code as well, where they reach Kirby without the proxy. See **[Server Imports](/api/server-imports)**.
 
 ## Common Usage Patterns
 

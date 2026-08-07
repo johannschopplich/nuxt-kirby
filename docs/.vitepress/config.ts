@@ -178,6 +178,7 @@ function sidebarApi(): DefaultTheme.SidebarItem[] {
         { text: '$kirby', link: '/api/kirby' },
       ],
     },
+    { text: 'Server Imports', link: '/api/server-imports' },
     {
       text: 'Types',
       items: [
