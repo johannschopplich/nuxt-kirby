@@ -37,6 +37,12 @@ describe('nuxt-kirby', async () => {
       expect(result.uncachedHits).toBe(result.firstHits + 1)
     })
 
+    it('answers with the raw response after useKql transformed the same query', async () => {
+      const result = await fetchTestResult<{ rawHits: number }>('/tests/$kql/raw-after-transform')
+
+      expect(result.rawHits).toBeGreaterThan(0)
+    })
+
     it('hydrates from the payload with payloadCache: false', async () => {
       const page = await createPage('/tests/$kql/hydration')
 

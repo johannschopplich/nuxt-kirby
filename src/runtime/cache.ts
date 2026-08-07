@@ -11,13 +11,17 @@ import { useNuxtApp } from '#imports'
  * the browser.
  */
 export function sendCachedRequest<T>(
-  key: string,
+  requestKey: string,
   payloadCache: boolean,
   send: () => Promise<T>,
 ): Promise<T> {
   const nuxt = useNuxtApp()
   const pendingRequests = (nuxt._pendingRequests ||= new Map()) as Map<string, Promise<T>>
   const cachesPayload = import.meta.server || payloadCache
+
+  // `useKql` and `useKirbyData` hand Nuxt the request key as their async data key, and what they
+  // store under it has been through their own `transform`.
+  const key = `raw:${requestKey}`
 
   if ((nuxt.isHydrating || payloadCache) && nuxt.payload.data[key])
     return Promise.resolve(nuxt.payload.data[key])
