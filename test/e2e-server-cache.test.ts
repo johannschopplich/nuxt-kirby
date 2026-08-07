@@ -1,8 +1,7 @@
 import type { KirbyQueryRequest } from 'kirby-types'
-import type { AddressInfo } from 'node:net'
-import { createServer } from 'node:http'
 import { join } from 'node:path'
 import { fetch, setup } from '@nuxt/test-utils/e2e'
+import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let upstreamRequestCount = 0
@@ -10,20 +9,18 @@ let upstreamRequestCount = 0
 // A stand-in for Kirby, so the number of requests leaving Nitro is observable and a stored response
 // is distinguishable from a fresh one by its body. The delay holds a request open long enough for a
 // second one to arrive while the first is still in flight.
-const upstream = createServer((request, response) => {
-  const requestNumber = ++upstreamRequestCount
-
-  request.resume()
-  request.on('end', () => {
-    setTimeout(() => {
-      response.writeHead(200, { 'content-type': 'application/json' })
-      response.end(JSON.stringify({ code: 200, status: 'OK', result: { title: `Site ${requestNumber}` } }))
-    }, 100)
-  })
+const upstream = serve({
+  hostname: '127.0.0.1',
+  port: 0,
+  silent: true,
+  async fetch() {
+    const requestNumber = ++upstreamRequestCount
+    await new Promise(resolve => setTimeout(resolve, 100))
+    return Response.json({ code: 200, status: 'OK', result: { title: `Site ${requestNumber}` } })
+  },
 })
 
-await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve))
-const { port } = upstream.address() as AddressInfo
+await upstream.ready()
 
 describe('server cache', async () => {
   await setup({
@@ -31,7 +28,7 @@ describe('server cache', async () => {
     rootDir: join(import.meta.dirname, 'fixture'),
     nuxtConfig: {
       kirby: {
-        url: `http://127.0.0.1:${port}`,
+        url: upstream.url,
         server: {
           cache: true,
           // Long enough that a repeated query within one test cannot expire.
@@ -46,8 +43,8 @@ describe('server cache', async () => {
     upstreamRequestCount = 0
   })
 
-  afterAll(() => {
-    upstream.close()
+  afterAll(async () => {
+    await upstream.close()
   })
 
   it('answers a repeated query without reaching Kirby again', async () => {
