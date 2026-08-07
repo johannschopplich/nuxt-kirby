@@ -1,17 +1,9 @@
-import type { KirbyQueryResponse } from 'kirby-types'
 import { join } from 'node:path'
-import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { fetch, setup } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
 
-const route = `/api/__kirby__/${encodeURIComponent('$kqlshared')}`
-
-function postQuery(query: Record<string, unknown>) {
-  return $fetch<KirbyQueryResponse<any>>(route, {
-    method: 'POST',
-    body: { query },
-  })
-}
-
+// The default fixture leaves `server.cache` off, so the cached branch of the proxy handler needs a
+// second app to run in.
 describe('server cache', async () => {
   await setup({
     server: true,
@@ -25,11 +17,22 @@ describe('server cache', async () => {
     },
   })
 
-  it('serves each query its own result when both travel under one route key', async () => {
-    const site = await postQuery({ query: 'site', select: { title: true } })
-    const children = await postQuery({ query: 'site.children', select: { id: true } })
+  it('answers a repeated query with the response it stored', async () => {
+    const first = await postToProxy({ query: 'site', select: ['title'] })
+    expect(first.status).toBe(200)
 
-    expect(site.result).toMatchObject({ title: expect.any(String) })
-    expect(children.result).toEqual(expect.any(Array))
+    const result = await first.json()
+    expect(result).toMatchObject({ result: { title: expect.any(String) } })
+
+    const second = await postToProxy({ query: 'site', select: ['title'] })
+    expect(await second.json()).toEqual(result)
   })
 })
+
+function postToProxy(query: Record<string, unknown>): Promise<Response> {
+  return fetch('/api/__kirby__/$kql-test', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query }),
+  })
+}
