@@ -1,8 +1,8 @@
 # What is Nuxt Kirby?
 
-Nuxt Kirby is a [Nuxt](https://nuxt.com) module for reading content out of a Kirby CMS. Queries travel through a Nuxt server route, so the Kirby credentials never reach the browser, and the same composables work server-side and client-side.
+Nuxt Kirby is a [Nuxt](https://nuxt.com) module for reading and writing Kirby CMS content. Requests travel through a Nuxt server route, so the Kirby credentials never reach the browser, and the same composables work server-side and client-side.
 
-## Two Ways to Fetch Data
+## Two Ways to Reach Kirby
 
 **KQL**, [Kirby's Query Language](/essentials/what-is-kql), for content queries that follow relationships and filter:
 

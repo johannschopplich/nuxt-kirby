@@ -1,6 +1,5 @@
 ---
 layout: home
-titleTemplate: Kirby CMS Integration for Nuxt
 hero:
   name: Nuxt Kirby
   text: Talk to Kirby from Nuxt
