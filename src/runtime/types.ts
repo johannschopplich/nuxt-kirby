@@ -8,7 +8,7 @@ export interface ServerFetchOptions extends Pick<
   /** A request carries one or the other: `query` for KQL, `path` for the REST API. */
   query?: Partial<KirbyQueryRequest>
   path?: string
-  /** Overrides the module's `forwardCookies` for this request. Absent means the module decides. */
+  /** Overrides the module's `forwardCookies` for this request. Absent leaves the decision to it. */
   forwardCookies?: boolean
 }
 

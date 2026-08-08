@@ -77,7 +77,6 @@ function createCachedFetcher(kirby: Required<ModuleOptions>) {
         // A stored `set-cookie` would hand every later visitor on this key the session Kirby
         // issued for the first one.
         headers: headers.filter(([key]) => key !== 'set-cookie'),
-        // The cache stores the value as JSON, which a `Uint8Array` does not survive.
         data: uint8ArrayToBase64(data),
       }
     },

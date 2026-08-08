@@ -29,7 +29,8 @@ describe('forwardCookies', async () => {
     nuxtConfig: {
       kirby: {
         url: upstream.url,
-        // Cache on and the option off, so each test states which of the two it is about.
+        // Cache on, so that the bypass is observable at all; the option itself stays at its
+        // default, so every test opts in for itself.
         server: { cache: true, maxAge: 60 },
       },
     },

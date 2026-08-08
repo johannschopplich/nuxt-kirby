@@ -73,7 +73,7 @@ Override it per call on `useKql`, `useKirbyData`, `$kql` and `$kirby`, which is 
 const { data } = await useKql({ query: 'user' }, { forwardCookies: true })
 ```
 
-With `kirby.client` enabled there is no proxy to forward anything, so the option sends `credentials: 'include'` instead and Kirby has to answer with the matching CORS headers.
+With `kirby.client` enabled there is no proxy to forward anything, so the option sends `credentials: 'include'` instead and Kirby has to answer with the matching CORS headers. On the server-rendered pass of that same setup the option has no say: Nuxt's `useRequestFetch()` hands Kirby the visitor's whole header set, cookie included, whether you asked for it or not.
 
 **Default Value**: `false`
 
