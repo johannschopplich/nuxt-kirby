@@ -50,7 +50,7 @@ const { data } = await useKql<KirbyQueryResponse<KirbySite>>({
 <template>
   <div>
     <!-- The IDE will provide auto completion and error checking for nested keys -->
-    <h1>{{ data?.result.title }}</h1>
+    <h1>{{ data?.result?.title }}</h1>
   </div>
 </template>
 ```

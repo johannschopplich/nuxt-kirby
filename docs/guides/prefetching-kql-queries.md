@@ -24,7 +24,7 @@ export default defineNuxtConfig({
 When you run your dev or build command, the result of the `site` query is fetched, stored locally, and the time spent on the query(s) is logged.
 
 ```
-ℹ Prefetched site KQL query in 170ms
+ℹ Prefetched KQL query "site" in 170ms
 ```
 
 Now you can import the query result and its TypeScript type in your application:

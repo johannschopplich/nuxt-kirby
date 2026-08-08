@@ -24,7 +24,6 @@ In your Vue components, you can choose between reactive data fetching with `useK
 | **Use case** | Components, reactive data | One-time actions |
 | **Return type** | [`AsyncData`](https://nuxt.com/docs/api/composables/use-async-data#return-values) interface | Direct Promise |
 | **Error handling** | Reactive error property | Try/catch with `FetchError` |
-| **Best for** | Simple data, files, custom endpoints | Complex queries, relationships |
 
 ## Method 1: KQL (Kirby Query Language)
 

@@ -36,7 +36,7 @@ const { data } = await useKql({
 })
 
 // Direct API access
-const { data } = await useKirbyData('api/pages/about')
+const { data: page } = await useKirbyData('api/pages/about')
 ```
 
 ## Type Safety
