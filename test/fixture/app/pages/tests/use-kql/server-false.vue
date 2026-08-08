@@ -9,6 +9,5 @@ const { data } = await useKql(
   { server: false },
 )
 
-// On SSR, data should be undefined when `server: false`.
 useTestResult({ data: data.value })
 </script>

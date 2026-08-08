@@ -2,8 +2,8 @@ import type { ServerFetchOptions } from '../../../../src/runtime/types'
 import { defineEventHandler, readBody } from 'h3'
 
 /**
- * Middleware that intercepts proxy requests with `_echo__` in the path.
- * Returns the received request options so tests can verify they were forwarded correctly.
+ * Answers a proxy request naming `__echo__` with the options it carried, so a test can assert on
+ * what the proxy forwarded.
  */
 export default defineEventHandler(async (event) => {
   if (!event.path.startsWith('/api/__kirby__'))
