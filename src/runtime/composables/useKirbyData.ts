@@ -59,6 +59,7 @@ export function useKirbyData<T = any>(
     toValue(fetchOptions.query),
     toValue(fetchOptions.method),
     toValue(fetchOptions.body),
+    forwardCookies,
   ])}`)
 
   if (!_path.value)

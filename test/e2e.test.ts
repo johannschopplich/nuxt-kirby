@@ -50,6 +50,12 @@ describe('nuxt-kirby', async () => {
         .toBe(await page.getByTestId('server-hits').textContent())
       await page.close()
     })
+
+    it('keys a query by forwardCookies, so an opted-out call is not served the opted-in response', async () => {
+      const result = await fetchTestResult('/tests/$kql/forward-cookies-key')
+
+      expect(result).toEqual({ forwarded: true, withheld: false })
+    })
   })
 
   describe('$kirby (composable)', () => {
@@ -57,6 +63,12 @@ describe('nuxt-kirby', async () => {
       const result = await fetchTestResult('/tests/$kirby')
 
       expect(result.result).toHaveProperty('title')
+    })
+
+    it('keys a path by forwardCookies, so an opted-out call is not served the opted-in response', async () => {
+      const result = await fetchTestResult('/tests/$kirby/forward-cookies-key')
+
+      expect(result).toEqual({ forwarded: true, withheld: false })
     })
   })
 
@@ -144,6 +156,12 @@ describe('nuxt-kirby', async () => {
       expect(result.afterExecute.status).toBe('success')
       expect(result.afterExecute.data).toBeDefined()
     })
+
+    it('keys a query by forwardCookies, so an opted-out call is not served the opted-in response', async () => {
+      const result = await fetchTestResult('/tests/use-kql/forward-cookies-key')
+
+      expect(result).toEqual({ forwarded: true, withheld: false })
+    })
   })
 
   describe('useKirbyData', () => {
@@ -211,6 +229,12 @@ describe('nuxt-kirby', async () => {
       expect(result.status).toBe('error')
       expect(result.data).toBeUndefined()
       expect(result.statusCode).toBe(404)
+    })
+
+    it('keys a path by forwardCookies, so an opted-out call is not served the opted-in response', async () => {
+      const result = await fetchTestResult('/tests/use-kirby-data/forward-cookies-key')
+
+      expect(result).toEqual({ forwarded: true, withheld: false })
     })
   })
 

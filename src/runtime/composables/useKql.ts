@@ -47,7 +47,7 @@ export function useKql<
 
   const _query = computed(() => toValue(query))
   const _language = computed(() => toValue(language))
-  const key = computed(() => `$kql${hash([_query.value, _language.value])}`)
+  const key = computed(() => `$kql${hash([_query.value, _language.value, forwardCookies])}`)
 
   if (Object.keys(_query.value).length === 0 || !_query.value.query)
     console.error('[nuxt-kirby] Empty KQL query')
