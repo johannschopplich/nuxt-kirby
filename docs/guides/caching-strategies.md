@@ -33,6 +33,8 @@ The key covers:
 - Query content (for KQL)
 - Path, method, query parameters and body (for direct API)
 - Language setting
+- Request headers
+- `forwardCookies`
 
 `$kql` and `$kirby` have no async data around them, so they keep a payload cache of their own. Set their `payloadCache` option to `false` for real-time data that changes frequently:
 
