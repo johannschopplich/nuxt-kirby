@@ -6,7 +6,7 @@ The `/api/__kirby__` server route proxies requests between your Nuxt app and Kir
 
 All [composables](/api/) ([`useKql`](/api/use-kql), [`$kql`](/api/kql), etc.) send POST requests to the `/api/__kirby__` server route. The KQL query or request data goes in the request body.
 
-This server route fetches data from your Kirby instance using your configuration (`KIRBY_BASE_URL`, `KIRBY_API_TOKEN`, etc.). The response is passed back to the client. This keeps credentials secure and avoids CORS issues.
+This server route fetches data from your Kirby instance using your configuration (`KIRBY_BASE_URL`, `KIRBY_API_TOKEN`, etc.) and passes the response back to the client.
 
 During server-side rendering, calls to `/api/__kirby__` directly invoke the relevant function (no HTTP overhead), so only the Nuxt-to-Kirby request is made.
 

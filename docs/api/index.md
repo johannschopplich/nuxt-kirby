@@ -41,11 +41,7 @@ const { data: page } = await useKirbyData('api/pages/about')
 
 ## Type Safety
 
-Three type families cover a query's round trip:
-
-- [Query Types](/api/types-query) – To build type-safe KQL queries
-- [Request Types](/api/types-request) – For typing request payloads
-- [Response Types](/api/types-response) – For typing response data
+Three type families cover a query's round trip – see [Using Types](/api/types).
 
 Annotating the composable call carries the shape through to `data`:
 

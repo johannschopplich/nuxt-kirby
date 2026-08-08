@@ -1,6 +1,6 @@
 # `$kirby`
 
-Returns raw data from a Kirby instance for the given path.
+Returns a promise of the raw data at the given path. Unlike `useKirbyData`, it resolves to the response body itself rather than to an `AsyncData` object.
 
 Responses are cached by default between function calls for the same path based on a calculated hash of the path and fetch options.
 

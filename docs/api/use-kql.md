@@ -4,25 +4,11 @@ Returns KQL query data. Uses an internal server route to proxy requests.
 
 Query responses are cached by default between function calls for the same query based on a calculated hash.
 
-## Return Values
-
-- **`data`**: the result of the asynchronous function that is passed in.
-- **`refresh`/`execute`**: a function that can be used to refresh the data returned by the handler function.
-- **`error`**: an error object if the data fetching failed.
-- **`status`**: a string indicating the status of the data request:
-  - `idle`: when the request has not started, such as:
-    - when `execute` has not yet been called and `{ immediate: false }` is set
-    - when rendering HTML on the server and `{ server: false }` is set
-  - `pending`: the request is in progress
-  - `success`: the request has completed successfully
-  - `error`: the request has failed
-- **`clear`**: a function that can be used to set `data` to `undefined` (or the value of `options.default()` if provided), set `error` to `undefined`, set `status` to `idle`, and mark any currently pending requests as cancelled.
-
-By default, Nuxt waits until a `refresh` is finished before it can be executed again.
+<!--@include: ./parts/_async-data-return-values.md-->
 
 ## Caching
 
-A [unique key is generated](/guides/caching-strategies) from the input parameters of each request, so two call sites asking for the same query share one entry and one round trip.
+Two call sites asking for the same query share one entry and one round trip – see [Caching Strategies](/guides/caching-strategies#payload-caching).
 
 Clear the cache for a specific query by calling the `clear` function. This will remove the cached data for the query and allow the next request to fetch the data from the server:
 

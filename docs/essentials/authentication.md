@@ -2,10 +2,6 @@
 
 Nuxt Kirby supports multiple authentication methods. Choose the one that fits your Kirby setup.
 
-::: tip
-For new projects, reach for **token-based authentication** with the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/). It brings a KQL endpoint at `api/kql` that accepts a bearer token, on any Kirby installation.
-:::
-
 ## Overview
 
 | Method | Use Case | Security | Setup Complexity |
