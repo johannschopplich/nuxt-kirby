@@ -67,8 +67,8 @@ export interface ModuleOptions {
    *
    * @remarks
    * A Kirby session lives in a cookie, so without this a logged-in visitor still receives the
-   * logged-out response. Every request that carries a cookie skips the server-side cache, because
-   * one stored response is shared between all visitors.
+   * logged-out response. Turning it on skips the server-side cache, whether or not the visitor
+   * actually sent a cookie – one stored response is shared between all visitors.
    *
    * Individual calls override this through the `forwardCookies` option of `useKql`, `useKirbyData`,
    * `$kql` and `$kirby`.
