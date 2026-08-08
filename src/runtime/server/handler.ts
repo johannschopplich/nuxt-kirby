@@ -68,9 +68,15 @@ function createCachedFetcher(kirby: Required<ModuleOptions>) {
     // Nitro reads the event from the first argument only, and hands the cache write to
     // `event.waitUntil()` – without it an edge worker is torn down before the entry reaches storage.
     async (event: H3Event, options: ServerFetchRequest) => {
-      const { data, ...rest } = await fetchFromKirby(event, options)
-      // The cache stores the value as JSON, which a `Uint8Array` does not survive.
-      return { ...rest, data: uint8ArrayToBase64(data) }
+      const { data, headers, ...rest } = await fetchFromKirby(event, options)
+      return {
+        ...rest,
+        // A stored `set-cookie` would hand every later visitor on this key the session Kirby
+        // issued for the first one.
+        headers: headers.filter(([key]) => key !== 'set-cookie'),
+        // The cache stores the value as JSON, which a `Uint8Array` does not survive.
+        data: uint8ArrayToBase64(data),
+      }
     },
     {
       name: 'nuxt-kirby',

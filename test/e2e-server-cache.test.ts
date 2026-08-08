@@ -16,7 +16,10 @@ const upstream = serve({
   async fetch() {
     const requestNumber = ++upstreamRequestCount
     await new Promise(resolve => setTimeout(resolve, 100))
-    return Response.json({ code: 200, status: 'OK', result: { title: `Site ${requestNumber}` } })
+    return Response.json(
+      { code: 200, status: 'OK', result: { title: `Site ${requestNumber}` } },
+      { headers: { 'set-cookie': `kirby_session=${requestNumber}; Path=/; HttpOnly` } },
+    )
   },
 })
 
@@ -65,6 +68,14 @@ describe('server cache', async () => {
     expect(await first.json()).toEqual({ code: 200, status: 'OK', result: { title: 'Site 1' } })
     expect(await second.json()).toEqual({ code: 200, status: 'OK', result: { title: 'Site 1' } })
     expect(upstreamRequestCount).toBe(1)
+  })
+
+  // Whatever the cache stores is replayed to every later visitor who lands on the same key, so a
+  // session cookie must not get in there in the first place.
+  it('strips the set-cookie header Kirby sent', async () => {
+    const response = await postQuery({ query: 'site.title', select: ['title'] })
+
+    expect(response.headers.get('set-cookie')).toBeNull()
   })
 })
 
