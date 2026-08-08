@@ -4,7 +4,7 @@
 
 ## `KirbyQuery`
 
-Represents any valid Kirby Query Language (KQL) string.
+Represents any valid Kirby Query Language (KQL) string. The union only admits strings that open with a known model, so a typo in the model name fails to compile – everything after the first `.` or `(` is unchecked. Pass `CustomModel` to add model names of your own.
 
 **Examples:**
 

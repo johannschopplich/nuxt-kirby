@@ -40,7 +40,39 @@ export interface KirbyApiResponse<T = any> {
 
 Represents the response structure for queries made using Kirby Query Language (KQL). It extends `KirbyApiResponse` and can optionally include pagination information.
 
-See [Typed Query Results](/guides/typed-query-results) for a worked example.
+See [Typed Query Results](/guides/typed-query-results) for the guide.
+
+**Examples:**
+
+```ts
+import type { KirbyQueryResponse } from 'kirby-types'
+
+// Define the expected response structure
+export interface KirbySite {
+  title: string
+  children: {
+    id: string
+    title: string
+    isListed: boolean
+  }[]
+}
+
+// `data` will be of type `KirbyQueryResponse<KirbySite>`
+const { data } = await useKql<KirbyQueryResponse<KirbySite>>({
+  query: 'site',
+  select: {
+    title: true,
+    children: {
+      query: 'site.children',
+      select: {
+        id: true,
+        title: true,
+        isListed: true
+      }
+    }
+  }
+})
+```
 
 **Type Declarations**
 
