@@ -63,6 +63,21 @@ export interface ModuleOptions {
   client?: boolean
 
   /**
+   * Forward the visitor's cookies to Kirby.
+   *
+   * @remarks
+   * A Kirby session lives in a cookie, so without this a logged-in visitor still receives the
+   * logged-out response. Every request that carries a cookie skips the server-side cache, because
+   * one stored response is shared between all visitors.
+   *
+   * Individual calls override this through the `forwardCookies` option of `useKql`, `useKirbyData`,
+   * `$kql` and `$kirby`.
+   *
+   * @default false
+   */
+  forwardCookies?: boolean
+
+  /**
    * Prefetch custom KQL queries at build-time.
    *
    * @remarks
@@ -144,6 +159,7 @@ export default defineNuxtModule<ModuleOptions>({
       password: process.env.KIRBY_API_PASSWORD || '',
     },
     client: false,
+    forwardCookies: false,
     prefetch: {},
     server: {
       cache: false,

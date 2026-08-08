@@ -24,6 +24,14 @@ export type UseKqlOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
    */
   language?: MaybeRefOrGetter<string>
   /**
+   * Forward the visitor's cookies to Kirby, overriding the module's `forwardCookies`.
+   *
+   * @remarks
+   * Such a request never reads from or writes to the server-side cache, since one stored response
+   * is shared between all visitors.
+   */
+  forwardCookies?: boolean
+  /**
    * Watch an array of reactive sources and auto-refresh the fetch result when they change.
    * Query and language are watched by default. You can completely ignore reactive sources by using `watch: false`.
    */
@@ -35,7 +43,7 @@ export function useKql<
   ResT extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse,
   ReqT extends KirbyQueryRequest = KirbyQueryRequest,
 >(query: MaybeRefOrGetter<ReqT>, opts: UseKqlOptions<ResT> = {}) {
-  const { language, ...fetchOptions } = opts
+  const { language, forwardCookies, ...fetchOptions } = opts
 
   const _query = computed(() => toValue(query))
   const _language = computed(() => toValue(language))
@@ -51,6 +59,7 @@ export function useKql<
     $fetch: ((_request: string, options) => sendKqlRequest(_query.value, {
       ...options,
       language: _language.value,
+      forwardCookies,
       key: key.value,
     })) as typeof globalThis.$fetch,
   }) as AsyncData<ResT | undefined, NuxtError>

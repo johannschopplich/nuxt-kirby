@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import type { ModuleOptions } from '../../module'
 import type { ServerFetchOptions, ServerFetchRequest } from '../types'
 import { destr } from 'destr'
-import { createError, defineEventHandler, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
+import { createError, defineEventHandler, getRequestHeader, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
 import { defineCachedFunction } from 'nitropack/runtime'
 import { hash } from 'ohash'
 import { base64ToUint8Array, uint8ArrayToBase64, uint8ArrayToString } from 'uint8array-extras'
@@ -32,8 +32,10 @@ async function fetchFromKirby(event: H3Event, {
   headers,
   method,
   body,
+  forwardCookies,
 }: ServerFetchRequest): Promise<ProxyResponse> {
   const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
+  const cookie = forwardCookies ? getRequestHeader(event, 'cookie') : undefined
 
   const response = await globalThis.$fetch.raw<ArrayBuffer>(isQueryRequest ? kirby.kqlPath : path!, {
     responseType: 'arrayBuffer',
@@ -51,6 +53,7 @@ async function fetchFromKirby(event: H3Event, {
         }),
     headers: {
       ...headers,
+      ...(cookie ? { cookie } : {}),
       ...createAuthHeader(kirby),
     },
   })
@@ -117,16 +120,21 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  const forwardCookies = body.forwardCookies ?? kirby.forwardCookies
+
   try {
     let response: ProxyResponse
+    const request: ServerFetchRequest = { isQueryRequest, ...body, forwardCookies }
 
-    if (kirby.server.cache) {
+    // The cache key cannot see the visitor's cookie, so a cookie-bearing request must not read from
+    // the shared store and must not write to it either.
+    if (kirby.server.cache && !forwardCookies) {
       cachedFetcher ??= createCachedFetcher(kirby)
-      const cached = await cachedFetcher(event, { isQueryRequest, ...body })
+      const cached = await cachedFetcher(event, request)
       response = { ...cached, data: base64ToUint8Array(cached.data) }
     }
     else {
-      response = await fetchFromKirby(event, { isQueryRequest, ...body })
+      response = await fetchFromKirby(event, request)
     }
 
     const dataArray = response.data

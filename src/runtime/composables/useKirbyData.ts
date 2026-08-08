@@ -30,6 +30,14 @@ export type UseKirbyDataOptions<T> = Omit<AsyncDataOptions<T>, 'watch'> & Pick<
    */
   language?: MaybeRefOrGetter<string>
   /**
+   * Forward the visitor's cookies to Kirby, overriding the module's `forwardCookies`.
+   *
+   * @remarks
+   * Such a request never reads from or writes to the server-side cache, since one stored response
+   * is shared between all visitors.
+   */
+  forwardCookies?: boolean
+  /**
    * Watch an array of reactive sources and auto-refresh the fetch result when they change.
    * Path and language are watched by default. You can completely ignore reactive sources by using `watch: false`.
    */
@@ -41,7 +49,7 @@ export function useKirbyData<T = any>(
   path: MaybeRefOrGetter<string>,
   opts: UseKirbyDataOptions<T> = {},
 ) {
-  const { language, ...fetchOptions } = opts
+  const { language, forwardCookies, ...fetchOptions } = opts
 
   const _language = computed(() => toValue(language))
   const _path = computed(() => toValue(path).replace(/^\//, ''))
@@ -62,6 +70,7 @@ export function useKirbyData<T = any>(
     $fetch: ((_request: string, options) => sendKirbyRequest(_path.value, {
       ...options,
       language: _language.value,
+      forwardCookies,
       key: key.value,
     })) as typeof globalThis.$fetch,
   }) as AsyncData<T | undefined, NuxtError>

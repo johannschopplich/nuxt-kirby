@@ -59,6 +59,24 @@ If Nuxt SSR is disabled, this is enabled by default, because there is no server 
 
 **Default Value**: `false`
 
+## `kirby.forwardCookies`
+
+Whether the visitor's cookies travel on to Kirby.
+
+A Kirby session lives in a cookie. The server-side proxy builds its own request to Kirby, so without this the session never arrives and a logged-in visitor keeps receiving the logged-out response.
+
+Every request that carries a cookie skips the [server-side cache](/guides/caching-strategies), in both directions: it is never answered from the store, and its response is never written there. One cached entry is shared between all visitors, and the cache key cannot see the cookie – so caching a personalized response would hand it to the next person on the same key.
+
+Override it per call on `useKql`, `useKirbyData`, `$kql` and `$kirby`, which is the safer way round: turn it on for the queries that need a session rather than for all of them.
+
+```ts
+const { data } = await useKql({ query: 'user' }, { forwardCookies: true })
+```
+
+With `kirby.client` enabled there is no proxy to forward anything, so the option sends `credentials: 'include'` instead and Kirby has to answer with the matching CORS headers.
+
+**Default Value**: `false`
+
 ## `kirby.prefetch`
 
 Queries to run once at build time. Each result is written into the module's virtual file and importable from `#nuxt-kirby` under its key, fully typed and with no request at runtime.

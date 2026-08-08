@@ -31,6 +31,14 @@ export type KqlOptions = Pick<
    */
   payloadCache?: boolean
   /**
+   * Forward the visitor's cookies to Kirby, overriding the module's `forwardCookies`.
+   *
+   * @remarks
+   * Such a request never reads from or writes to the server-side cache, since one stored response
+   * is shared between all visitors.
+   */
+  forwardCookies?: boolean
+  /**
    * Cache key, generated from the request options by default.
    */
   key?: string
@@ -58,6 +66,7 @@ export function sendKqlRequest<T extends KirbyQueryResponse<any, boolean> = Kirb
     headers,
     language,
     key,
+    forwardCookies,
     ...fetchOptions
   } = opts
 
@@ -71,6 +80,7 @@ export function sendKqlRequest<T extends KirbyQueryResponse<any, boolean> = Kirb
     body: {
       query,
       headers: sharedHeaders,
+      forwardCookies,
     } satisfies ServerFetchOptions,
   }
 
@@ -82,6 +92,8 @@ export function sendKqlRequest<T extends KirbyQueryResponse<any, boolean> = Kirb
       ...createAuthHeader(kirby),
     },
     body: query,
+    // There is no proxy to forward anything here, so the browser has to attach the cookie itself.
+    credentials: (forwardCookies ?? kirby.forwardCookies) ? 'include' : undefined,
   }
 
   return useRequestFetch()(kirby.client ? kirby.kqlPath : buildApiProxyPath(key), {
