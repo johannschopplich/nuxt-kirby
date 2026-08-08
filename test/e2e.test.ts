@@ -56,6 +56,12 @@ describe('nuxt-kirby', async () => {
 
       expect(result).toEqual({ forwarded: true, withheld: false })
     })
+
+    it('keys a query by its headers, so a differing header set is fetched again', async () => {
+      const result = await fetchTestResult('/tests/$kql/headers-key')
+
+      expect(result).toEqual({ first: 'first', second: 'second' })
+    })
   })
 
   describe('$kirby (composable)', () => {
@@ -69,6 +75,12 @@ describe('nuxt-kirby', async () => {
       const result = await fetchTestResult('/tests/$kirby/forward-cookies-key')
 
       expect(result).toEqual({ forwarded: true, withheld: false })
+    })
+
+    it('keys a path by its headers, so a differing header set is fetched again', async () => {
+      const result = await fetchTestResult('/tests/$kirby/headers-key')
+
+      expect(result).toEqual({ first: 'first', second: 'second' })
     })
   })
 
@@ -162,6 +174,12 @@ describe('nuxt-kirby', async () => {
 
       expect(result).toEqual({ forwarded: true, withheld: false })
     })
+
+    it('keys a query by its headers, so a differing header set is fetched again', async () => {
+      const result = await fetchTestResult('/tests/use-kql/headers-key')
+
+      expect(result).toEqual({ first: 'first', second: 'second' })
+    })
   })
 
   describe('useKirbyData', () => {
@@ -235,6 +253,12 @@ describe('nuxt-kirby', async () => {
       const result = await fetchTestResult('/tests/use-kirby-data/forward-cookies-key')
 
       expect(result).toEqual({ forwarded: true, withheld: false })
+    })
+
+    it('keys a path by its headers, so a differing header set is fetched again', async () => {
+      const result = await fetchTestResult('/tests/use-kirby-data/headers-key')
+
+      expect(result).toEqual({ first: 'first', second: 'second' })
     })
   })
 

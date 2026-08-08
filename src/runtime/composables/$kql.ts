@@ -50,7 +50,12 @@ export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResp
   opts: KqlOptions = {},
 ): Promise<T> {
   const { payloadCache = true, ...requestOptions } = opts
-  const key = opts.key || `$kql${hash([query, opts.language, opts.forwardCookies])}`
+  const key = opts.key || `$kql${hash([
+    query,
+    opts.language,
+    opts.forwardCookies,
+    headersToObject(opts.headers),
+  ])}`
 
   return sendCachedRequest(key, payloadCache, () => sendKqlRequest<T>(query, { ...requestOptions, key }))
 }

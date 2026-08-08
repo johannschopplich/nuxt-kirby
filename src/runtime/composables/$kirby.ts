@@ -63,6 +63,7 @@ export function $kirby<T = any>(
     opts.body,
     opts.language,
     opts.forwardCookies,
+    headersToObject(opts.headers),
   ])}`
 
   return sendCachedRequest(key, payloadCache, () => sendKirbyRequest<T>(path, { ...requestOptions, key }))

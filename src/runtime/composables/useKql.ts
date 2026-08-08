@@ -5,6 +5,7 @@ import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
 import { computed, toValue } from 'vue'
 import { useFetch } from '#imports'
+import { headersToObject } from '../utils'
 import { sendKqlRequest } from './$kql'
 
 // #region options
@@ -47,7 +48,12 @@ export function useKql<
 
   const _query = computed(() => toValue(query))
   const _language = computed(() => toValue(language))
-  const key = computed(() => `$kql${hash([_query.value, _language.value, forwardCookies])}`)
+  const key = computed(() => `$kql${hash([
+    _query.value,
+    _language.value,
+    forwardCookies,
+    headersToObject(toValue(fetchOptions.headers)),
+  ])}`)
 
   if (Object.keys(_query.value).length === 0 || !_query.value.query)
     console.error('[nuxt-kirby] Empty KQL query')

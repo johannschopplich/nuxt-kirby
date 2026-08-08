@@ -4,6 +4,7 @@ import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 import { hash } from 'ohash'
 import { computed, toValue } from 'vue'
 import { useFetch } from '#imports'
+import { headersToObject } from '../utils'
 import { sendKirbyRequest } from './$kirby'
 
 // #region options
@@ -60,6 +61,7 @@ export function useKirbyData<T = any>(
     toValue(fetchOptions.method),
     toValue(fetchOptions.body),
     forwardCookies,
+    headersToObject(toValue(fetchOptions.headers)),
   ])}`)
 
   if (!_path.value)
