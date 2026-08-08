@@ -18,6 +18,7 @@ export default defineConfig({
   lang: 'en-US',
   title: name,
   description,
+  srcExclude: ['**/parts/*.md'],
   head: [
     ['link', { rel: 'icon', href: '/logo.svg', type: 'image/svg+xml' }],
     ['meta', { name: 'author', content: 'Johann Schopplich' }],
