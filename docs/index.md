@@ -4,7 +4,7 @@ titleTemplate: Kirby CMS Integration for Nuxt
 hero:
   name: Nuxt Kirby
   text: Talk to Kirby from Nuxt
-  tagline: Fetch content with KQL queries or plain API requests to your Kirby CMS.
+  tagline: Read and write your Kirby CMS content with KQL queries or plain REST requests.
   image:
     src: /logo-shadow.svg
     alt: Nuxt Kirby Logo
