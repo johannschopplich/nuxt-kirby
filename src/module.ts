@@ -50,13 +50,14 @@ export interface ModuleOptions {
   }
 
   /**
-   * Send client-side requests instead of using the server-side proxy.
+   * Send queries straight from the browser instead of through the server-side proxy.
    *
    * @remarks
-   * By default, data from Kirby is fetched safely with a server-side proxy.
-   * If enabled, query requests will be sent directly from the client.
-   * Note: This means your token or user credentials will be publicly visible.
-   * If Nuxt SSR is disabled, this option is enabled by default.
+   * Leaving this off is what keeps your token out of the client bundle. Turn it on only for an
+   * instance whose credentials may be public, or one that needs none.
+   *
+   * If Nuxt SSR is disabled, this is enabled by default, because there is no server to proxy
+   * through.
    *
    * @default false
    */
