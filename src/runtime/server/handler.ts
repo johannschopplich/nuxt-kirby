@@ -110,7 +110,6 @@ export default defineEventHandler(async (event) => {
     }
   }
   else {
-    // Check if the path is an absolute URL.
     if (body.path && new URL(body.path, 'http://localhost').origin !== 'http://localhost') {
       throw createError({
         statusCode: 400,

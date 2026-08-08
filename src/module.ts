@@ -199,7 +199,6 @@ export default defineNuxtModule<ModuleOptions>({
       options,
     )
 
-    // Write data to public runtime config if client requests are enabled.
     nuxt.options.runtimeConfig.public.kirby = defu(
       nuxt.options.runtimeConfig.public.kirby as Required<ModuleOptions>,
       options.client
