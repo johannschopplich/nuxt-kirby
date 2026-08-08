@@ -1,9 +1,9 @@
 # Data Fetching Methods
 
-Nuxt Kirby offers two approaches to fetch data from your Kirby CMS. Choose the right method for your use case.
+KQL for content queries that follow relationships and filter; the REST API for plain requests, file handling and endpoints of your own.
 
 ::: tip
-In most cases, KQL queries with `useKql` and `$kql` are preferred for their flexibility and type safety. However, `useKirbyData` and `$kirby` are excellent for simple data fetching and direct API access.
+In most cases, KQL queries with `useKql` and `$kql` are preferred for their flexibility and type safety.
 :::
 
 ## Methods Comparison
@@ -12,7 +12,7 @@ Access your Kirby CMS data using either KQL or direct API access:
 
 | Method | Composables | Description |
 |--------|-------------|-------------|
-| KQL | `useKql`, `$kql` | Kirby Query Language for content queries for simple and complex data structures and relationships. |
+| KQL | `useKql`, `$kql` | Kirby Query Language, for content queries that follow relationships and filter. |
 | Direct Kirby API Access | `useKirbyData`, `$kirby` | Direct access to Kirby's REST API for custom endpoints. |
 
 ## Composables Comparison
@@ -77,7 +77,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
 ## Batching KQL Queries
 
-Fetching multiple KQL queries in a single request can significantly improve performance by reducing the number of HTTP requests made to the server. Nuxt Kirby supports batching multiple queries into a single request using the [`useKql`](/api/use-kql) composable.
+Several queries can travel in one request, so a page that needs site, navigation and a listing costs one round trip rather than three. Nuxt Kirby supports batching multiple queries into a single request using the [`useKql`](/api/use-kql) composable.
 
 To batch multiple queries, pass an object to the `select` property. Each key represents a separate query:
 

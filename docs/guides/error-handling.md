@@ -6,7 +6,7 @@ The [server proxy](/advanced/how-does-it-work) passes Kirby's error through unto
 
 ### Composables – `useKql` and `useKirbyData`
 
-The `use*` composables (`useKql`, `useKirbyData`) integrate with Nuxt's error handling and will expose errors through the `error` property, following Nuxt's [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data) pattern:
+Both composables surface errors through the `error` property, as Nuxt's own [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data) does:
 
 ```vue
 <script setup lang="ts">

@@ -1,7 +1,5 @@
 # Getting Started
 
-This guide will walk you through the steps to get started with Nuxt Kirby.
-
 ::: tip
 Want to jump right in? Choose one of the [Starter Kits](/essentials/starter-kits) to get started with Nuxt Kirby in no time instead of starting from scratch.
 :::

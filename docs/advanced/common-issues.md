@@ -1,7 +1,5 @@
 # Common Issues
 
-Solutions to frequently encountered problems when using Nuxt Kirby.
-
 ## CORS Issues
 
 ### Can I Encounter CORS Issues?

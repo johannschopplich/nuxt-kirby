@@ -4,7 +4,7 @@ Instead of starting from scratch, use one of the following starter kits to get u
 
 ## 🍫 Cacao Kit
 
-The [🍫 Cacao Kit](https://github.com/johannschopplich/cacao-kit-frontend) provides a minimal but feature-rich Nuxt starter kit. It fetches content from the [🍫 Cacao Kit backend](https://github.com/johannschopplich/cacao-kit-backend), a headless Kirby instance. It is the evolved version of the Kirby Nuxt Starterkit (see below) and my best practice solution for building a Nuxt-based frontend on top of Kirby CMS.
+The [🍫 Cacao Kit](https://github.com/johannschopplich/cacao-kit-frontend) is a minimal Nuxt starter kit. It fetches content from the [🍫 Cacao Kit backend](https://github.com/johannschopplich/cacao-kit-backend), a headless Kirby instance. It is the evolved version of the Kirby Nuxt Starterkit (see below) and my best practice solution for building a Nuxt-based frontend on top of Kirby CMS.
 
 ::: info
 This is the starter kit I personally recommend for most use cases.
@@ -12,7 +12,7 @@ This is the starter kit I personally recommend for most use cases.
 
 You can harness every feature Nuxt provides to build a server-side rendered application or even pre-render the content using [Nuxt's static generation](https://nuxt.com/docs/getting-started/deployment#static-hosting).
 
-Kirby's page structure is used as the source routing – you do not need to replicate the page structure in Nuxt. This makes it easy to add new pages in Kirby without touching the frontend. All pages are rendered by the [catch-all route](https://github.com/johannschopplich/cacao-kit-frontend/blob/main/app/pages/%5B...slug%5D.vue).
+Kirby's page structure is the source of truth for routing – you do not need to replicate the page structure in Nuxt. This makes it easy to add new pages in Kirby without touching the frontend. All pages are rendered by the [catch-all route](https://github.com/johannschopplich/cacao-kit-frontend/blob/main/app/pages/%5B...slug%5D.vue).
 
 A key design decision is: **Everything is a block**. All Kirby templates are designed to be block-based. This allows you to create complex pages in Kirby with a simple drag-and-drop interface. The frontend then renders these blocks in a flexible way. Of course, you do not have to stick to the block-first architecture.
 

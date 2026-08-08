@@ -1,6 +1,6 @@
 # Prefetching KQL Queries
 
-Prefetch custom queries **at build-time** to improve performance for static content. Query results and their TypeScript types can be imported from `#nuxt-kirby`.
+Prefetch custom queries **at build time** and serve static content with no request at runtime. Query results and their TypeScript types can be imported from `#nuxt-kirby`.
 
 Add a `prefetch` object to your `kirby` configuration in `nuxt.config.ts`. Each key represents a query to prefetch.
 
@@ -21,7 +21,7 @@ export default defineNuxtConfig({
 })
 ```
 
-When you run your dev or build command, the result of the `site` query is fetched, stored locally, and the time spent on the query(s) is logged.
+The query runs once per dev or build command, and its result is written to disk:
 
 ```
 ℹ Prefetched KQL query "site" in 170ms

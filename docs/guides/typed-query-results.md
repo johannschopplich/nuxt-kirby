@@ -14,7 +14,7 @@ await useKql<KirbyQueryResponse<{ title: string }>>({
 
 ## Example
 
-By creating a custom `KirbySite` type for the expected response result and passed to the `KirbyQueryResponse` as its first type parameter, the `data` reactive variable will be provided with typings:
+Pass a custom `KirbySite` type to `KirbyQueryResponse` as its first parameter, and `data` carries that shape:
 
 ```vue
 <script setup lang="ts">

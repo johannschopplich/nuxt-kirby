@@ -1,6 +1,6 @@
 # Caching Strategies
 
-Nuxt Kirby provides multiple caching layers to optimize performance.
+Three caches sit between a component and Kirby, each with a different lifetime.
 
 ## Overview
 
@@ -54,13 +54,13 @@ const { data, refresh, clear } = await useKql(query)
 
 ## Server-Side Caching
 
-With Nuxt Kirby, you can opt in to server-side caching of data responses. This is achieved by using the [cache API](https://nitro.build/guide/cache) of Nuxt's underlying server engine, [Nitro](https://nitro.build). By default, data responses are cached in memory, but you can use any storage mountpoint supported by Nitro to persist the response on the server for future requests from the client.
+The proxy can cache responses through [Nitro's cache API](https://nitro.build/guide/cache). They live in memory by default; any Nitro storage mountpoint persists them across restarts.
 
 ::: tip
 All built-in storage mountpoints can be found in the [unstorage documentation](https://unstorage.unjs.io).
 :::
 
-For short, concurrent requests on your site, caching will significantly improve performance because the data response will be served from the server cache rather than being fetched from Kirby again.
+Concurrent requests for the same query then cost one round trip to Kirby rather than one each.
 
 You can enable server-side caching by setting the `server.cache` module option to `true`. You can also set a custom expiration time in seconds by setting the `server.maxAge` option:
 
