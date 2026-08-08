@@ -66,7 +66,6 @@ describe('forwardCookies', async () => {
     expect(upstreamRequestCount).toBe(2)
   })
 
-  // The strip that keeps a session out of the cache must not cost every visitor their login.
   it('passes the session Kirby issues on to the visitor', async () => {
     const response = await postQuery({ query: 'site.info', select: ['title'] }, true)
 
