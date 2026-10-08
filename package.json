@@ -51,7 +51,7 @@
     "@nuxt/kit": "^4.5.2",
     "defu": "^6.1.7",
     "destr": "^2.0.5",
-    "kirby-types": "^1.6.0",
+    "kirby-types": "^1.8.1",
     "ofetch": "^1.5.1",
     "ohash": "^2.0.11",
     "pathe": "^2.0.3",
