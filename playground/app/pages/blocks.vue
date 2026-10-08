@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { KirbyBlock, KirbyQueryRequest } from '#nuxt-kirby'
+import type { KirbyBlock, KirbyQueryRequest } from 'kirby-types'
 import { computed, ref, useKql } from '#imports'
 
 const query = ref<KirbyQueryRequest>({
