@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { KirbyBlock, KirbyQueryRequest } from 'kirby-types'
+import type { KirbyDefaultBlock, KirbyQueryRequest } from 'kirby-types'
 import { computed, ref, useKql } from '#imports'
 
 const query = ref<KirbyQueryRequest>({
@@ -12,7 +12,7 @@ const query = ref<KirbyQueryRequest>({
 })
 
 const { data } = await useKql(query)
-const blocks = computed<KirbyBlock<string>[]>(() => data.value?.result?.text ?? [])
+const blocks = computed<KirbyDefaultBlock[]>(() => data.value?.result?.text ?? [])
 </script>
 
 <template>
@@ -29,11 +29,11 @@ const blocks = computed<KirbyBlock<string>[]>(() => data.value?.result?.text ?? 
           :is="block.content.level"
           v-if="block.type === 'heading'"
         >
-          {{ (block as KirbyBlock<'heading'>).content.text }}
+          {{ block.content.text }}
         </component>
         <div
-          v-else
-          v-html="block.content?.text"
+          v-else-if="'text' in block.content"
+          v-html="block.content.text"
         />
       </template>
     </div>
