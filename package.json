@@ -15,11 +15,11 @@
     "url": "https://github.com/johannschopplich/nuxt-kirby/issues"
   },
   "keywords": [
-    "getkirby",
     "kirby",
-    "kql",
+    "kirby-cms",
+    "getkirby",
     "nuxt",
-    "query"
+    "kql"
   ],
   "sideEffects": false,
   "exports": {
