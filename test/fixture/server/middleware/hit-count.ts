@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   if (!event.path.startsWith('/api/__kirby__'))
     return
 
-  const body = await readBody<ServerFetchOptions>(event)
+  const body = await readBody<ServerFetchOptions>(event) ?? {}
 
   if (body.query?.query !== '__hits__')
     return

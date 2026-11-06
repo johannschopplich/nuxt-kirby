@@ -89,6 +89,12 @@ describe('proxy', async () => {
     expect(kirbyRequests).toEqual([])
   })
 
+  it('rejects a request without a body', async () => {
+    const status = await postToProxy('proxy-path')
+
+    expect(status).toBe(400)
+  })
+
   it('sends a $kql request to kqlPath despite isQueryRequest: false in the body', async () => {
     const status = await postToProxy('$kql-proxy-path', {
       isQueryRequest: false,

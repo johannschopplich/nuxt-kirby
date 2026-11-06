@@ -98,7 +98,7 @@ let cachedFetcher: ReturnType<typeof createCachedFetcher> | undefined
 
 export default defineEventHandler(async (event) => {
   const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
-  const body = await readBody<ServerFetchOptions>(event)
+  const body = await readBody<ServerFetchOptions>(event) ?? {}
   const key = decodeURIComponent(getRouterParam(event, 'key')!)
   const isQueryRequest = key.startsWith('$kql')
 
