@@ -89,6 +89,18 @@ describe('proxy', async () => {
     expect(kirbyRequests).toEqual([])
   })
 
+  it('sends a $kql request to kqlPath despite isQueryRequest: false in the body', async () => {
+    const status = await postToProxy('$kql-proxy-path', {
+      isQueryRequest: false,
+      path: `http://${foreignHost}/stolen`,
+      query: { query: 'site' },
+    })
+
+    expect(status).toBe(200)
+    expect(foreignRequests).toEqual([])
+    expect(kirbyRequests).toEqual([{ path: '/base/api/kql', authorization: 'Bearer test' }])
+  })
+
   it.each(['pages/notes', './pages/notes'])('forwards %s to /base/pages/notes with the Authorization header', async (path) => {
     const status = await postToProxy('proxy-path', { path })
 

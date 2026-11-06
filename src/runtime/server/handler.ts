@@ -125,7 +125,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     let response: ProxyResponse
-    const request: ServerFetchRequest = { isQueryRequest, ...body, forwardCookies }
+    const request: ServerFetchRequest = { ...body, isQueryRequest, forwardCookies }
 
     // The cache key cannot see the visitor's cookie, so a cookie-bearing request must not read from
     // the shared store and must not write to it either.
