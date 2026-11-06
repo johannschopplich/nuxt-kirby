@@ -107,4 +107,16 @@ describe('proxy', async () => {
     expect(status).toBe(200)
     expect(kirbyRequests).toEqual([{ path: '/base/pages/notes', authorization: 'Bearer test' }])
   })
+
+  it('replaces an Authorization header from the body with the Kirby credentials', async () => {
+    await postToProxy('proxy-path', { path: 'pages/notes', headers: { Authorization: 'Bearer client' } })
+
+    expect(kirbyRequests).toEqual([{ path: '/base/pages/notes', authorization: 'Bearer test' }])
+  })
+
+  it('rejects headers that are not an object', async () => {
+    const status = await postToProxy('proxy-path', { path: 'pages/notes', headers: 'Bearer client' })
+
+    expect(status).toBe(400)
+  })
 })

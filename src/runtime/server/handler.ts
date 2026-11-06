@@ -7,7 +7,7 @@ import { defineCachedFunction } from 'nitropack/runtime'
 import { hash } from 'ohash'
 import { base64ToUint8Array, uint8ArrayToBase64, uint8ArrayToString } from 'uint8array-extras'
 import { useRuntimeConfig } from '#imports'
-import { createAuthHeader } from '../utils'
+import { createAuthHeader, headersToObject } from '../utils'
 import { assertPathBelowBase } from './path'
 
 const EXCLUDED_HEADERS = new Set([
@@ -121,11 +121,22 @@ export default defineEventHandler(async (event) => {
     assertPathBelowBase(body.path)
   }
 
+  let headers: Record<string, string>
+  try {
+    headers = headersToObject(body.headers ?? undefined)
+  }
+  catch {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Headers are invalid',
+    })
+  }
+
   const forwardCookies = body.forwardCookies ?? kirby.forwardCookies
 
   try {
     let response: ProxyResponse
-    const request: ServerFetchRequest = { ...body, isQueryRequest, forwardCookies }
+    const request: ServerFetchRequest = { ...body, headers, isQueryRequest, forwardCookies }
 
     // The cache key cannot see the visitor's cookie, so a cookie-bearing request must not read from
     // the shared store and must not write to it either.
