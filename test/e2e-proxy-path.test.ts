@@ -89,6 +89,13 @@ describe('proxy', async () => {
     expect(kirbyRequests).toEqual([])
   })
 
+  it('rejects a non-string method', async () => {
+    const status = await postToProxy('proxy-path', { path: 'pages/notes', method: 123 })
+
+    expect(status).toBe(400)
+    expect(kirbyRequests).toEqual([])
+  })
+
   it('rejects a request without a body', async () => {
     const status = await postToProxy('proxy-path')
 

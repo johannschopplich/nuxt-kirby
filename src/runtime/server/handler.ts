@@ -118,6 +118,13 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    if (body.method != null && typeof body.method !== 'string') {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Method must be a string',
+      })
+    }
+
     assertPathBelowBase(body.path)
   }
 
