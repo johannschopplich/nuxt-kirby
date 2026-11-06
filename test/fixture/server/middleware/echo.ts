@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<ServerFetchOptions>(event)
 
   // A KQL request carries no path, so its query names the echo endpoint instead.
-  if (!body.path?.includes('__echo__') && body.query?.query !== '__echo__')
+  if (!(typeof body.path === 'string' && body.path.includes('__echo__')) && body.query?.query !== '__echo__')
     return
 
   return {

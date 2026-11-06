@@ -8,6 +8,7 @@ import { hash } from 'ohash'
 import { base64ToUint8Array, uint8ArrayToBase64, uint8ArrayToString } from 'uint8array-extras'
 import { useRuntimeConfig } from '#imports'
 import { createAuthHeader } from '../utils'
+import { assertPathBelowBase } from './path'
 
 const EXCLUDED_HEADERS = new Set([
   // https://github.com/h3js/h3/blob/fe9800bbbe9bda2972cc5d11db7353f4ab70f0ba/src/utils/proxy.ts#L97
@@ -110,12 +111,14 @@ export default defineEventHandler(async (event) => {
     }
   }
   else {
-    if (body.path && new URL(body.path, 'http://localhost').origin !== 'http://localhost') {
+    if (typeof body.path !== 'string') {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Absolute URLs are not allowed',
+        statusMessage: 'Path must be a string',
       })
     }
+
+    assertPathBelowBase(body.path)
   }
 
   const forwardCookies = body.forwardCookies ?? kirby.forwardCookies

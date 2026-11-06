@@ -274,7 +274,7 @@ describe('nuxt-kirby', async () => {
       const response = await postToProxy('$kirby-test', { path: 'https://example.com/api/site' })
 
       expect(response.status).toBe(400)
-      expect(await response.json()).toMatchObject({ statusMessage: 'Absolute URLs are not allowed' })
+      expect(await response.json()).toMatchObject({ statusMessage: 'Path must stay below the Kirby URL' })
     })
   })
 
