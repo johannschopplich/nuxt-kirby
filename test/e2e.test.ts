@@ -63,7 +63,7 @@ describe('nuxt-kirby', async () => {
       expect(result).toEqual({ first: 'first', second: 'second' })
     })
 
-    it('rejects instead of throwing for an invalid header value', async () => {
+    it('rejects instead of throwing for a header value with a line break', async () => {
       const result = await fetchTestResult('/tests/$kql/rejection')
 
       expect(result).toEqual({ errorName: 'TypeError' })
@@ -91,7 +91,7 @@ describe('nuxt-kirby', async () => {
   })
 
   describe('$kql (server import)', () => {
-    it('rejects instead of throwing for an invalid header value', async () => {
+    it('rejects instead of throwing for a header value with a line break', async () => {
       const result = await $fetch('/tests/server-imports/rejection')
 
       expect(result).toEqual({ errorName: 'TypeError' })
