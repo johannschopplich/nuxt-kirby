@@ -11,7 +11,6 @@ afterAll(async () => {
   await rm(buildDir, { recursive: true, force: true })
 })
 
-/** Sets the module up on the fixture and returns the runtime config it produced. */
 async function loadRuntimeConfig(overrides: NuxtConfig) {
   const nuxt = await loadNuxt({
     cwd: join(import.meta.dirname, 'fixture'),
