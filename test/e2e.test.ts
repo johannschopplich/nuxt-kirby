@@ -88,9 +88,11 @@ describe('nuxt-kirby', async () => {
 
       expect(result).toEqual({ first: 'first', second: 'second' })
     })
+  })
 
+  describe('$kql (server import)', () => {
     it('rejects instead of throwing for an invalid header value', async () => {
-      const result = await fetchTestResult('/tests/$kirby/rejection')
+      const result = await $fetch('/tests/server-imports/rejection')
 
       expect(result).toEqual({ errorName: 'TypeError' })
     })
@@ -107,12 +109,6 @@ describe('nuxt-kirby', async () => {
       const { requestedPath } = await $fetch<{ requestedPath: string }>('/tests/server-imports/language')
 
       expect(requestedPath).toBe('api/__template__/__site__')
-    })
-
-    it('rejects instead of throwing for an invalid header value', async () => {
-      const result = await $fetch('/tests/server-imports/rejection')
-
-      expect(result).toEqual({ kirbyErrorName: 'TypeError', kqlErrorName: 'TypeError' })
     })
   })
 
