@@ -55,7 +55,7 @@ Whether queries may be sent straight from the browser instead of through the ser
 
 Leaving this off is what keeps your token out of the client bundle. Turn it on only for an instance whose credentials may be public, or one that needs none.
 
-If Nuxt SSR is disabled, this is always on, because there is no server to proxy through.
+If Nuxt SSR is disabled, this is on unless you set it to `false`, because a client-rendered app often has no server to proxy through.
 
 With it on, requests go directly from the browser to Kirby, which may cause CORS issues depending on your Kirby setup. Configure Kirby's `cors` option (Kirby 5.2 or later):
 
@@ -69,7 +69,7 @@ return [
 ];
 ```
 
-**Default Value**: `false`
+**Default Value**: `false`, or `true` if Nuxt SSR is disabled
 
 ## `kirby.forwardCookies`
 

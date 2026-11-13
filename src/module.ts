@@ -56,10 +56,10 @@ export interface ModuleOptions {
    * Leaving this off is what keeps your token out of the client bundle. Turn it on only for an
    * instance whose credentials may be public, or one that needs none.
    *
-   * If Nuxt SSR is disabled, this is enabled by default, because there is no server to proxy
-   * through.
+   * If Nuxt SSR is disabled, this is enabled unless you set it to `false`, because a client-rendered
+   * app often has no server to proxy through.
    *
-   * @default false
+   * @default false, or true if Nuxt SSR is disabled
    */
   client?: boolean
 
@@ -159,7 +159,8 @@ export default defineNuxtModule<ModuleOptions>({
       username: process.env.KIRBY_API_USERNAME || '',
       password: process.env.KIRBY_API_PASSWORD || '',
     },
-    client: false,
+    // Left unset, so that an explicit `false` survives `ssr: false`.
+    client: undefined,
     forwardCookies: false,
     prefetch: {},
     server: {
@@ -186,9 +187,10 @@ export default defineNuxtModule<ModuleOptions>({
       ? 'api/kql'
       : 'api/query'
 
-    if (!nuxt.options.ssr) {
-      logger.info('Kirby requests are client-only because SSR is disabled')
-      options.client = true
+    if (options.client == null) {
+      options.client = !nuxt.options.ssr
+      if (options.client)
+        logger.info('Kirby requests are client-only because SSR is disabled. Set `client: false` to keep them on the server proxy.')
     }
 
     if (options.server) {
