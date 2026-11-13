@@ -12,8 +12,15 @@ const kirby = serve({
   silent: true,
   fetch(request) {
     const { pathname } = new URL(request.url)
-    kirbyRequests.push({ path: pathname, authorization: request.headers.get('authorization') })
-    return Response.json({ code: 200, status: 'OK', result: { title: 'Site' } })
+    kirbyRequests.push({
+      path: pathname,
+      authorization: request.headers.get('authorization'),
+    })
+    return Response.json({
+      code: 200,
+      status: 'OK',
+      result: { title: 'Site' },
+    })
   },
 })
 const foreign = serve({
@@ -26,7 +33,10 @@ const foreign = serve({
   },
 })
 
-await Promise.all([kirby.ready(), foreign.ready()])
+await Promise.all([
+  kirby.ready(),
+  foreign.ready(),
+])
 const foreignHost = new URL(foreign.url!).host
 
 describe('proxy', async () => {
@@ -46,7 +56,10 @@ describe('proxy', async () => {
   })
 
   afterAll(async () => {
-    await Promise.all([kirby.close(), foreign.close()])
+    await Promise.all([
+      kirby.close(),
+      foreign.close(),
+    ])
   })
 
   function postToProxy(key: string, body?: Record<string, unknown>) {
@@ -62,7 +75,9 @@ describe('proxy', async () => {
     ' http:{host}/stolen',
     '//{host}/stolen',
   ])('rejects %j without contacting the host it names', async (pathTemplate) => {
-    const status = await postToProxy('proxy-path', { path: pathTemplate.replace('{host}', foreignHost) })
+    const status = await postToProxy('proxy-path', {
+      path: pathTemplate.replace('{host}', foreignHost),
+    })
 
     expect(status).toBe(400)
     expect(foreignRequests).toEqual([])
@@ -111,20 +126,29 @@ describe('proxy', async () => {
 
     expect(status).toBe(200)
     expect(foreignRequests).toEqual([])
-    expect(kirbyRequests).toEqual([{ path: '/base/api/kql', authorization: 'Bearer test' }])
+    expect(kirbyRequests).toEqual([
+      { path: '/base/api/kql', authorization: 'Bearer test' },
+    ])
   })
 
   it.each(['pages/notes', './pages/notes'])('forwards %s to /base/pages/notes with the Authorization header', async (path) => {
     const status = await postToProxy('proxy-path', { path })
 
     expect(status).toBe(200)
-    expect(kirbyRequests).toEqual([{ path: '/base/pages/notes', authorization: 'Bearer test' }])
+    expect(kirbyRequests).toEqual([
+      { path: '/base/pages/notes', authorization: 'Bearer test' },
+    ])
   })
 
   it('replaces an Authorization header from the body with the Kirby credentials', async () => {
-    await postToProxy('proxy-path', { path: 'pages/notes', headers: { Authorization: 'Bearer client' } })
+    await postToProxy('proxy-path', {
+      path: 'pages/notes',
+      headers: { Authorization: 'Bearer client' },
+    })
 
-    expect(kirbyRequests).toEqual([{ path: '/base/pages/notes', authorization: 'Bearer test' }])
+    expect(kirbyRequests).toEqual([
+      { path: '/base/pages/notes', authorization: 'Bearer test' },
+    ])
   })
 
   it('rejects headers that are not an object', async () => {

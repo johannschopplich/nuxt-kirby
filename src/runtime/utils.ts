@@ -35,5 +35,7 @@ export function createAuthHeader({
  * a caller's own `X-Language` instead of traveling alongside it as a second value.
  */
 export function createLanguageHeader(language: string | undefined) {
-  return language ? { 'x-language': language } : undefined
+  return language
+    ? { 'x-language': language }
+    : undefined
 }

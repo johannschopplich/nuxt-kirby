@@ -98,10 +98,14 @@ export function sendKqlRequest<T extends KirbyQueryResponse<any, boolean> = Kirb
     },
     body: query,
     // There is no proxy to forward anything here, so the browser has to attach the cookie itself.
-    credentials: (forwardCookies ?? kirby.forwardCookies) ? 'include' : undefined,
+    credentials: (forwardCookies ?? kirby.forwardCookies)
+      ? 'include'
+      : undefined,
   }
 
-  return useRequestFetch()(kirby.client ? kirby.kqlPath : buildApiProxyPath(key), {
+  return useRequestFetch()(kirby.client
+    ? kirby.kqlPath
+    : buildApiProxyPath(key), {
     ...fetchOptions,
     ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
   }) as Promise<T>

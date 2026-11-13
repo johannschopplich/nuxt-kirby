@@ -28,7 +28,9 @@ export async function prefetchQueries(
   const start = Date.now()
 
   for (const [key, query] of Object.entries(options.prefetch)) {
-    const language = 'language' in query ? query.language : undefined
+    const language = 'language' in query
+      ? query.language
+      : undefined
 
     if (language && !query.query) {
       logger.error(`Prefetch KQL query "${key}" requires the "query" property in multi-language mode`)
@@ -65,8 +67,12 @@ export async function prefetchQueries(
     const firstKey = results.keys().next().value as string
 
     logger.info(
-      `Prefetched ${results.size === 1 ? '' : `${results.size} `}KQL ${
-        results.size === 1 ? `query "${firstKey}"` : 'queries'
+      `Prefetched ${results.size === 1
+        ? ''
+        : `${results.size} `}KQL ${
+        results.size === 1
+          ? `query "${firstKey}"`
+          : 'queries'
       } in ${Date.now() - start}ms`,
     )
   }

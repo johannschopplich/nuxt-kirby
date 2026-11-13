@@ -17,8 +17,14 @@ const upstream = serve({
     const requestNumber = ++upstreamRequestCount
     await new Promise(resolve => setTimeout(resolve, 100))
     return Response.json(
-      { code: 200, status: 'OK', result: { title: `Site ${requestNumber}` } },
-      { headers: { 'set-cookie': `kirby_session=${requestNumber}; Path=/; HttpOnly` } },
+      {
+        code: 200,
+        status: 'OK',
+        result: { title: `Site ${requestNumber}` },
+      },
+      {
+        headers: { 'set-cookie': `kirby_session=${requestNumber}; Path=/; HttpOnly` },
+      },
     )
   },
 })
@@ -51,29 +57,60 @@ describe('server cache', async () => {
   })
 
   it('answers a repeated query without reaching Kirby again', async () => {
-    const first = await postQuery({ query: 'site', select: ['title'] })
-    const second = await postQuery({ query: 'site', select: ['title'] })
+    const first = await postQuery({
+      query: 'site',
+      select: ['title'],
+    })
+    const second = await postQuery({
+      query: 'site',
+      select: ['title'],
+    })
 
-    expect(await first.json()).toEqual({ code: 200, status: 'OK', result: { title: 'Site 1' } })
-    expect(await second.json()).toEqual({ code: 200, status: 'OK', result: { title: 'Site 1' } })
+    expect(await first.json()).toEqual({
+      code: 200,
+      status: 'OK',
+      result: { title: 'Site 1' },
+    })
+    expect(await second.json()).toEqual({
+      code: 200,
+      status: 'OK',
+      result: { title: 'Site 1' },
+    })
     expect(upstreamRequestCount).toBe(1)
   })
 
   it('answers concurrent identical queries with one request to Kirby', async () => {
     const [first, second] = await Promise.all([
-      postQuery({ query: 'site.children', select: ['id'] }),
-      postQuery({ query: 'site.children', select: ['id'] }),
+      postQuery({
+        query: 'site.children',
+        select: ['id'],
+      }),
+      postQuery({
+        query: 'site.children',
+        select: ['id'],
+      }),
     ])
 
-    expect(await first.json()).toEqual({ code: 200, status: 'OK', result: { title: 'Site 1' } })
-    expect(await second.json()).toEqual({ code: 200, status: 'OK', result: { title: 'Site 1' } })
+    expect(await first.json()).toEqual({
+      code: 200,
+      status: 'OK',
+      result: { title: 'Site 1' },
+    })
+    expect(await second.json()).toEqual({
+      code: 200,
+      status: 'OK',
+      result: { title: 'Site 1' },
+    })
     expect(upstreamRequestCount).toBe(1)
   })
 
   // Whatever the cache stores is replayed to every later visitor who lands on the same key, so a
   // session cookie must not get in there in the first place.
   it('strips the set-cookie header Kirby sent', async () => {
-    const response = await postQuery({ query: 'site.title', select: ['title'] })
+    const response = await postQuery({
+      query: 'site.title',
+      select: ['title'],
+    })
 
     expect(response.headers.get('set-cookie')).toBeNull()
   })

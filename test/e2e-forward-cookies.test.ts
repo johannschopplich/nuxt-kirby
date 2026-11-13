@@ -16,7 +16,11 @@ const upstream = serve({
   fetch(request) {
     upstreamRequestCount++
     receivedCookies.push(request.headers.get('cookie'))
-    return Response.json({ code: 200, status: 'OK', result: { title: 'Site' } }, {
+    return Response.json({
+      code: 200,
+      status: 'OK',
+      result: { title: 'Site' },
+    }, {
       headers: { 'set-cookie': 'kirby_session=fresh; Path=/' },
     })
   },
@@ -48,26 +52,41 @@ describe('forwardCookies', async () => {
   })
 
   it('withholds the visitor cookie from Kirby by default', async () => {
-    await postQuery({ query: 'site', select: ['title'] })
+    await postQuery({
+      query: 'site',
+      select: ['title'],
+    })
 
     expect(receivedCookies).toEqual([null])
   })
 
   it('sends the visitor cookie on to Kirby', async () => {
-    await postQuery({ query: 'site.title', select: ['title'] }, true)
+    await postQuery({
+      query: 'site.title',
+      select: ['title'],
+    }, true)
 
     expect(receivedCookies).toEqual(['kirby_session=abc'])
   })
 
   it('reaches Kirby again rather than answering a cookie-bearing request from the cache', async () => {
-    await postQuery({ query: 'site.children', select: ['title'] }, true)
-    await postQuery({ query: 'site.children', select: ['title'] }, true)
+    await postQuery({
+      query: 'site.children',
+      select: ['title'],
+    }, true)
+    await postQuery({
+      query: 'site.children',
+      select: ['title'],
+    }, true)
 
     expect(upstreamRequestCount).toBe(2)
   })
 
   it('passes the session Kirby issues on to the visitor', async () => {
-    const response = await postQuery({ query: 'site.info', select: ['title'] }, true)
+    const response = await postQuery({
+      query: 'site.info',
+      select: ['title'],
+    }, true)
 
     expect(response.headers.getSetCookie()).toContain('kirby_session=fresh; Path=/')
   })

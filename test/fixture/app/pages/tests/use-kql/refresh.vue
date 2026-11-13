@@ -2,8 +2,13 @@
 import { useKql, useTestResult } from '#imports'
 
 const { data, refresh } = await useKql<any>(
-  { query: 'site', select: { title: true } },
-  { transform: response => ({ ...response, transformCount: (response.transformCount ?? 0) + 1 }) },
+  {
+    query: 'site',
+    select: { title: true },
+  },
+  {
+    transform: response => ({ ...response, transformCount: (response.transformCount ?? 0) + 1 }),
+  },
 )
 
 const initialCount = data.value?.transformCount

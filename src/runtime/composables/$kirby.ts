@@ -114,10 +114,14 @@ export function sendKirbyRequest<T = any>(
     },
     body,
     // There is no proxy to forward anything here, so the browser has to attach the cookie itself.
-    credentials: (forwardCookies ?? kirby.forwardCookies) ? 'include' : undefined,
+    credentials: (forwardCookies ?? kirby.forwardCookies)
+      ? 'include'
+      : undefined,
   }
 
-  return useRequestFetch()(kirby.client ? path : buildApiProxyPath(key), {
+  return useRequestFetch()(kirby.client
+    ? path
+    : buildApiProxyPath(key), {
     ...fetchOptions,
     ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
   }) as Promise<T>

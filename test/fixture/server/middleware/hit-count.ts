@@ -15,5 +15,7 @@ export default defineEventHandler(async (event) => {
   if (body.query?.query !== '__hits__')
     return
 
-  return { result: { hits: ++hits } }
+  return {
+    result: { hits: ++hits },
+  }
 })

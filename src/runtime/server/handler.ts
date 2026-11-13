@@ -36,7 +36,9 @@ async function fetchFromKirby(event: H3Event, {
   forwardCookies,
 }: ServerFetchRequest): Promise<ProxyResponse> {
   const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
-  const cookie = forwardCookies ? getRequestHeader(event, 'cookie') : undefined
+  const cookie = forwardCookies
+    ? getRequestHeader(event, 'cookie')
+    : undefined
 
   const response = await globalThis.$fetch.raw<ArrayBuffer>(isQueryRequest ? kirby.kqlPath : path!, {
     responseType: 'arrayBuffer',
@@ -54,7 +56,9 @@ async function fetchFromKirby(event: H3Event, {
         }),
     headers: {
       ...headers,
-      ...(cookie ? { cookie } : {}),
+      ...(cookie
+        ? { cookie }
+        : {}),
       ...createAuthHeader(kirby),
     },
   })
@@ -62,7 +66,9 @@ async function fetchFromKirby(event: H3Event, {
   return {
     status: response.status,
     statusText: response.statusText,
-    headers: [...response.headers.entries()],
+    headers: [
+      ...response.headers.entries(),
+    ],
     data: new Uint8Array(response._data ?? []),
   }
 }
@@ -143,14 +149,22 @@ export default defineEventHandler(async (event) => {
 
   try {
     let response: ProxyResponse
-    const request: ServerFetchRequest = { ...body, headers, isQueryRequest, forwardCookies }
+    const request: ServerFetchRequest = {
+      ...body,
+      headers,
+      isQueryRequest,
+      forwardCookies,
+    }
 
     // The cache key cannot see the visitor's cookie, so a cookie-bearing request must not read from
     // the shared store and must not write to it either.
     if (kirby.server.cache && !forwardCookies) {
       cachedFetcher ??= createCachedFetcher(kirby)
       const cached = await cachedFetcher(event, request)
-      response = { ...cached, data: base64ToUint8Array(cached.data) }
+      response = {
+        ...cached,
+        data: base64ToUint8Array(cached.data),
+      }
     }
     else {
       response = await fetchFromKirby(event, request)

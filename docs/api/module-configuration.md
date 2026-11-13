@@ -97,7 +97,10 @@ Queries to run once at build time. Each result is importable from `#nuxt-kirby` 
 export default defineNuxtConfig({
   kirby: {
     prefetch: {
-      site: { query: 'site', select: ['title'] }
+      site: {
+        query: 'site',
+        select: ['title']
+      }
     }
   }
 })

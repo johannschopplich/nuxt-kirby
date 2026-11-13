@@ -5,7 +5,10 @@
 ```ts
 // `server/api/site.get.ts`
 export default defineEventHandler(async () => {
-  const { result } = await $kql({ query: 'site', select: ['title'] })
+  const { result } = await $kql({
+    query: 'site',
+    select: ['title']
+  })
   return result
 })
 ```
