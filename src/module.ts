@@ -56,8 +56,8 @@ export interface ModuleOptions {
    * Leaving this off is what keeps your token out of the client bundle. Turn it on only for an
    * instance whose credentials may be public, or one that needs none.
    *
-   * If Nuxt SSR is disabled, this is enabled unless you set it to `false`, because a client-rendered
-   * app often has no server to proxy through.
+   * An explicit `false` holds even with SSR disabled; the default flips there because a
+   * client-rendered app often has no server to proxy through.
    *
    * @default false, or true if Nuxt SSR is disabled
    */

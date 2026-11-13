@@ -88,8 +88,8 @@ export function sendKirbyRequest<T = any>(
     ...fetchOptions
   } = opts
 
-  // `$fetch` would send a path that names a scheme to the host it names, credentials included. The
-  // proxy checks the path of a request it forwards itself.
+  // `$fetch` would send a path that names a scheme to the host it names, credentials included.
+  // Without `client`, the proxy checks the path before it forwards the request.
   if (kirby.client)
     assertPathBelowBase(path)
 
