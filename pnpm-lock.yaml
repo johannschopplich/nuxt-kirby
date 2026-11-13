@@ -224,9 +224,6 @@ importers:
       playwright-core:
         specifier: ^1.65.0
         version: 1.65.0
-      srvx:
-        specifier: ^1.0.8
-        version: 1.0.8
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

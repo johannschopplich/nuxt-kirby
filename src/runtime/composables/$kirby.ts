@@ -1,133 +1,92 @@
-import type { NitroFetchOptions } from 'nitropack'
-import type { PublicKirbyConfig, ServerFetchOptions } from '../types'
-import { hash } from 'ohash'
-import { useRequestFetch, useRuntimeConfig } from '#imports'
-import { sendCachedRequest } from '../cache'
-import { assertPathBelowBase } from '../path'
-import { buildApiProxyPath, createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
+import type { $Fetch, ResponseType } from 'ofetch'
+import type { MaybeRefOrGetter } from 'vue'
+import type { KirbyFetchOptions } from '../types'
+import { joinURL } from 'ufo'
+import { toValue } from 'vue'
+import { proxyRoute } from '#build/module/nuxt-kirby.config'
+import { useNuxtApp, useRequestEvent, useRequestHeaders, useRuntimeConfig } from '#imports'
+import { assertPathBelowBase } from '../server/path'
+import { createAuthHeader, createLanguageHeader, mergeHeaders } from '../utils'
 
-// #region options
-export type KirbyFetchOptions = Pick<
-  NitroFetchOptions<string>,
-  | 'onRequest'
-  | 'onRequestError'
-  | 'onResponse'
-  | 'onResponseError'
-  | 'method'
-  | 'headers'
-  | 'query'
-  | 'body'
-  | 'retry'
-  | 'retryDelay'
-  | 'retryStatusCodes'
-  | 'timeout'
-  | 'signal'
-> & {
-  /**
-   * Language code to fetch data for in multi-language Kirby setups.
-   *
-   * @remarks
-   * Travels as the `X-Language` header, which Kirby reads on API routes. Kirby Headless 8.1 also
-   * reads it on the global-routes catch-all, but only for a path that names no language itself.
-   */
-  language?: string
-  /**
-   * Serve a repeated request from the Nuxt payload instead of sending it again.
-   * @default true
-   */
-  payloadCache?: boolean
-  /**
-   * Forward the visitor's cookies to Kirby, overriding the module's `forwardCookies`.
-   *
-   * @remarks
-   * Such a request never reads from or writes to the server-side cache, since one stored response
-   * is shared between all visitors.
-   */
-  forwardCookies?: boolean
-  /**
-   * Cache key, generated from the request options by default.
-   */
-  key?: string
-}
-// #endregion options
+let hasWarnedAboutHydration = false
 
-export async function $kirby<T = any>(
+export function $kirby<T = any>(
   path: string,
   opts: KirbyFetchOptions = {},
 ): Promise<T> {
-  const { payloadCache = true, ...requestOptions } = opts
-  const key = opts.key || `$kirby${hash([
-    path,
-    opts.method,
-    opts.query,
-    opts.body,
-    opts.language,
-    opts.forwardCookies,
-    headersToObject(opts.headers),
-  ])}`
+  warnAboutHydration('$kirby', 'useKirbyData')
 
-  return sendCachedRequest(key, payloadCache, () => sendKirbyRequest<T>(path, { ...requestOptions, key }))
+  return createKirbyFetch()<T>(path, opts)
 }
 
-/** Sends the request with nothing cached in front of it. */
-export function sendKirbyRequest<T = any>(
-  path: string,
-  opts: Omit<KirbyFetchOptions, 'payloadCache'> & { key: string },
-): Promise<T> {
-  const kirby = useRuntimeConfig().public.kirby as PublicKirbyConfig
+/** Warns once when a request is sent while the page hydrates, where the server may have sent it already. */
+export function warnAboutHydration(functionName: string, composableName: string) {
+  if (!import.meta.dev || !import.meta.client || hasWarnedAboutHydration)
+    return
 
-  const {
-    method,
-    headers,
-    query,
-    body,
-    language,
-    key,
-    forwardCookies,
-    ...fetchOptions
-  } = opts
+  const nuxt = useNuxtApp()
 
-  // `$fetch` would send a path that names a scheme to the host it names, credentials included.
-  // Without `client`, the proxy checks the path before it forwards the request.
-  if (kirby.client)
-    assertPathBelowBase(path)
-
-  const sharedHeaders = {
-    ...headersToObject(headers),
-    ...createLanguageHeader(language),
+  // Without a server render, no request was sent before this one.
+  if (nuxt.isHydrating && nuxt.payload.serverRendered) {
+    hasWarnedAboutHydration = true
+    console.warn(`[nuxt-kirby] \`${functionName}\` sent a request during hydration. If the server sent it as well while rendering the page, wrap the call in \`useAsyncData\` or use \`${composableName}\` to reuse the server's response.`)
   }
+}
 
-  const _serverFetchOptions: NitroFetchOptions<string> = {
-    method: 'POST',
-    body: {
-      path,
-      method,
-      query,
-      body,
-      headers: sharedHeaders,
-      forwardCookies,
-    } satisfies ServerFetchOptions,
+export function createKirbyFetch() {
+  const runtimeConfig = useRuntimeConfig()
+  const kirby = runtimeConfig.public.kirby
+
+  const baseURL = kirby.client
+    ? kirby.url!
+    : joinURL(runtimeConfig.app.baseURL, proxyRoute)
+
+  // Typed as plain ofetch: Kirby's paths are not the app's routes that Nuxt's typed fetch checks against.
+  const kirbyFetch = globalThis.$fetch as $Fetch
+  const requestEvent = import.meta.server && !kirby.client
+    ? useRequestEvent()
+    : undefined
+  // During SSR, the server proxy is called in-process and sees only what it is handed, and forwards
+  // the cookie only with `forwardCookies`.
+  const visitorHeaders = requestEvent
+    ? useRequestHeaders(['cookie']) as Record<string, string>
+    : {}
+
+  return async function <T = any>(
+    path: string,
+    opts: Omit<KirbyFetchOptions, 'language'> & { language?: MaybeRefOrGetter<string | undefined> } = {},
+  ) {
+    const { language, headers, ...fetchOptions } = opts
+
+    // Joining keeps the request on the Kirby host, but not below the Kirby URL. Without client
+    // mode, the server proxy runs the check.
+    if (kirby.client)
+      assertPathBelowBase(path)
+
+    // During SSR, the proxy is called in-process, where nothing derives the content type from a form or
+    // `Blob` body as `fetch` does on the wire, a multipart boundary included.
+    const encodedBody = requestEvent && (fetchOptions.body instanceof FormData || fetchOptions.body instanceof URLSearchParams || fetchOptions.body instanceof Blob)
+      ? new Response(fetchOptions.body)
+      : undefined
+
+    return kirbyFetch<T, ResponseType>(joinURL(baseURL, path), {
+      ...fetchOptions,
+      headers: mergeHeaders(
+        visitorHeaders,
+        encodedBody?.headers,
+        headers,
+        createLanguageHeader(toValue(language)),
+        kirby.client
+          ? createAuthHeader(kirby)
+          : undefined,
+      ),
+      ...(encodedBody && {
+        body: new Uint8Array(await encodedBody.arrayBuffer()),
+      }),
+      // Hands the proxy the page request's platform bindings, such as `event.context.cloudflare`, as `useRequestFetch` does.
+      ...(requestEvent && { context: requestEvent.context }),
+      // Without it, `$fetch` would prepend `app.baseURL`.
+      baseURL: '',
+    }) as Promise<T>
   }
-
-  const _clientFetchOptions: NitroFetchOptions<string> = {
-    baseURL: kirby.url,
-    query,
-    method,
-    headers: {
-      ...sharedHeaders,
-      ...createAuthHeader(kirby),
-    },
-    body,
-    // There is no proxy to forward anything here, so the browser has to attach the cookie itself.
-    credentials: (forwardCookies ?? kirby.forwardCookies)
-      ? 'include'
-      : undefined,
-  }
-
-  return useRequestFetch()(kirby.client
-    ? path
-    : buildApiProxyPath(key), {
-    ...fetchOptions,
-    ...(kirby.client ? _clientFetchOptions : _serverFetchOptions),
-  }) as Promise<T>
 }

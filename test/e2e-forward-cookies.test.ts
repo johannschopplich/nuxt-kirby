@@ -1,104 +1,64 @@
-import type { KirbyQueryRequest } from 'kirby-types'
 import { join } from 'node:path'
 import { fetch, setup } from '@nuxt/test-utils/e2e'
-import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
-
-let upstreamRequestCount = 0
-let receivedCookies: (string | null)[] = []
-
-// A stand-in for Kirby that records what the proxy passed on, so the cookie is observable from the
-// test rather than inferred from the proxy's own response.
-const upstream = serve({
-  hostname: '127.0.0.1',
-  port: 0,
-  silent: true,
-  fetch(request) {
-    upstreamRequestCount++
-    receivedCookies.push(request.headers.get('cookie'))
-    return Response.json({
-      code: 200,
-      status: 'OK',
-      result: { title: 'Site' },
-    }, {
-      headers: { 'set-cookie': 'kirby_session=fresh; Path=/' },
-    })
-  },
-})
-
-await upstream.ready()
+import { fetchTestResult } from './helpers/fixture'
+import { startKirbyStandIn } from './helpers/kirby'
 
 describe('forwardCookies', async () => {
+  const kirby = await startKirbyStandIn()
+  beforeEach(() => {
+    kirby.requests.length = 0
+  })
+  afterAll(() => kirby.close())
+
   await setup({
     server: true,
     rootDir: join(import.meta.dirname, 'fixture'),
     nuxtConfig: {
       kirby: {
-        url: upstream.url,
-        // Cache on, so that the bypass is observable at all; the option itself stays at its
-        // default, so every test opts in for itself.
+        url: kirby.url,
+        forwardCookies: true,
+        // Set as well, so that a response answered from the server cache would show.
         server: { cache: true, maxAge: 60 },
       },
     },
   })
 
-  beforeEach(() => {
-    upstreamRequestCount = 0
-    receivedCookies = []
-  })
-
-  afterAll(async () => {
-    await upstream.close()
-  })
-
-  it('withholds the visitor cookie from Kirby by default', async () => {
-    await postQuery({
-      query: 'site',
-      select: ['title'],
+  it('sends the visitor cookie on to Kirby', async () => {
+    await fetch('/api/__kirby__/api/site', {
+      headers: { cookie: 'kirby_session=visitor' },
     })
 
-    expect(receivedCookies).toEqual([null])
+    expect(kirby.requests[0]!.headers.cookie).toBe('kirby_session=visitor')
   })
 
-  it('sends the visitor cookie on to Kirby', async () => {
-    await postQuery({
-      query: 'site.title',
-      select: ['title'],
-    }, true)
+  it('sends the cookie of the page request on to Kirby during SSR', async () => {
+    await fetchTestResult('/tests/use-kql', {
+      headers: { cookie: 'kirby_session=visitor' },
+    })
 
-    expect(receivedCookies).toEqual(['kirby_session=abc'])
+    expect(kirby.requests[0]!.headers.cookie).toBe('kirby_session=visitor')
   })
 
-  it('reaches Kirby again rather than answering a cookie-bearing request from the cache', async () => {
-    await postQuery({
-      query: 'site.children',
-      select: ['title'],
-    }, true)
-    await postQuery({
-      query: 'site.children',
-      select: ['title'],
-    }, true)
+  it('passes the set-cookie header Kirby sent on to the visitor', async () => {
+    const response = await fetch('/api/__kirby__/api/site')
 
-    expect(upstreamRequestCount).toBe(2)
+    expect(response.headers.get('set-cookie')).toBe('kirby_session=1; Path=/; HttpOnly')
   })
 
-  it('passes the session Kirby issues on to the visitor', async () => {
-    const response = await postQuery({
-      query: 'site.info',
-      select: ['title'],
-    }, true)
+  it('reaches Kirby again for a repeated request despite server.cache', async () => {
+    await fetch('/api/__kirby__/api/site')
+    await fetch('/api/__kirby__/api/site')
 
-    expect(response.headers.getSetCookie()).toContain('kirby_session=fresh; Path=/')
+    expect(kirby.requests).toHaveLength(2)
+  })
+
+  it('refuses a cross-site request without contacting Kirby', async () => {
+    const response = await fetch('/api/__kirby__/api/site', {
+      headers: { 'sec-fetch-site': 'cross-site' },
+    })
+
+    expect(response.status).toBe(403)
+    expect(kirby.requests).toEqual([])
   })
 })
-
-function postQuery(query: KirbyQueryRequest, forwardCookies?: boolean): Promise<Response> {
-  return fetch('/api/__kirby__/$kql-test', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'cookie': 'kirby_session=abc',
-    },
-    body: JSON.stringify({ query, forwardCookies }),
-  })
-}

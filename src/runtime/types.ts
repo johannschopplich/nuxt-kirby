@@ -1,25 +1,67 @@
-import type { KirbyQueryRequest } from 'kirby-types'
+import type { RouterMethod } from 'h3'
 import type { NitroFetchOptions } from 'nitropack'
-import type { ModuleOptions } from '../module'
 
-export type ServerKirbyConfig = Required<ModuleOptions>
+export const AUTH_METHODS = ['basic', 'bearer', 'none'] as const
 
-/** The fields published in client mode; without it, only `client` is. */
-export type PublicKirbyConfig = Pick<Required<ModuleOptions>, 'url' | 'kqlPath' | 'auth' | 'forwardCookies'>
-  & Pick<ModuleOptions, 'token' | 'credentials'>
-  & { client: boolean }
+export type KirbyAuth = typeof AUTH_METHODS[number]
 
-export interface ServerFetchOptions extends Pick<
-  NitroFetchOptions<string>,
-  'method' | 'headers' | 'query' | 'body'
-> {
-  /** A request carries one or the other: `query` for KQL, `path` for the REST API. */
-  query?: Partial<KirbyQueryRequest>
-  path?: string
-  /** Overrides the module's `forwardCookies` for this request. Absent leaves the decision to it. */
-  forwardCookies?: boolean
+export type RequestMethod = Uppercase<RouterMethod> | RouterMethod
+
+export interface AllowedRoute {
+  /** Pathname below the Kirby URL, where `*` matches one segment and a trailing `**` any number of them. */
+  path: string
+  /** Methods the route accepts; all of them when omitted. */
+  methods?: RequestMethod[]
 }
 
-export interface ServerFetchRequest extends ServerFetchOptions {
-  isQueryRequest: boolean
+export interface BasicCredentials {
+  username: string
+  password: string
+}
+
+// #region kirby-fetch-options
+export type KirbyFetchOptions = Omit<NitroFetchOptions<string>, 'baseURL'> & {
+  /**
+   * Language to ask the content in.
+   *
+   * @remarks
+   * Travels as the `X-Language` header, which Kirby reads on API routes. Kirby Headless 8.1 also
+   * reads it on the global-routes catch-all, but only for a path that names no language itself.
+   */
+  language?: string
+}
+// #endregion kirby-fetch-options
+
+// #region kql-options
+export type KqlOptions = Omit<KirbyFetchOptions, 'method' | 'body' | 'query' | 'params'>
+// #endregion kql-options
+
+/** The private runtime config, which `NUXT_KIRBY_*` variables override. */
+export interface ServerKirbyConfig {
+  url: string
+  kqlPath: string
+  auth: KirbyAuth
+  token: string
+  credentials: BasicCredentials
+  forwardCookies: boolean
+  allowedRoutes: AllowedRoute[]
+  server: {
+    cache: boolean
+    storage: string
+    swr: boolean
+    maxAge: number
+  }
+}
+
+/**
+ * The public runtime config, which `NUXT_PUBLIC_KIRBY_*` variables override. The URL and the
+ * credentials are published in client mode only.
+ */
+export interface PublicKirbyConfig {
+  client: boolean
+  kqlPath: string
+  url?: string
+  auth?: KirbyAuth
+  token?: string
+  credentials?: BasicCredentials
 }

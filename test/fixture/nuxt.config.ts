@@ -7,8 +7,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
 
   kirby: {
-    url: 'https://kirby-headless-starter.byjohann.dev',
-    token: 'test',
+    // Every test file points the module at a Kirby stand-in of its own.
     auth: 'bearer',
+    token: 'test',
   },
 })

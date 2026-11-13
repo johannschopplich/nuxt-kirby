@@ -1,46 +1,12 @@
 import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
-import type { NitroFetchOptions } from 'nitropack'
-import type { ServerKirbyConfig } from '../types'
-import { useRuntimeConfig } from '#imports'
-import { assertPathBelowBase } from '../path'
-import { createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
+import type { KirbyFetchOptions, KqlOptions, ServerKirbyConfig } from '../types'
+import { useRuntimeConfig } from 'nitropack/runtime'
+import { joinURL } from 'ufo'
+import { createAuthHeader, createLanguageHeader, mergeHeaders } from '../utils'
+import { assertPathBelowBase } from './path'
 
-export type NitroKirbyFetchOptions = Omit<
-  NitroFetchOptions<string>,
-  'baseURL'
-> & {
-  /**
-   * Language code to fetch data for in multi-language Kirby setups.
-   *
-   * @remarks
-   * Travels as the `X-Language` header, which Kirby reads on API routes. Kirby Headless 8.1 also
-   * reads it on the global-routes catch-all, but only for a path that names no language itself.
-   */
-  language?: string
-}
-
-export type NitroKqlFetchOptions = Pick<
-  NitroFetchOptions<string>,
-  | 'onRequest'
-  | 'onRequestError'
-  | 'onResponse'
-  | 'onResponseError'
-  | 'headers'
-  | 'retry'
-  | 'retryDelay'
-  | 'retryStatusCodes'
-  | 'timeout'
-  | 'signal'
-> & {
-  /**
-   * Language code to fetch data for in multi-language Kirby setups.
-   *
-   * @remarks
-   * Travels as the `X-Language` header, which Kirby reads on API routes. Kirby Headless 8.1 also
-   * reads it on the global-routes catch-all, but only for a path that names no language itself.
-   */
-  language?: string
-}
+export type NitroKirbyFetchOptions = KirbyFetchOptions
+export type NitroKqlFetchOptions = KqlOptions
 
 export async function $kirby<T = any>(
   path: string,
@@ -49,17 +15,14 @@ export async function $kirby<T = any>(
   const { headers, language, ...fetchOptions } = opts
   const kirby = useRuntimeConfig().kirby as ServerKirbyConfig
 
-  // `$fetch` would send a path that names a scheme to the host it names, credentials included.
   assertPathBelowBase(path)
 
-  return globalThis.$fetch<T, string>(path, {
+  // Joined here rather than by `$fetch`, which sends a path that names a scheme to the host it names.
+  return globalThis.$fetch<T, string>(joinURL(kirby.url, path), {
     ...fetchOptions,
-    baseURL: kirby.url,
-    headers: {
-      ...headersToObject(headers),
-      ...createLanguageHeader(language),
-      ...createAuthHeader(kirby),
-    },
+    // Without it, `$fetch` would prepend `app.baseURL`.
+    baseURL: '',
+    headers: mergeHeaders(headers, createLanguageHeader(language), createAuthHeader(kirby)),
   }) as Promise<T>
 }
 
@@ -67,18 +30,11 @@ export async function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQue
   query: KirbyQueryRequest,
   opts: NitroKqlFetchOptions = {},
 ): Promise<T> {
-  const { headers, language, ...fetchOptions } = opts
   const kirby = useRuntimeConfig().kirby as ServerKirbyConfig
 
-  return globalThis.$fetch<T, string>(kirby.kqlPath, {
-    ...fetchOptions,
-    baseURL: kirby.url,
+  return $kirby<T>(kirby.kqlPath, {
+    ...opts,
     method: 'POST',
     body: query,
-    headers: {
-      ...headersToObject(headers),
-      ...createLanguageHeader(language),
-      ...createAuthHeader(kirby),
-    },
-  }) as Promise<T>
+  })
 }

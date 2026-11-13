@@ -69,7 +69,6 @@
     "eslint": "^10.14.0",
     "nuxt": "^4.6.4",
     "playwright-core": "^1.65.0",
-    "srvx": "^1.0.8",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
   }

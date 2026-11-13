@@ -49,7 +49,7 @@ function updateQuery() {
 <template>
   <div>
     <h1>Send KQL Queries</h1>
-    <p>KQL Data is being proxied by a Nuxt server route and passed back to the client.</p>
+    <p>The KQL query passes through the server proxy, which adds the Kirby credentials.</p>
     <hr>
     <h2>Query</h2>
     <pre>{{ JSON.stringify(query, undefined, 2) }}</pre>

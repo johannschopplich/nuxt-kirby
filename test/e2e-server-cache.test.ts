@@ -1,122 +1,109 @@
-import type { KirbyQueryRequest } from 'kirby-types'
 import { join } from 'node:path'
-import { setup } from '@nuxt/test-utils/e2e'
-import { serve } from 'srvx'
+import { fetch, setup } from '@nuxt/test-utils/e2e'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
-import { postToProxy } from './utils'
-
-let upstreamRequestCount = 0
-
-// A stand-in for Kirby, so the number of requests leaving Nitro is observable and a stored response
-// is distinguishable from a fresh one by its body. The delay holds a request open long enough for a
-// second one to arrive while the first is still in flight.
-const upstream = serve({
-  hostname: '127.0.0.1',
-  port: 0,
-  silent: true,
-  async fetch() {
-    const requestNumber = ++upstreamRequestCount
-    await new Promise(resolve => setTimeout(resolve, 100))
-    return Response.json(
-      {
-        code: 200,
-        status: 'OK',
-        result: { title: `Site ${requestNumber}` },
-      },
-      {
-        headers: { 'set-cookie': `kirby_session=${requestNumber}; Path=/; HttpOnly` },
-      },
-    )
-  },
-})
-
-await upstream.ready()
+import { startKirbyStandIn } from './helpers/kirby'
 
 describe('server cache', async () => {
+  // The delay holds a request open long enough for a second one to arrive while the first is in flight.
+  const kirby = await startKirbyStandIn({ delay: 100 })
+  // The cache outlives the test that filled it, so each test below queries something of its own.
+  beforeEach(() => {
+    kirby.requests.length = 0
+  })
+  afterAll(() => kirby.close())
+
   await setup({
     server: true,
     rootDir: join(import.meta.dirname, 'fixture'),
     nuxtConfig: {
       kirby: {
-        url: upstream.url,
+        url: kirby.url,
         server: {
           cache: true,
-          // Long enough that a repeated query within one test cannot expire.
+          // Long enough that a repeated request within one test cannot expire.
           maxAge: 60,
         },
       },
     },
   })
 
-  // The cache outlives the test that filled it, so each test below queries something of its own.
-  beforeEach(() => {
-    upstreamRequestCount = 0
+  function postQuery(query: string, headers?: Record<string, string>) {
+    return fetch('/api/__kirby__/api/kql', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...headers },
+      body: JSON.stringify({ query }),
+    })
+  }
+
+  it('answers a repeated KQL query without reaching Kirby again', async () => {
+    const first = await postQuery('repeated')
+    const second = await postQuery('repeated')
+
+    expect(await second.json()).toEqual(await first.json())
+    expect(kirby.requests).toHaveLength(1)
   })
 
-  afterAll(async () => {
-    await upstream.close()
+  it('answers a repeated GET request without reaching Kirby again', async () => {
+    await fetch('/api/__kirby__/api/pages/repeated')
+    await fetch('/api/__kirby__/api/pages/repeated')
+
+    expect(kirby.requests).toHaveLength(1)
   })
 
-  it('answers a repeated query without reaching Kirby again', async () => {
-    const first = await postQuery({
-      query: 'site',
-      select: ['title'],
-    })
-    const second = await postQuery({
-      query: 'site',
-      select: ['title'],
-    })
+  it('answers a query reformatted with whitespace from the cache', async () => {
+    for (const body of ['{"query":"spelled"}', '{ "query": "spelled" }']) {
+      await fetch('/api/__kirby__/api/kql', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body,
+      })
+    }
 
-    expect(await first.json()).toEqual({
-      code: 200,
-      status: 'OK',
-      result: { title: 'Site 1' },
-    })
-    expect(await second.json()).toEqual({
-      code: 200,
-      status: 'OK',
-      result: { title: 'Site 1' },
-    })
-    expect(upstreamRequestCount).toBe(1)
+    expect(kirby.requests).toHaveLength(1)
+  })
+
+  it('answers a repeated KQL query to the KQL path with a trailing slash from the cache', async () => {
+    for (let index = 0; index < 2; index++) {
+      await fetch('/api/__kirby__/api/kql/', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ query: 'slashed' }),
+      })
+    }
+
+    expect(kirby.requests).toHaveLength(1)
   })
 
   it('answers concurrent identical queries with one request to Kirby', async () => {
-    const [first, second] = await Promise.all([
-      postQuery({
-        query: 'site.children',
-        select: ['id'],
-      }),
-      postQuery({
-        query: 'site.children',
-        select: ['id'],
-      }),
+    await Promise.all([
+      postQuery('concurrent'),
+      postQuery('concurrent'),
     ])
 
-    expect(await first.json()).toEqual({
-      code: 200,
-      status: 'OK',
-      result: { title: 'Site 1' },
-    })
-    expect(await second.json()).toEqual({
-      code: 200,
-      status: 'OK',
-      result: { title: 'Site 1' },
-    })
-    expect(upstreamRequestCount).toBe(1)
+    expect(kirby.requests).toHaveLength(1)
   })
 
-  // Whatever the cache stores is replayed to every later visitor who lands on the same key, so a
-  // session cookie must not get in there in the first place.
-  it('strips the set-cookie header Kirby sent', async () => {
-    const response = await postQuery({
-      query: 'site.title',
-      select: ['title'],
-    })
+  it('reaches Kirby again for the same query in another language', async () => {
+    await postQuery('translated', { 'x-language': 'en' })
+    const response = await postQuery('translated', { 'x-language': 'de' })
 
-    expect(response.headers.get('set-cookie')).toBeNull()
+    expect(await response.json()).toMatchObject({
+      result: { language: 'de' },
+    })
+    expect(kirby.requests).toHaveLength(2)
+  })
+
+  it('passes cache-control from Kirby on to the client', async () => {
+    await postQuery('headed')
+    const response = await postQuery('headed')
+
+    expect(response.headers.get('cache-control')).toBe('max-age=60')
+    expect(kirby.requests).toHaveLength(1)
+  })
+
+  it('strips the set-cookie header Kirby sent', async () => {
+    const response = await postQuery('session')
+
+    expect(response.headers.has('set-cookie')).toBe(false)
   })
 })
-
-function postQuery(query: KirbyQueryRequest): Promise<Response> {
-  return postToProxy('$kql-test', { query })
-}
