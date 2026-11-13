@@ -10,21 +10,5 @@ export default defineNuxtConfig({
     url: 'https://kirby-headless-starter.byjohann.dev',
     token: 'test',
     auth: 'bearer',
-    prefetch: {
-      site: {
-        query: 'site',
-        select: {
-          title: true,
-          children: {
-            query: 'site.children',
-            select: {
-              id: true,
-              title: true,
-              isListed: true,
-            },
-          },
-        },
-      },
-    },
   },
 })

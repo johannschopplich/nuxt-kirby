@@ -284,18 +284,4 @@ describe('nuxt-kirby', async () => {
       expect(await response.json()).toMatchObject({ statusMessage: 'KQL query is empty' })
     })
   })
-
-  describe('prefetch', () => {
-    it('resolves a prefetched query from the payload', async () => {
-      const result = await fetchTestResult('/tests/prefetch')
-
-      expect(result.status).toBe('success')
-      expect(result.data).toMatchObject({
-        result: {
-          title: expect.any(String),
-          children: expect.any(Array),
-        },
-      })
-    })
-  })
 })

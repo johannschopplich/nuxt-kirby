@@ -9,23 +9,6 @@ export default defineNuxtConfig({
   kirby: {
     auth: 'bearer',
 
-    prefetch: {
-      site: {
-        query: 'site',
-        select: {
-          title: true,
-          children: {
-            query: 'site.children',
-            select: {
-              id: true,
-              title: true,
-              isListed: true,
-            },
-          },
-        },
-      },
-    },
-
     server: {
       cache: true,
     },

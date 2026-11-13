@@ -18,7 +18,6 @@ async function loadRuntimeConfig(overrides: NuxtConfig) {
       ...overrides,
       buildDir,
       kirby: {
-        // Nothing listens on the discard port, so the fixture's prefetch fails fast.
         url: 'http://127.0.0.1:9',
         ...overrides.kirby,
       },

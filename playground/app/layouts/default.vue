@@ -10,10 +10,6 @@
       <NuxtLink to="/blocks">
         <span>Kirby Blocks</span>
       </NuxtLink>
-      /
-      <NuxtLink to="/prefetched-queries">
-        <span>Prefetched Queries</span>
-      </NuxtLink>
     </header>
 
     <main>

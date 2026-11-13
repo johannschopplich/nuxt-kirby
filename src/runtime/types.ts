@@ -2,8 +2,7 @@ import type { KirbyQueryRequest } from 'kirby-types'
 import type { NitroFetchOptions } from 'nitropack'
 import type { ModuleOptions } from '../module'
 
-/** The module options without `prefetch`, which only the build reads. */
-export type ServerKirbyConfig = Omit<Required<ModuleOptions>, 'prefetch'>
+export type ServerKirbyConfig = Required<ModuleOptions>
 
 /** The fields published in client mode; without it, only `client` is. */
 export type PublicKirbyConfig = Pick<Required<ModuleOptions>, 'url' | 'kqlPath' | 'auth' | 'forwardCookies'>
