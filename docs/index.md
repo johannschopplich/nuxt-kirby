@@ -26,7 +26,7 @@ features:
     linkText: Learn More
   - title: Credentials Stay on the Server
     icon: <span class="i-carbon:ibm-cloud-hyper-protect-dbaas"></span>
-    details: A server-side proxy sends every query, so your token never reaches the browser and CORS never applies.
+    details: Outside client mode, the server proxy sends every request, so your token never reaches the browser and CORS never applies.
     link: /essentials/how-it-works
     linkText: How It Works
   - title: Familiar Data Handling

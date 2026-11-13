@@ -1,65 +1,79 @@
 # Prefetching KQL Queries
 
-Prefetch custom queries **at build time** and serve static content with no request at runtime. Query results and their TypeScript types can be imported from `#nuxt-kirby`.
+Run custom queries **at build time** and serve static content with no request at runtime. A [Nuxt Prepare](https://nuxt-prepare.byjohann.dev) script sends the query once per dev, build or prepare command, and your app imports the result and its TypeScript type from `#nuxt-prepare`.
 
-Add a `prefetch` object to your `kirby` configuration in `nuxt.config.ts`. Each key represents a query to prefetch.
+## Install Nuxt Prepare
+
+```bash
+npx nuxt module add prepare
+```
+
+## Fetch the Query in a Prepare Script
+
+The script runs before Nuxt builds your app, so it sends the query itself, with the same environment variables Nuxt Kirby reads. Create `server.prepare.ts` in your project root and return each result under `state`:
 
 ```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-kirby'],
+// `server.prepare.ts`
+import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
+import process from 'node:process'
+import { defineNuxtPrepareHandler } from 'nuxt-prepare/config'
 
-  kirby: {
-    // Prefetch queries at build-time
-    prefetch: {
-      site: {
-        query: 'site',
-        select: ['title']
-      }
+const siteQuery = {
+  query: 'site',
+  select: ['title']
+} satisfies KirbyQueryRequest
+
+export default defineNuxtPrepareHandler(async () => {
+  const site = await fetchQuery(siteQuery)
+
+  return {
+    state: {
+      site: site.result
     }
   }
 })
+
+async function fetchQuery(query: KirbyQueryRequest) {
+  const response = await fetch(`${process.env.NUXT_KIRBY_URL}/api/kql`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.NUXT_KIRBY_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(query)
+  })
+
+  if (!response.ok)
+    throw new Error(`KQL query failed with status ${response.status}`)
+
+  return await response.json() as KirbyQueryResponse
+}
 ```
 
-The query runs once per dev or build command, and its result is written to disk:
+The script sends a bearer token to the KQL endpoint of [Kirby Headless](https://kirby.tools/docs/headless/getting-started/). For basic authentication, send the query to `api/query` with a `Basic` authorization header instead – see [Authentication](/essentials/authentication). A failed query throws, which stops the build – Nuxt Prepare's [Error Handling](https://nuxt-prepare.byjohann.dev/guide/error-handling) shows a fallback instead.
 
-```
-ℹ Prefetched KQL query "site" in 170ms
-```
+## Import the Result
 
-Import the result and its type:
+Each state key is a named export of `#nuxt-prepare`, along with a type that takes the key in PascalCase: `site` becomes `Site`, `blogPosts` becomes `BlogPosts`.
 
 ```ts
 // Import the type for the query result
-import type { Site } from '#nuxt-kirby'
+import type { Site } from '#nuxt-prepare'
 
 // Import the actual prefetched data
-import { site } from '#nuxt-kirby'
+import { site } from '#nuxt-prepare'
 ```
-
-The type takes the key in PascalCase: `site` becomes `Site`, `blogPosts` becomes `BlogPosts`.
 
 ## Multi-Language Queries
 
-For a [multi-language](/guides/multi-language-sites) Kirby instance, set the language per query: nest the query in a `query` object and add `language` next to it. To prefetch the `site` query in German:
+For a [multi-language](/guides/multi-language-sites) Kirby instance, send the language as the `X-Language` header. To prefetch the `site` query in German, add the header in `fetchQuery`:
+
+<!-- eslint-skip -->
 
 ```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-kirby'],
-
-  kirby: {
-    prefetch: {
-      site: {
-        // Define the KQL query and fields to select
-        query: {
-          query: 'site',
-          select: ['title']
-        },
-        // Specify the language for this query
-        language: 'de'
-      }
-    }
-  }
-})
+headers: {
+  'Authorization': `Bearer ${process.env.NUXT_KIRBY_TOKEN}`,
+  'Content-Type': 'application/json',
+  'X-Language': 'de' // [!code ++]
+},
 ```

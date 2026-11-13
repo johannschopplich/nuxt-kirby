@@ -2,7 +2,7 @@
 
 Returns a promise of the raw data at the given path. Unlike `useKirbyData`, it resolves to the response body itself rather than to an `AsyncData` object.
 
-Responses are cached by default between function calls for the same path based on a calculated hash of the path and fetch options.
+Each call sends a request – through the server proxy, or straight to Kirby in client mode. A call outside `useAsyncData` that ran during SSR runs again while the page hydrates, so wrap it in `useAsyncData` or use [`useKirbyData`](/api/use-kirby-data).
 
 ## Example
 
@@ -19,17 +19,14 @@ interface KirbySitemapItem {
   }[]
 }
 
-const data = await $kirby<KirbyApiResponse<KirbySitemapItem[]>>('api/__sitemap__')
-
-if (!data?.result) {
-  throw new Error('Could not fetch sitemap data')
-}
+const { data } = await useAsyncData('sitemap', () =>
+  $kirby<KirbyApiResponse<KirbySitemapItem[]>>('api/__sitemap__'))
 </script>
 
 <template>
   <div>
     <ul>
-      <li v-for="item in data.result" :key="item.url">
+      <li v-for="item in data?.result" :key="item.url">
         <a :href="item.url">{{ item.url }}</a>
       </li>
     </ul>
@@ -46,4 +43,4 @@ function $kirby<T = any>(
 ): Promise<T>
 ```
 
-<<< @/../src/runtime/composables/$kirby.ts#options
+<<< @/../src/runtime/types.ts#kirby-fetch-options

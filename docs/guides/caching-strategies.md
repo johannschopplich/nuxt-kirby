@@ -6,45 +6,26 @@ Three caches sit between a component and Kirby, each with a different lifetime.
 
 | Cache Type | Location | Scope | Persistence | Best For |
 |------------|----------|-------|-------------|----------|
-| [**Payload**](#payload-caching) | Nuxt payload | Per session | Until page reload | Frequent queries |
-| [**Server-side**](#server-side-caching) | Nitro cache | Cross-request | Configurable TTL | Expensive operations |
-| [**Build-time**](/guides/prefetching-kql-queries) | Static files | Permanent | Until rebuild | Stable content |
+| [**Payload**](#payload-caching) | Nuxt payload | Per call site | Until the page has hydrated | Every server-rendered query |
+| [**Server-side**](#server-side-caching) | Server cache | All visitors | Configurable TTL | Expensive operations |
+| [**Build-time**](/guides/prefetching-kql-queries) | `#nuxt-prepare` state | Permanent | Until rebuild | Stable content |
 
 ## Payload Caching
 
-`useKql` and `useKirbyData` derive their async data key from the request, so two call sites asking for the same thing share one entry and one round trip:
+`useKql` and `useKirbyData` are built on Nuxt's `useFetch`, which keys each call site; the language joins the key. A response fetched during SSR reaches the browser in the payload, and the hydrating call reads it there instead of sending the query again. Two call sites asking for the same query send two requests – with the [server cache](#server-side-caching) on, Kirby answers only the first.
+
+`$kql` and `$kirby` are plain fetches. A call that ran during SSR runs again while the page hydrates, and dev mode warns about it. Wrap it in `useAsyncData` to read the server's response from the payload instead:
 
 ```ts
-// First call - fetches from Kirby
-const { data: firstCall } = await useKql({
+import type { KirbyQueryRequest } from 'kirby-types'
+
+const siteQuery = {
   query: 'site',
   select: ['title']
-})
+} satisfies KirbyQueryRequest
 
-// Second call - resolves from the entry the first one filled
-const { data: secondCall } = await useKql({
-  query: 'site',
-  select: ['title']
-})
+const { data: site } = await useAsyncData('site', () => $kql(siteQuery))
 ```
-
-The key covers:
-
-- Query content (for KQL)
-- Path, method, query parameters and body (for direct API)
-- Language setting
-- Request headers
-- `forwardCookies`
-
-`$kql` and `$kirby` have no async data around them, so they keep a payload cache of their own. Set their `payloadCache` option to `false` for real-time data that changes frequently:
-
-```ts
-const site = await $kql(query, {
-  payloadCache: false
-})
-```
-
-Even with `payloadCache: false`, a response fetched during SSR reaches the client in the payload and the hydrating call reads it there; only later calls send the query again.
 
 ### Refresh or Clear a Query
 
@@ -56,13 +37,13 @@ const { data, refresh, clear } = await useKql(query)
 
 ## Server-Side Caching
 
-The proxy can cache responses through [Nitro's cache API](https://v2.nitro.build/guide/cache). They live in memory by default; any Nitro storage mountpoint persists them across restarts.
+The server cache answers KQL queries and `GET` requests through [Nitro's cache API](https://v2.nitro.build/guide/cache), for every visitor alike. It keys a response by method, URL, language and body, and of the errors stores a 404 or 410 alone, so any other failed request reaches Kirby again next time, while a page Kirby no longer has stops being served once its entry expires. Responses live in memory by default; any Nitro storage mountpoint persists them across restarts. [`forwardCookies`](/api/module-configuration#kirby-forwardcookies) turns the server cache off.
 
 ::: tip
 All built-in storage mountpoints can be found in the [unstorage documentation](https://unstorage.unjs.io).
 :::
 
-Concurrent requests for the same query then cost one round trip to Kirby rather than one each.
+Concurrent requests for the same query then cost one request to Kirby rather than one each.
 
 You can enable server-side caching by setting the `server.cache` module option to `true`. You can also set a custom expiration time in seconds by setting the `server.maxAge` option:
 

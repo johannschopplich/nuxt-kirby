@@ -1,8 +1,8 @@
 # `useKirbyData`
 
-Returns raw data from a Kirby instance for the given path. `data`, `error`, `status`, `refresh` and `clear` work as for Nuxt's [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data#return-values).
+Returns raw data from a Kirby instance for the given path, as Nuxt's [`useFetch`](https://nuxt.com/docs/api/composables/use-fetch) does. `data`, `error`, `status`, `refresh` and `clear` work as for Nuxt's [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data#return-values).
 
-Responses are cached by default between function calls for the same path based on a calculated hash of the path and fetch options. Two call sites asking for the same path share one entry and one round trip – see [Caching Strategies](/guides/caching-strategies#payload-caching).
+Nuxt keys each call site, and the language joins the key. A response fetched during SSR is read from the payload while the page hydrates; two call sites asking for the same path send two requests – see [Caching Strategies](/guides/caching-strategies#payload-caching).
 
 ## Example
 
@@ -40,14 +40,20 @@ const { data, refresh, error, status, clear } = await useKirbyData<KirbyApiRespo
 ## Type Declarations
 
 ```ts
-export function useKirbyData<T = any>(
+function useKirbyData<
+  ResT = any,
+  ErrorT = unknown,
+  DataT = ResT,
+  PickKeys extends KeysOf<DataT> = KeysOf<DataT>,
+  DefaultT = undefined,
+>(
   path: MaybeRefOrGetter<string>,
-  opts: UseKirbyDataOptions<T> = {},
-): AsyncData<T | undefined, NuxtError>
+  opts?: UseKirbyDataOptions<ResT, DataT, PickKeys, DefaultT>
+): AsyncData<PickFrom<DataT, PickKeys> | DefaultT, NuxtError<ErrorT> | undefined>
 ```
 
 <<< @/../src/runtime/composables/useKirbyData.ts#options
 
 ::: tip
-`useKirbyData` infers all of Nuxt's [`useAsyncData` options](https://nuxt.com/docs/api/composables/use-async-data#parameters).
+`UseKirbyDataOptions` are Nuxt's [`useFetch` options](https://nuxt.com/docs/api/composables/use-fetch#parameters) without `baseURL`, `$fetch` and `params`, plus `language` – a string, a ref or a getter. `headers` reach Kirby in client mode only; the server proxy forwards none of them except `content-type`, `content-length` and `X-Language`. A write through the server proxy needs an [allowed route](/api/module-configuration#kirby-allowedroutes).
 :::

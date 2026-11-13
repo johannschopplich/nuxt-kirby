@@ -4,22 +4,22 @@
 
 ## `KirbyQueryRequest`
 
-A KQL request: the main query, optional field selections, and pagination settings.
+A KQL query: the main query, optional field selections, and pagination settings.
 
 **Examples**
 
 ```ts
 // Basic query
-const basicRequest: KirbyQueryRequest = {
+const basicQuery = {
   query: 'site',
   select: {
     title: true,
     description: true
   }
-}
+} satisfies KirbyQueryRequest
 
 // With nested selections
-const nestedRequest: KirbyQueryRequest = {
+const nestedQuery = {
   query: 'page("blog").children',
   select: {
     title: true,
@@ -29,10 +29,10 @@ const nestedRequest: KirbyQueryRequest = {
       select: ['name', 'email']
     }
   }
-}
+} satisfies KirbyQueryRequest
 
 // With pagination
-const paginatedRequest: KirbyQueryRequest = {
+const paginatedQuery = {
   query: 'page("blog").children.published',
   select: {
     title: true,
@@ -42,13 +42,13 @@ const paginatedRequest: KirbyQueryRequest = {
     limit: 10,
     page: 1
   }
-}
+} satisfies KirbyQueryRequest
 
 // Array selection
-const arrayRequest: KirbyQueryRequest = {
+const arrayQuery = {
   query: 'page("about")',
   select: ['title', 'text', 'images']
-}
+} satisfies KirbyQueryRequest
 ```
 
 **Type Declarations**

@@ -63,3 +63,15 @@ async function fetchSite() {
 }
 </script>
 ```
+
+## Errors of the Server Proxy
+
+The server proxy answers some requests itself, without passing Kirby's response on:
+
+| Status | Message | Cause |
+|--------|---------|-------|
+| 400 | `Path must stay below the base URL` | The path names a host of its own or climbs above the Kirby URL. |
+| 403 | `Route is not allowed` | The request matches none of the [`allowedRoutes`](/api/module-configuration#kirby-allowedroutes). |
+| 403 | `Cross-site requests are refused with cookie forwarding` | A cross-site page sent the request while [`forwardCookies`](/api/module-configuration#kirby-forwardcookies) is on. |
+| 500 | `Kirby URL is missing` | Neither `NUXT_KIRBY_URL` nor the `url` option is set. |
+| 502 | `Bad Gateway` | Kirby could not be reached. |

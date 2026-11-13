@@ -24,8 +24,8 @@ export default defineNuxtConfig({
 Set the following environment variables in your project's `.env` file:
 
 ```ini
-KIRBY_BASE_URL=https://kirby.example.com
-KIRBY_API_TOKEN=your-token
+NUXT_KIRBY_URL=https://kirby.example.com
+NUXT_KIRBY_TOKEN=your-token
 ```
 
 ::: info
@@ -54,9 +54,9 @@ return [
 Nuxt Kirby will automatically read your environment variables. Create an `.env` file in your project (or edit the existing one) and add the following environment variables:
 
 ```ini
-KIRBY_BASE_URL=https://kirby.example.com
-KIRBY_API_USERNAME=your-username
-KIRBY_API_PASSWORD=your-password
+NUXT_KIRBY_URL=https://kirby.example.com
+NUXT_KIRBY_CREDENTIALS_USERNAME=your-username
+NUXT_KIRBY_CREDENTIALS_PASSWORD=your-password
 ```
 
 ::: tip
@@ -66,6 +66,8 @@ Nuxt Kirby uses basic authentication by default, so you do not need to set the `
 ## When Requests Are Rejected
 
 **Check your environment variables** against the blocks above.
+
+**A 403 that never reached Kirby** comes from the server proxy – see [Errors of the Server Proxy](/guides/error-handling#errors-of-the-server-proxy).
 
 **Check your Kirby setup**:
 

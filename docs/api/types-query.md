@@ -4,7 +4,7 @@
 
 ## `KirbyQuery`
 
-A Kirby Query Language (KQL) string. The union only admits strings that open with a known model, so a typo in the model name fails to compile – everything after the first `.` or `(` is unchecked. Pass `CustomModel` to add model names of your own.
+A Kirby Query Language (KQL) string. The union only admits strings that open with a known root, alone or followed by `.`, `?.`, `[`, `(` or a spaced operator such as `??` or `&&`, so a typo in the root name fails to compile – the rest of the chain is unchecked. Pass `CustomModel` to add roots of your own. In kirby-types 1, a query admits neither `[` nor the operators beyond `??`, `?:` and `?`, and `this` is no root.
 
 **Examples**
 
@@ -31,22 +31,29 @@ const complex: KirbyQuery = 'site("home").children.sortBy("date", "desc").limit(
 type FunctionOnlyQueryModel = 'collection' | 't' | 'qr'
 
 type AccessibleQueryModel<M extends string = never>
-  = Exclude<KirbyQueryModel, FunctionOnlyQueryModel> | M
+  = Exclude<KirbyQueryRoot, FunctionOnlyQueryModel> | M
 
 type CallableQueryModel<M extends string = never>
-  = | Exclude<KirbyQueryModel, 'model' | 'item' | 'arrayItem' | 'structureItem' | 'block'>
+  = | Exclude<KirbyQueryRoot, 'model' | 'item' | 'arrayItem' | 'structureItem' | 'block' | 'this'>
     | M
 
 type DotNotationQuery<M extends string = never>
   = | `${AccessibleQueryModel<M>}.${string}`
     | `${AccessibleQueryModel<M>}?.${string}`
+    | `${AccessibleQueryModel<M>}[${string}`
 
 type FunctionNotationQuery<M extends string = never>
   = | `${CallableQueryModel<M>}(${string})`
     | `${CallableQueryModel<M>}(${string})${string}`
 
+type QueryOperator
+  = | '??' | '?:' | '?'
+    | '||' | 'OR' | '&&' | 'AND'
+    | '==' | '===' | '!=' | '!==' | '<' | '<=' | '>' | '>='
+    | '+' | '-' | '*' | '/' | '%'
+
 type OperatorQuery<M extends string = never>
-  = `${AccessibleQueryModel<M>} ${'??' | '?:' | '?'} ${string}`
+  = `${AccessibleQueryModel<M>} ${QueryOperator} ${string}`
 
 export type KirbyQueryChain<M extends string = never>
   = | DotNotationQuery<M>
@@ -60,12 +67,12 @@ export type KirbyQuery<CustomModel extends string = never>
       : KirbyQueryChain<CustomModel>)
 ```
 
-## `KirbyQueryModel`
+## `KirbyQueryRoot`
 
-The model names a query may open with.
+The roots a query may open with. `this` is the whole data context, for keys that are not valid identifiers, as in `this["my-key"]`.
 
 ```ts
-export type KirbyQueryModel<CustomModel extends string = never>
+export type KirbyQueryRoot<CustomModel extends string = never>
   = | 'collection'
     | 'kirby'
     | 'site'
@@ -80,5 +87,6 @@ export type KirbyQueryModel<CustomModel extends string = never>
     | 'arrayItem'
     | 'structureItem'
     | 'block'
+    | 'this'
     | CustomModel
 ```

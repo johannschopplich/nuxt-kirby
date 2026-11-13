@@ -3,14 +3,20 @@
 The types Nuxt Kirby ships for Kirby data and queries, and where each one applies.
 
 ::: info
-These types belong to the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package – import them from there. The `#nuxt-kirby` alias re-exports the same names next to your [prefetched queries](/guides/prefetching-kql-queries), so both paths resolve to the same types.
+These types belong to the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package – import them from there. The `#nuxt-kirby` alias re-exports the same names next to the module's own option types – `AllowedRoute`, `KqlOptions`, `KirbyFetchOptions`, `UseKqlOptions`, `UseKirbyDataOptions`, `NitroKqlFetchOptions` and `NitroKirbyFetchOptions` – so both paths resolve to the same types.
 
-Nuxt Kirby depends on `kirby-types`, but a package manager that does not hoist – pnpm out of the box – keeps a dependency of a dependency out of your project's `node_modules`. `#nuxt-kirby` resolves the types through the module and needs nothing more; to import from `kirby-types` itself, add it to your project:
+`kirby-types` is a peer dependency of Nuxt Kirby. Add it to your project – v2 for Kirby 6, published under the `next` tag, or v1 for Kirby 4 and 5:
 
 ```bash
+# Kirby 6
+pnpm add -D kirby-types@next
+
+# Kirby 4 and 5
 pnpm add -D kirby-types
 ```
 :::
+
+These pages show kirby-types 2. In v1, `KirbyQueryRoot` is named `KirbyQueryModel`, the result of `ParseKirbyQuery` names its root `model` instead of `root`, and block toggles such as `crop` or `autoplay` are `'true' | 'false'` instead of `boolean`.
 
 ```ts
 import type {
@@ -22,9 +28,9 @@ import type {
   KirbyLayoutColumn,
   KirbyQuery,
   KirbyQueryChain,
-  KirbyQueryModel,
   KirbyQueryRequest,
   KirbyQueryResponse,
+  KirbyQueryRoot,
   KirbyQuerySchema,
 } from 'kirby-types'
 ```

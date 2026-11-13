@@ -12,23 +12,25 @@ npx nuxt module add i18n
 
 ## Pass the Language to a Query
 
-To fetch language-specific content, pass the `language` option with your query request. You can get the current locale code from the `useI18n` composable:
+To fetch language-specific content, pass the `language` option with your query. You can get the current language from the `useI18n` composable's `locale`:
 
 ```ts
 const { locale } = useI18n()
 
-// Get the German translation of the about page
+// Get the about page in the current language
 const { data } = await useKql(
   { query: 'page("about")' },
-  { language: locale.value }
+  { language: locale }
 )
 ```
+
+`language` takes a string, a ref or a getter and is part of the key, so each language gets an entry of its own, and a language switch sends the query again in the new language.
 
 The `language` option travels as the `X-Language` header, which Kirby reads on every API route – a code no language matches falls back to the default language instead of erroring. `useKirbyData` and `$kirby` accept it too:
 
 ```ts
 const { data } = await useKirbyData('api/__sitemap__', {
-  language: locale.value
+  language: locale
 })
 ```
 
@@ -38,7 +40,7 @@ Kirby itself reads `X-Language` only for requests below `/api`. [Kirby Headless]
 
 ```ts
 const { data } = await useKirbyData('about', {
-  language: locale.value
+  language: locale
 })
 ```
 

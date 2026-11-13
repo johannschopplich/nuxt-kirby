@@ -1,14 +1,12 @@
 # `$kql`
 
-Returns raw KQL query data. Uses an internal server route to proxy requests.
-
-Query responses are cached by default between function calls for the same query based on a calculated hash.
+Sends a KQL query and returns the response. Each call sends a request – through the server proxy, or straight to Kirby in client mode. A call outside `useAsyncData` that ran during SSR runs again while the page hydrates, so wrap it in `useAsyncData` or use [`useKql`](/api/use-kql).
 
 ## Example
 
 ```vue
 <script setup lang="ts">
-const data = await $kql(
+const { data } = await useAsyncData('site', () => $kql(
   {
     query: 'site',
     select: ['title', 'children']
@@ -27,7 +25,7 @@ const data = await $kql(
       console.log(error)
     }
   }
-)
+))
 </script>
 
 <template>
@@ -46,4 +44,4 @@ function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
 ): Promise<T>
 ```
 
-<<< @/../src/runtime/composables/$kql.ts#options
+<<< @/../src/runtime/types.ts#kql-options

@@ -13,14 +13,13 @@ export default defineEventHandler(async () => {
 })
 ```
 
-Where auto-imports are off, import them from `#imports`. The names match the browser-side composables, but the signatures do not, so which one a call reaches depends on whether the file runs in the app or in Nitro.
+Where auto-imports are off, import them from `#imports`. The names and signatures match the app's `$kql` and `$kirby`, so which one a call reaches depends on whether the file runs in the app or in Nitro. Their options, `NitroKqlFetchOptions` and `NitroKirbyFetchOptions`, carry the `ofetch` options plus `language`.
 
 Authentication comes from the module options and travels the same way the proxy sends it, and `language` becomes the `X-Language` header as it does in the browser.
 
 ## What They Leave Out
 
-Server code needs neither the proxy nor the payload, so these are plain `$fetch` calls against Kirby and nothing more:
+Server code needs no proxy, so these are plain `$fetch` calls against Kirby and nothing more:
 
-- **No proxy.** The request goes straight to Kirby.
-- **No payload cache.** Two calls for the same query are two round trips. Reach for Nitro's [`cachedEventHandler`](https://v2.nitro.build/guide/cache), or for the [`server.cache`](/guides/caching-strategies#server-side-caching) option, which covers the proxy rather than these.
-- **Their own options.** `NitroKqlFetchOptions` and `NitroKirbyFetchOptions` carry the `ofetch` options plus `language`. Options that only mean something in the browser – `payloadCache` above all – are absent rather than ignored.
+- **No server proxy.** The request goes straight to Kirby, so [`allowedRoutes`](/api/module-configuration#kirby-allowedroutes) do not apply and `headers` reach Kirby as given.
+- **No server cache.** Two calls for the same query are two requests. Reach for Nitro's [`cachedEventHandler`](https://v2.nitro.build/guide/cache); the [`server.cache`](/guides/caching-strategies#server-side-caching) option covers the server proxy rather than these.

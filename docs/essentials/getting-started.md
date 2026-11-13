@@ -1,14 +1,16 @@
 # Getting Started
 
-Nuxt Kirby is a [Nuxt](https://nuxt.com) module for reading and writing Kirby CMS content. Requests travel through a Nuxt server route, so the Kirby credentials never reach the browser, and the same composables work server-side and client-side. To skip the setup, start from one of the [Starter Kits](/essentials/starter-kits).
+Nuxt Kirby is a [Nuxt](https://nuxt.com) module for reading and writing the content of a Kirby instance. Requests travel through the server proxy of your Nuxt app, so the Kirby credentials never reach the browser, and the same composables work server-side and client-side. To skip the setup, start from one of the [Starter Kits](/essentials/starter-kits).
 
 ## Install Nuxt Kirby
 
-The command installs the package and adds `nuxt-kirby` to the modules in your `nuxt.config.ts`:
+Nuxt Kirby requires Nuxt 4.6 or a later Nuxt 4 release. The command installs the package and adds `nuxt-kirby` to the modules in your `nuxt.config.ts`:
 
 ```bash
 npx nuxt module add kirby
 ```
+
+The types of your queries come from `kirby-types`, a peer dependency – v1 for Kirby 4 and 5, v2 for Kirby 6 – see [Using Types](/api/types).
 
 ## Connect Kirby
 
@@ -29,8 +31,8 @@ Set your environment variables in `.env`:
 
 ```ini
 # Your Kirby instance URL
-KIRBY_BASE_URL=https://your-kirby-site.com
-KIRBY_API_TOKEN=your-secret-token
+NUXT_KIRBY_URL=https://your-kirby-site.com
+NUXT_KIRBY_TOKEN=your-secret-token
 ```
 
 Without the plugin, install the official [Kirby KQL plugin](https://github.com/getkirby/kql) and use basic authentication instead – see [Authentication](/essentials/authentication).
