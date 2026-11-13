@@ -1,15 +1,15 @@
-allowBuilds:
-  '@parcel/watcher': true
-  esbuild: true
-
-minimumReleaseAgeExclude:
-  - kirby-types@1.8.1
-shellEmulator: true
+minimumReleaseAgeExcludePrune: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - semver@6.3.1
   - vite@5.4.21
 
+shellEmulator: true
+
 packages:
   - docs
   - playground
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
