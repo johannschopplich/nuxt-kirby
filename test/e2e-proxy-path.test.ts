@@ -1,8 +1,11 @@
 import { join } from 'node:path'
+import { gzipSync } from 'node:zlib'
 import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
 import { destr } from 'destr'
 import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+
+const GZIP_BODY = '{"result":"gzip"}'
 
 let kirbyRequests: { path: string, authorization: string | null }[] = []
 let foreignRequests: string[] = []
@@ -17,6 +20,20 @@ const kirby = serve({
       path: pathname,
       authorization: request.headers.get('authorization'),
     })
+
+    if (pathname.endsWith('/gzip')) {
+      return new Response(gzipSync(GZIP_BODY), {
+        headers: { 'content-encoding': 'gzip' },
+      })
+    }
+
+    if (pathname.endsWith('/hop-by-hop')) {
+      // A stream carries no length, so Node sends the body chunked.
+      return new Response(new Blob(['{}']).stream(), {
+        headers: { 'x-kept': '1' },
+      })
+    }
+
     return Response.json({
       code: 200,
       status: 'OK',
@@ -70,11 +87,11 @@ describe('proxy', () => {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: body && JSON.stringify(body),
-    }).then(response => response.status)
+    })
   }
 
   it('rejects an absolute URL without contacting the host it names', async () => {
-    const status = await postToProxy('proxy-path', {
+    const { status } = await postToProxy('proxy-path', {
       path: `http://${foreignHost}/stolen`,
     })
 
@@ -84,27 +101,27 @@ describe('proxy', () => {
   })
 
   it('rejects a non-string path', async () => {
-    const status = await postToProxy('proxy-path', { path: 123 })
+    const { status } = await postToProxy('proxy-path', { path: 123 })
 
     expect(status).toBe(400)
     expect(kirbyRequests).toEqual([])
   })
 
   it('rejects a non-string method', async () => {
-    const status = await postToProxy('proxy-path', { path: 'pages/notes', method: 123 })
+    const { status } = await postToProxy('proxy-path', { path: 'pages/notes', method: 123 })
 
     expect(status).toBe(400)
     expect(kirbyRequests).toEqual([])
   })
 
   it('rejects a request without a body', async () => {
-    const status = await postToProxy('proxy-path')
+    const { status } = await postToProxy('proxy-path')
 
     expect(status).toBe(400)
   })
 
   it('sends a $kql request to kqlPath despite isQueryRequest: false in the body', async () => {
-    const status = await postToProxy('$kql-proxy-path', {
+    const { status } = await postToProxy('$kql-proxy-path', {
       isQueryRequest: false,
       path: `http://${foreignHost}/stolen`,
       query: { query: 'site' },
@@ -118,7 +135,7 @@ describe('proxy', () => {
   })
 
   it('forwards pages/notes to /base/pages/notes with the Authorization header', async () => {
-    const status = await postToProxy('proxy-path', { path: 'pages/notes' })
+    const { status } = await postToProxy('proxy-path', { path: 'pages/notes' })
 
     expect(status).toBe(200)
     expect(kirbyRequests).toEqual([
@@ -138,9 +155,22 @@ describe('proxy', () => {
   })
 
   it('rejects headers that are not an object', async () => {
-    const status = await postToProxy('proxy-path', { path: 'pages/notes', headers: 'Bearer client' })
+    const { status } = await postToProxy('proxy-path', { path: 'pages/notes', headers: 'Bearer client' })
 
     expect(status).toBe(400)
+  })
+
+  it('withholds transfer-encoding and passes x-kept through', async () => {
+    const response = await postToProxy('proxy-path', { path: 'hop-by-hop' })
+
+    expect(response.headers.get('x-kept')).toBe('1')
+    expect(response.headers.get('transfer-encoding')).toBeNull()
+  })
+
+  it('passes a compressed response back decoded', async () => {
+    const response = await postToProxy('proxy-path', { path: 'gzip' })
+
+    expect(await response.text()).toBe(GZIP_BODY)
   })
 })
 
