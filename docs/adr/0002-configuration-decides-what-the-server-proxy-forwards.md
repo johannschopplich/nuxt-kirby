@@ -4,6 +4,6 @@ Until 4.x a request's body named the method, the path and whether the visitor's 
 
 ## Consequences
 
-The server cache is shared between visitors and keyed by a request's content alone, its language included, so it cannot tell two visitors apart. Cookie forwarding therefore turns the server cache off, and the proxy sends the Kirby instance no other header of the visitor – unlike Nuxt API Party's proxy, which passes `user-agent`, `accept-language` and `x-forwarded-for` on. Client mode, which in 4.x passed the visitor's whole header set during SSR, sends none of them there either.
+The server cache is shared between visitors and keyed by a request's content alone, its language included, so it cannot tell two visitors apart. Cookie forwarding therefore turns the server cache off, and the proxy sends the Kirby instance no other header of the visitor – unlike Nuxt API Party's proxy, which passes every other header on and adds `x-forwarded-for`. Client mode, which in 4.x passed the visitor's whole header set during SSR, sends none of them there either.
 
 A `set-cookie` of the Kirby instance reaches the visitor only with cookie forwarding, and with it the proxy refuses a cross-site request, as Nuxt API Party's does.

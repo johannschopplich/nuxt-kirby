@@ -7,7 +7,7 @@ A Nuxt module that reaches a Kirby instance through composables, keeping the Kir
 ### Kirby
 
 **Kirby instance**:
-The Kirby installation the app is configured to call: one URL with one set of Kirby credentials.
+The Kirby installation the app is configured to call: one URL and, unless it needs none, one set of Kirby credentials.
 _Avoid_: Kirby site, backend, CMS, Kirby API
 
 **Kirby credentials**:
@@ -49,5 +49,5 @@ The store on the app's server that holds responses of the Kirby instance for eve
 _Avoid_: Nitro cache
 
 **Cookie forwarding**:
-The server proxy passing the cookie a visitor's browser sent to the app on to the Kirby instance.
+The server proxy passing the cookie a visitor's browser sent to the app on to the Kirby instance, and the cookies the Kirby instance sets back to the visitor.
 _Avoid_: credential forwarding
