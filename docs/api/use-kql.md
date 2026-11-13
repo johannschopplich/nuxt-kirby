@@ -2,7 +2,7 @@
 
 Sends a KQL query – through the server proxy, or straight to Kirby in client mode – and returns its response as Nuxt's [`useFetch`](https://nuxt.com/docs/api/composables/use-fetch) does. `data`, `error`, `status`, `refresh` and `clear` work as for Nuxt's [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data#return-values).
 
-Nuxt keys each call site, and the language joins the key. A response fetched during SSR is read from the payload while the page hydrates; two call sites asking for the same query send two requests – see [Caching Strategies](/guides/caching-strategies#payload-caching).
+A response fetched during SSR is read from the payload while the page hydrates, and two call sites asking for the same query send two requests – see [Caching Strategies](/guides/caching-strategies#payload-caching).
 
 ## Example
 

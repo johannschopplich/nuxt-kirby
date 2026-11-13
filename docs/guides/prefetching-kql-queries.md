@@ -66,14 +66,4 @@ import { site } from '#nuxt-prepare'
 
 ## Multi-Language Queries
 
-For a [multi-language](/guides/multi-language-sites) Kirby instance, send the language as the `X-Language` header. To prefetch the `site` query in German, add the header in `fetchQuery`:
-
-<!-- eslint-skip -->
-
-```ts
-headers: {
-  'Authorization': `Bearer ${process.env.NUXT_KIRBY_TOKEN}`,
-  'Content-Type': 'application/json',
-  'X-Language': 'de' // [!code ++]
-},
-```
+For a [multi-language](/guides/multi-language-sites) Kirby instance, add the language as an `X-Language` header in `fetchQuery`, such as `'X-Language': 'de'` for German.

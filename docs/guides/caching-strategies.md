@@ -12,7 +12,7 @@ Three caches sit between a component and Kirby, each with a different lifetime.
 
 ## Payload Caching
 
-`useKql` and `useKirbyData` are built on Nuxt's `useFetch`, which keys each call site; the language joins the key. A response fetched during SSR reaches the browser in the payload, and the hydrating call reads it there instead of sending the query again. Two call sites asking for the same query send two requests – with the [server cache](#server-side-caching) on, Kirby answers only the first.
+`useKql` and `useKirbyData` key each response as Nuxt's `useFetch` does – by call site and request – and add the language to the key. A response fetched during SSR reaches the browser in the payload, and the hydrating call reads it there instead of sending the query again. Two call sites asking for the same query send two requests – with the [server cache](#server-side-caching) on, Kirby answers only the first.
 
 `$kql` and `$kirby` are plain fetches. A call that ran during SSR runs again while the page hydrates, and dev mode warns about it. Wrap it in `useAsyncData` to read the server's response from the payload instead:
 

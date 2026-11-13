@@ -16,7 +16,7 @@ pnpm add -D kirby-types
 ```
 :::
 
-These pages show kirby-types 2. In v1, `KirbyQueryRoot` is named `KirbyQueryModel`, the result of `ParseKirbyQuery` names its root `model` instead of `root`, and block toggles such as `crop` or `autoplay` are `'true' | 'false'` instead of `boolean`.
+These pages show kirby-types 2; in v1, `KirbyQueryRoot` is named `KirbyQueryModel`.
 
 ```ts
 import type {

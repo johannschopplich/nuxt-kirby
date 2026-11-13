@@ -55,9 +55,9 @@ const { data } = await useKirbyData(`${locale.value}/about`)
 
 ## Handling Dynamic Routes
 
-For dynamic routes like `pages/[...slug].vue`, you will need to handle both the language code and the page slug. With prefixed routes (e.g., `/en/about`, `/de/about`), the locale code is part of the URL.
+For dynamic routes like `pages/[...slug].vue`, you will need to handle both the language code and the page slug. With prefixed routes (e.g., `/en/about`, `/de/about`), the language code is part of the URL.
 
-To trim the leading locale code from the slug, create a utility function in `app/utils/locale.ts` to build the non-localized slug:
+To trim the leading language code from the slug, create a utility function in `app/utils/locale.ts` to build the non-localized slug:
 
 ```ts
 export function getNonLocalizedSlug(
@@ -95,7 +95,7 @@ const { data: pageData, error: pageError } = await useKql(
     query: `page("${pageUri || 'home'}")`,
     select: { title: true }
   },
-  { language: locale.value }
+  { language: locale }
 )
 </script>
 ```
@@ -110,7 +110,7 @@ if (!pageData.value?.result) {
   // Load error page in current language
   const { data } = await useKql(
     { query: 'page("error")' },
-    { language: locale.value }
+    { language: locale }
   )
 
   const event = useRequestEvent()

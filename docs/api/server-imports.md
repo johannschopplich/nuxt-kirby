@@ -19,7 +19,7 @@ Authentication comes from the module options and travels the same way the proxy 
 
 ## What They Leave Out
 
-Server code needs no proxy, so these are plain `$fetch` calls against Kirby and nothing more:
+These are plain `$fetch` calls against Kirby and nothing more:
 
 - **No server proxy.** The request goes straight to Kirby, so [`allowedRoutes`](/api/module-configuration#kirby-allowedroutes) do not apply and `headers` reach Kirby as given.
 - **No server cache.** Two calls for the same query are two requests. Reach for Nitro's [`cachedEventHandler`](https://v2.nitro.build/guide/cache); the [`server.cache`](/guides/caching-strategies#server-side-caching) option covers the server proxy rather than these.

@@ -4,7 +4,7 @@
 
 ## `KirbyQuery`
 
-A Kirby Query Language (KQL) string. The union only admits strings that open with a known root, alone or followed by `.`, `?.`, `[`, `(` or a spaced operator such as `??` or `&&`, so a typo in the root name fails to compile – the rest of the chain is unchecked. Pass `CustomModel` to add roots of your own. In kirby-types 1, a query admits neither `[` nor the operators beyond `??`, `?:` and `?`, and `this` is no root.
+A Kirby Query Language (KQL) string. The union only admits strings that open with a known root, alone or followed by `.`, `?.`, `[`, `(` or a spaced operator such as `??` or `&&`, so a typo in the root name fails to compile – the rest of the chain is unchecked. Pass `CustomModel` to add roots of your own. In kirby-types 1, a query admits neither `[` nor the operators beyond `??`, `?:` and `?`, and has no `this` root.
 
 **Examples**
 
