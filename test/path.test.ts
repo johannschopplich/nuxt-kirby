@@ -1,10 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { assertPathBelowBase } from '../src/runtime/path'
-
-// The module lists no `h3` of its own; the Nitro server it runs in provides it.
-vi.mock('h3', () => ({
-  createError: ({ statusMessage }: { statusMessage: string }) => new Error(statusMessage),
-}))
 
 describe('assertPathBelowBase', () => {
   it.each([
