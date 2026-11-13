@@ -1,6 +1,6 @@
 # Typed Query Results
 
-Pass [`KirbyQueryResponse`](/api/types-response#kirbyqueryresponse) with the shape of your query result as the type parameter of [`useKql`](/api/use-kql), and `data` carries that shape, which catches errors in your templates:
+Pass [`KirbyQueryResponse`](/api/types-response#kirbyqueryresponse) with the shape of your query result as the type parameter of [`useKql`](/api/use-kql), and `data` carries that shape, so errors in your templates are caught:
 
 ```vue
 <script setup lang="ts">
