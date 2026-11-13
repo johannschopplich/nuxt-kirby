@@ -56,7 +56,7 @@ const { data, refresh, clear } = await useKql(query)
 
 ## Server-Side Caching
 
-The proxy can cache responses through [Nitro's cache API](https://nitro.build/docs/cache). They live in memory by default; any Nitro storage mountpoint persists them across restarts.
+The proxy can cache responses through [Nitro's cache API](https://v2.nitro.build/guide/cache). They live in memory by default; any Nitro storage mountpoint persists them across restarts.
 
 ::: tip
 All built-in storage mountpoints can be found in the [unstorage documentation](https://unstorage.unjs.io).
