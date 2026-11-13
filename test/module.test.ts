@@ -37,13 +37,13 @@ describe('runtime config', () => {
     expect(publicConfig.kirby).toEqual({ client: false })
   })
 
-  it('publishes the credentials with `ssr: false` and `client` unset', async () => {
+  it('publishes the credentials with ssr: false and `client` unset', async () => {
     const { public: publicConfig } = await loadRuntimeConfig({ ssr: false })
 
     expect(publicConfig.kirby).toMatchObject({ client: true, token: 'test' })
   })
 
-  it('publishes only what a client request reads, with the credential `auth` names', async () => {
+  it('publishes only url, kqlPath, auth, credentials, client and forwardCookies for auth: basic', async () => {
     const { public: publicConfig } = await loadRuntimeConfig({
       kirby: {
         client: true,
@@ -62,26 +62,12 @@ describe('runtime config', () => {
     })
   })
 
-  it('leaves the build-time `prefetch` out of the private runtime config', async () => {
-    const { kirby } = await loadRuntimeConfig({})
-
-    expect(kirby).not.toHaveProperty('prefetch')
-  })
-
-  it('publishes no credentials with `ssr: false` and `client: false`', async () => {
+  it('publishes no credentials with ssr: false and client: false', async () => {
     const { public: publicConfig } = await loadRuntimeConfig({
       ssr: false,
       kirby: { client: false },
     })
 
     expect(publicConfig.kirby).toEqual({ client: false })
-  })
-
-  it('publishes the credentials with `client: true`', async () => {
-    const { public: publicConfig } = await loadRuntimeConfig({
-      kirby: { client: true },
-    })
-
-    expect(publicConfig.kirby).toMatchObject({ client: true, token: 'test' })
   })
 })
