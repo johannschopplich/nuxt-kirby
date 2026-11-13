@@ -1,7 +1,6 @@
 import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
 import type { NitroFetchOptions } from 'nitropack'
-import type { ModuleOptions } from '../../module'
-import type { ServerFetchOptions } from '../types'
+import type { PublicKirbyConfig, ServerFetchOptions } from '../types'
 import { hash } from 'ohash'
 import { useRequestFetch, useRuntimeConfig } from '#imports'
 import { sendCachedRequest } from '../cache'
@@ -65,7 +64,7 @@ export function sendKqlRequest<T extends KirbyQueryResponse<any, boolean> = Kirb
   query: KirbyQueryRequest,
   opts: Omit<KqlOptions, 'payloadCache'> & { key: string },
 ): Promise<T> {
-  const kirby = useRuntimeConfig().public.kirby as Required<ModuleOptions>
+  const kirby = useRuntimeConfig().public.kirby as PublicKirbyConfig
 
   const {
     headers,

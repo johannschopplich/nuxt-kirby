@@ -1,4 +1,5 @@
 import type { KirbyQueryRequest } from 'kirby-types'
+import type { PublicKirbyConfig } from './runtime/types'
 import process from 'node:process'
 import { addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 import { defu } from 'defu'
@@ -207,19 +208,21 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     // The browser reads the config only to send a request itself, so only what that request needs is published.
+    const publicOptions: Partial<PublicKirbyConfig> & Pick<PublicKirbyConfig, 'client'> = options.client
+      ? {
+          url: options.url,
+          kqlPath: options.kqlPath,
+          auth: options.auth,
+          ...(options.auth === 'bearer' && { token: options.token }),
+          ...(options.auth === 'basic' && { credentials: options.credentials }),
+          client: true,
+          forwardCookies: options.forwardCookies,
+        }
+      : { client: false }
+
     nuxt.options.runtimeConfig.public.kirby = defu(
-      nuxt.options.runtimeConfig.public.kirby as Required<ModuleOptions>,
-      options.client
-        ? {
-            url: options.url,
-            kqlPath: options.kqlPath,
-            auth: options.auth,
-            ...(options.auth === 'bearer' && { token: options.token }),
-            ...(options.auth === 'basic' && { credentials: options.credentials }),
-            client: true,
-            forwardCookies: options.forwardCookies,
-          }
-        : { client: false },
+      nuxt.options.runtimeConfig.public.kirby as Partial<PublicKirbyConfig>,
+      publicOptions,
     )
 
     const { resolve } = createResolver(import.meta.url)

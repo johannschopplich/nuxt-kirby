@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
-import type { ModuleOptions } from '../../module'
-import type { ServerFetchOptions, ServerFetchRequest } from '../types'
+import type { ServerFetchOptions, ServerFetchRequest, ServerKirbyConfig } from '../types'
 import { destr } from 'destr'
 import { createError, defineEventHandler, getRequestHeader, getRouterParam, readBody, setResponseHeader, setResponseStatus, splitCookiesString } from 'h3'
 import { defineCachedFunction } from 'nitropack/runtime'
@@ -45,7 +44,7 @@ async function fetchFromKirby(event: H3Event, {
   body,
   forwardCookies,
 }: ServerFetchRequest): Promise<ProxyResponse> {
-  const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
+  const kirby = useRuntimeConfig(event).kirby as ServerKirbyConfig
   const cookie = forwardCookies
     ? getRequestHeader(event, 'cookie')
     : undefined
@@ -83,7 +82,7 @@ async function fetchFromKirby(event: H3Event, {
   }
 }
 
-function createCachedFetcher(kirby: Required<ModuleOptions>) {
+function createCachedFetcher(kirby: ServerKirbyConfig) {
   return defineCachedFunction(
     // Nitro reads the event from the first argument only, and hands the cache write to
     // `event.waitUntil()` – without it an edge worker is torn down before the entry reaches storage.
@@ -113,7 +112,7 @@ function createCachedFetcher(kirby: Required<ModuleOptions>) {
 let cachedFetcher: ReturnType<typeof createCachedFetcher> | undefined
 
 export default defineEventHandler(async (event) => {
-  const kirby = useRuntimeConfig(event).kirby as Required<ModuleOptions>
+  const kirby = useRuntimeConfig(event).kirby as ServerKirbyConfig
   const body = await readBody<ServerFetchOptions>(event) ?? {}
   const key = decodeURIComponent(getRouterParam(event, 'key')!)
   const isQueryRequest = key.startsWith('$kql')
