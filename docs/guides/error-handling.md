@@ -36,9 +36,9 @@ if (error.value) {
 </template>
 ```
 
-### `$kql` and `$kirby` Throw
+### `$kql` and `$kirby` Reject
 
-The `$*` functions (`$kql`, `$kirby`) throw `FetchError` objects directly since they are designed for programmatic use (like form submissions or one-time actions):
+The `$*` functions (`$kql`, `$kirby`) reject instead, since they are designed for programmatic use (like form submissions or one-time actions). The error is usually a `FetchError`; in client mode, `$kirby` rejects a path that leaves the Kirby URL with a 400 `H3Error`:
 
 ```vue
 <script setup lang="ts">

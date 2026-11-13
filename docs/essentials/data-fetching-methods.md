@@ -61,4 +61,4 @@ In your Vue components, you can choose between reactive data fetching with `useK
 |---------|---------------------------|-------------------|
 | **Use case** | Components, reactive data | One-time actions |
 | **Return type** | [`AsyncData`](https://nuxt.com/docs/api/composables/use-async-data#return-values) interface | Direct Promise |
-| **Error handling** | Reactive error property | Try/catch with `FetchError` |
+| **Error handling** | Reactive error property | Try/catch, usually a `FetchError` |
