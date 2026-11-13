@@ -62,7 +62,7 @@ It was deprecated in v3.0.1 and warned at build time. A `prefix` left in place i
 
 ### The `#nuxt-kql` Import Alias Is Gone
 
-The back-compat alias kept through v3 has been removed. Types come from [`kirby-types`](/api/types), which the module installs for you:
+The back-compat alias kept through v3 has been removed. Types come from [`kirby-types`](/api/types), a dependency of the module (under pnpm, add it to your project yourself):
 
 ```ts
 import type { KirbyQueryRequest } from 'kirby-types' // [!code ++]
@@ -71,16 +71,13 @@ import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 
 `#nuxt-kirby` is the alias for [prefetched queries](/guides/prefetching-kql-queries) and re-exports the same types, so it works here as well.
 
-
 ## v3.0.0
 
 ### Renamed From Nuxt KQL to Nuxt Kirby
 
-[Matt Lenz](https://github.com/mattlenz) kindly provided the `nuxt-kirby` npm package name and has transferred the ownership of the package to me. Therefore, the module name has changed from `nuxt-kql` to `nuxt-kirby`. This better reflects the purpose of the module, which is to integrate [Kirby CMS](https://getkirby.com/) with Nuxt – not only for KQL queries.
+[Matt Lenz](https://github.com/mattlenz) kindly provided the `nuxt-kirby` npm package name and has transferred the ownership of the package to me. Therefore, the module name has changed from `nuxt-kql` to `nuxt-kirby`.
 
-Other than the module name change, there are no breaking changes in the module itself. However, you have to update the Nuxt module configuration key from `kql` to `kirby`.
-
-Please follow these steps to migrate your existing Nuxt KQL v2 project to Nuxt Kirby v3:
+Beyond the name, only the configuration key changes, from `kql` to `kirby`. To migrate a Nuxt KQL v2 project to Nuxt Kirby v3:
 
 1. Uninstall the `nuxt-kql` module and install the `nuxt-kirby` module instead:
    ```bash
@@ -93,7 +90,7 @@ Please follow these steps to migrate your existing Nuxt KQL v2 project to Nuxt K
    yarn remove nuxt-kql && yarn add -D nuxt-kirby
    ```
 
-2. Update your `nuxt.config.ts` file to replace all instances of `kql` with `kirby`. For example, change this:
+2. Replace `kql` with `kirby` in your `nuxt.config.ts`:
    ```ts
    // `nuxt.config.ts`
    export default defineNuxtConfig({
@@ -109,18 +106,4 @@ Please follow these steps to migrate your existing Nuxt KQL v2 project to Nuxt K
    })
    ```
 
-To keep breaking changes to a minimum, v3 kept the import alias `#nuxt-kql` alongside the new one. [v4 removed it](#the-nuxt-kql-import-alias-is-gone), so import the types from `kirby-types` instead:
-
-```ts
-import type { KirbyQueryRequest } from 'kirby-types' // [!code ++]
-import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
-
-const query = ref<KirbyQueryRequest>({
-  query: 'page("notes/across-the-ocean")',
-  select: {
-    id: true,
-    title: true,
-    text: 'page.text.toBlocks',
-  },
-})
-```
+v3 kept the import alias `#nuxt-kql` alongside the new one; [v4 removed it](#the-nuxt-kql-import-alias-is-gone).

@@ -75,9 +75,9 @@ function nav(): DefaultTheme.NavItem[] {
       text: 'Essentials',
       activeMatch: '^/essentials/',
       items: [
-        { text: 'What is Nuxt Kirby?', link: '/essentials/what-is-nuxt-kirby' },
-        { text: 'What is KQL?', link: '/essentials/what-is-kql' },
         { text: 'Getting Started', link: '/essentials/getting-started' },
+        { text: 'How It Works', link: '/essentials/how-it-works' },
+        { text: 'What is KQL?', link: '/essentials/what-is-kql' },
         { text: 'Data Fetching Methods', link: '/essentials/data-fetching-methods' },
         { text: 'Authentication', link: '/essentials/authentication' },
         { text: 'Starter Kits', link: '/essentials/starter-kits' },
@@ -90,6 +90,7 @@ function nav(): DefaultTheme.NavItem[] {
         { text: 'Multi-Language Sites', link: '/guides/multi-language-sites' },
         { text: 'Caching Strategies', link: '/guides/caching-strategies' },
         { text: 'Error Handling', link: '/guides/error-handling' },
+        { text: 'Batching KQL Queries', link: '/guides/batching-kql-queries' },
         { text: 'Prefetching KQL Queries', link: '/guides/prefetching-kql-queries' },
         { text: 'Typed Query Results', link: '/guides/typed-query-results' },
       ],
@@ -100,7 +101,6 @@ function nav(): DefaultTheme.NavItem[] {
       items: [
         { text: 'Overview', link: '/api/' },
         { text: 'Module Configuration', link: '/api/module-configuration' },
-        { text: 'Using Types', link: '/api/types' },
         {
           text: 'KQL Queries',
           items: [
@@ -109,10 +109,20 @@ function nav(): DefaultTheme.NavItem[] {
           ],
         },
         {
-          text: 'Kirby API',
+          text: 'REST API',
           items: [
             { text: 'useKirbyData', link: '/api/use-kirby-data' },
             { text: '$kirby', link: '/api/kirby' },
+          ],
+        },
+        { text: 'Server Imports', link: '/api/server-imports' },
+        {
+          text: 'Types',
+          items: [
+            { text: 'Using Types', link: '/api/types' },
+            { text: 'Query Types', link: '/api/types-query' },
+            { text: 'Request Types', link: '/api/types-request' },
+            { text: 'Response Types', link: '/api/types-response' },
           ],
         },
       ],
@@ -132,9 +142,9 @@ function sidebarMain(): DefaultTheme.SidebarItem[] {
     {
       text: 'Essentials',
       items: [
-        { text: 'What is Nuxt Kirby?', link: '/essentials/what-is-nuxt-kirby' },
-        { text: 'What is KQL?', link: '/essentials/what-is-kql' },
         { text: 'Getting Started', link: '/essentials/getting-started' },
+        { text: 'How It Works', link: '/essentials/how-it-works' },
+        { text: 'What is KQL?', link: '/essentials/what-is-kql' },
         { text: 'Data Fetching Methods', link: '/essentials/data-fetching-methods' },
         { text: 'Authentication', link: '/essentials/authentication' },
         { text: 'Starter Kits', link: '/essentials/starter-kits' },
@@ -146,15 +156,9 @@ function sidebarMain(): DefaultTheme.SidebarItem[] {
         { text: 'Multi-Language Sites', link: '/guides/multi-language-sites' },
         { text: 'Caching Strategies', link: '/guides/caching-strategies' },
         { text: 'Error Handling', link: '/guides/error-handling' },
+        { text: 'Batching KQL Queries', link: '/guides/batching-kql-queries' },
         { text: 'Prefetching KQL Queries', link: '/guides/prefetching-kql-queries' },
         { text: 'Typed Query Results', link: '/guides/typed-query-results' },
-      ],
-    },
-    {
-      text: 'Advanced',
-      items: [
-        { text: 'How It Works', link: '/advanced/how-does-it-work' },
-        { text: 'Common Issues', link: '/advanced/common-issues' },
       ],
     },
     { text: 'Migration', link: '/advanced/migration' },
@@ -173,7 +177,7 @@ function sidebarApi(): DefaultTheme.SidebarItem[] {
       ],
     },
     {
-      text: 'Kirby API',
+      text: 'REST API',
       items: [
         { text: 'useKirbyData', link: '/api/use-kirby-data' },
         { text: '$kirby', link: '/api/kirby' },

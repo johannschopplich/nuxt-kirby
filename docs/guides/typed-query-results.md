@@ -4,16 +4,6 @@ For better TypeScript support, define custom response types for [`useKql`](/api/
 
 The [`KirbyQueryResponse<T = any, Pagination extends boolean = false>`](/api/types-response#kirbyqueryresponse) accepts a generic type parameter `T` for the query result.
 
-```ts
-// Extend the default response type with the result we expect from the query response
-await useKql<KirbyQueryResponse<{ title: string }>>({
-  query: 'site',
-  select: ['title'],
-})
-```
-
-## Example
-
 Pass a custom `KirbySite` type to `KirbyQueryResponse` as its first parameter, and `data` carries that shape:
 
 ```vue

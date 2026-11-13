@@ -10,7 +10,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /essentials/what-is-nuxt-kirby
+      link: /essentials/getting-started
     - theme: alt
       text: API Reference
       link: /api/
@@ -27,7 +27,7 @@ features:
   - title: Credentials Stay on the Server
     icon: <span class="i-carbon:ibm-cloud-hyper-protect-dbaas"></span>
     details: A server-side proxy sends every query, so your token never reaches the browser and CORS never applies.
-    link: /essentials/what-is-nuxt-kirby
+    link: /essentials/how-it-works
     linkText: How It Works
   - title: Familiar Data Handling
     icon: <span class="i-carbon:noodle-bowl"></span>

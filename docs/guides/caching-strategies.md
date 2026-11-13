@@ -46,7 +46,7 @@ const site = await $kql(query, {
 
 The option governs repeated calls within one environment, not the handover between them. A response fetched during SSR always travels to the client in the payload, and the hydrating call reads it there – otherwise every query would cost a second round trip in the browser for no gain. Caching stops after that: the next call sends the query again.
 
-### Custom Cache Management
+### Refresh or Clear a Query
 
 `refresh` sends the query again and replaces the stored result, `clear` empties it without fetching:
 
@@ -56,7 +56,7 @@ const { data, refresh, clear } = await useKql(query)
 
 ## Server-Side Caching
 
-The proxy can cache responses through [Nitro's cache API](https://nitro.build/guide/cache). They live in memory by default; any Nitro storage mountpoint persists them across restarts.
+The proxy can cache responses through [Nitro's cache API](https://nitro.build/docs/cache). They live in memory by default; any Nitro storage mountpoint persists them across restarts.
 
 ::: tip
 All built-in storage mountpoints can be found in the [unstorage documentation](https://unstorage.unjs.io).

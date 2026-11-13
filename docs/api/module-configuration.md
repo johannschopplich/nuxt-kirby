@@ -55,7 +55,19 @@ Whether queries may be sent straight from the browser instead of through the ser
 
 Leaving this off is what keeps your token out of the client bundle. Turn it on only for an instance whose credentials may be public, or one that needs none.
 
-If Nuxt SSR is disabled, this is enabled by default, because there is no server to proxy through.
+If Nuxt SSR is disabled, this is always on, because there is no server to proxy through.
+
+With it on, requests go directly from the browser to Kirby, which may cause CORS issues depending on your Kirby setup. Configure Kirby's `cors` option (Kirby 5.2 or later):
+
+```php
+// site/config/config.php
+return [
+    'cors' => [
+        'allowOrigin' => 'https://your-nuxt-app.com',
+        'allowHeaders' => ['Content-Type', 'Authorization', 'X-Language']
+    ]
+];
+```
 
 **Default Value**: `false`
 
@@ -79,7 +91,7 @@ With `kirby.client` enabled there is no proxy to forward anything, so the option
 
 ## `kirby.prefetch`
 
-Queries to run once at build time. Each result is written into the module's virtual file and importable from `#nuxt-kirby` under its key, fully typed and with no request at runtime.
+Queries to run once at build time. Each result is importable from `#nuxt-kirby` under its key, fully typed and with no request at runtime.
 
 ```ts
 export default defineNuxtConfig({

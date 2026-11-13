@@ -4,11 +4,9 @@
 The [KQL documentation](https://github.com/getkirby/kql) is the full introduction.
 :::
 
-Kirby's Query Language API combines the flexibility of Kirby's data structures, the power of GraphQL and the simplicity of REST.
+The Kirby Query Language API takes a JSON object in a POST request and returns the fields its `select` asks for.
 
-The Kirby Query Language API takes POST requests with standard JSON objects and returns highly customized results that fit your application.
-
-By default, the official KQL API endpoint is located at `/api/query`. An example request might look like this:
+The official KQL endpoint is `/api/query`. An example request:
 
 ```json
 {

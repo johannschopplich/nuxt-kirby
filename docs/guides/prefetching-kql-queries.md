@@ -27,7 +27,7 @@ The query runs once per dev or build command, and its result is written to disk:
 ℹ Prefetched KQL query "site" in 170ms
 ```
 
-Now you can import the query result and its TypeScript type in your application:
+Import the result and its type:
 
 ```ts
 // Import the type for the query result
@@ -37,15 +37,11 @@ import type { Site } from '#nuxt-kirby'
 import { site } from '#nuxt-kirby'
 ```
 
-::: info
-The inferred **type** for the key will be pascal-cased, e.g. `site` becomes `Site`. If you have a query key with multiple words, e.g. `blogPosts`, the type will be `BlogPosts`.
-:::
+The type takes the key in PascalCase: `site` becomes `Site`, `blogPosts` becomes `BlogPosts`.
 
 ## Multi-Language Queries
 
-If you have a [multi-language](/guides/multi-language-sites) Kirby instance, you can specify the language for each query individually.
-
-To only prefetch the `site` query in German, set the `language` property for the query:
+For a [multi-language](/guides/multi-language-sites) Kirby instance, set the language per query: nest the query in a `query` object and add `language` next to it. To prefetch the `site` query in German:
 
 ```ts
 // `nuxt.config.ts`
@@ -67,7 +63,3 @@ export default defineNuxtConfig({
   }
 })
 ```
-
-::: info
-In multi-language prefetching, note that the query to be fetched is nested inside a `query` object, while `language` is a sibling property.
-:::

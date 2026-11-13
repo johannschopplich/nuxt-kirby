@@ -2,7 +2,7 @@
 
 A multi-language Kirby pairs with [Nuxt i18n](https://i18n.nuxtjs.org): the locale i18n resolves is the language you pass to a query.
 
-## Prerequisites
+## Install Nuxt i18n
 
 Install the official [Nuxt i18n](https://i18n.nuxtjs.org) module before proceeding:
 
@@ -10,7 +10,7 @@ Install the official [Nuxt i18n](https://i18n.nuxtjs.org) module before proceedi
 npx nuxt module add i18n
 ```
 
-## Basic Usage
+## Pass the Language to a Query
 
 To fetch language-specific content, pass the `language` option with your query request. You can get the current locale code from the `useI18n` composable:
 
@@ -85,7 +85,7 @@ const { locale, localeCodes } = useI18n()
 const route = useRoute()
 
 // Extract the non-localized slug
-const pageUri = getNonLocalizedSlug(route.params.slug, localeCodes.value)
+const pageUri = getNonLocalizedSlug(route.params.slug ?? '', localeCodes.value)
 
 // Fetch page data for current language
 const { data: pageData, error: pageError } = await useKql(
@@ -98,7 +98,7 @@ const { data: pageData, error: pageError } = await useKql(
 </script>
 ```
 
-## Error Handling & Redirects
+## Handle Missing Pages
 
 When working with translated content, you may want to handle pages that do not exist in the requested language or do not exist at all. You can check if the query returned a valid result and handle it accordingly.
 

@@ -52,7 +52,7 @@ The default KQL endpoint `/api/query` [requires authentication](https://getkirby
 return [
     'api' => [
         'basicAuth' => true,
-        'allowInsecure' => true // For local development, you may want to disable SSL verification
+        'allowInsecure' => true // Allow basic authentication over plain HTTP, for local development only
     ]
 ];
 ```
@@ -70,3 +70,19 @@ KIRBY_API_PASSWORD=your-password
 ::: tip
 Nuxt Kirby uses basic authentication by default, so you do not need to set the `auth` option in your `nuxt.config.ts` file.
 :::
+
+## When Requests Are Rejected
+
+**Check your environment variables** against the blocks above.
+
+**Check your Kirby setup**:
+
+For **bearer token** authentication:
+- Ensure the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/) is installed
+- Verify the token matches in both applications
+- Confirm the endpoint is `api/kql`, not `api/query`
+
+For **basic authentication**:
+- Ensure `basicAuth` is enabled in Kirby's `config.php`
+- Confirm the endpoint is `api/query`, not `api/kql`
+- Verify username and password are correct

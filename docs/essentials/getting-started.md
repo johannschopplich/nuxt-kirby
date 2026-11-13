@@ -1,39 +1,18 @@
 # Getting Started
 
-::: tip
-Want to jump right in? Choose one of the [Starter Kits](/essentials/starter-kits) to get started with Nuxt Kirby in no time instead of starting from scratch.
-:::
+Nuxt Kirby is a [Nuxt](https://nuxt.com) module for reading and writing Kirby CMS content. Requests travel through a Nuxt server route, so the Kirby credentials never reach the browser, and the same composables work server-side and client-side. To skip the setup, start from one of the [Starter Kits](/essentials/starter-kits).
 
-## Step 1: Install Nuxt Kirby
+## Install Nuxt Kirby
+
+The command installs the package and adds `nuxt-kirby` to the modules in your `nuxt.config.ts`:
 
 ```bash
 npx nuxt module add kirby
 ```
 
-## Step 2: Add the Module
+## Connect Kirby
 
-Add `nuxt-kirby` to your Nuxt config:
-
-```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-kirby']
-})
-```
-
-## Step 3: Set up Your Kirby Backend
-
-Nuxt Kirby needs a Kirby instance to connect to. You have two options:
-
-### Option A: Kirby Headless Starter (Recommended)
-Use the [Kirby Headless Starter](https://github.com/johannschopplich/kirby-headless-starter) which includes token authentication and optimizations for headless usage.
-
-### Option B: Standard Kirby + KQL Plugin
-Install the official [Kirby KQL plugin](https://github.com/getkirby/kql) on your existing Kirby instance.
-
-## Step 4: Configure Authentication
-
-For the **Kirby Headless Starter**, enable token authentication:
+Nuxt Kirby needs a Kirby instance to connect to. It is built against the [Kirby Headless plugin](https://kirby.tools/docs/headless/getting-started/), which adds a KQL endpoint with token authentication – the recommended setup for a headless Kirby. Install it in your Kirby project, or start from the [Kirby Headless Starter](https://github.com/johannschopplich/kirby-headless-starter), which comes with it. Then enable token authentication in Nuxt:
 
 ```ts
 // `nuxt.config.ts`
@@ -54,17 +33,12 @@ KIRBY_BASE_URL=https://your-kirby-site.com
 KIRBY_API_TOKEN=your-secret-token
 ```
 
-If you prefer a **standard Kirby + KQL** setup, you have to use basic authentication instead.
+Without the plugin, install the official [Kirby KQL plugin](https://github.com/getkirby/kql) and use basic authentication instead – see [Authentication](/essentials/authentication).
 
-::: tip
-See the [Authentication guide](/essentials/authentication) for more details on authentication methods and configuration options.
-:::
+## Send Your First Query
 
-## Step 5: Choose Your Data Fetching Method
+`useKql` sends a KQL query; [Data Fetching Methods](/essentials/data-fetching-methods) covers the REST API as the alternative.
 
-Now you can start fetching data! Nuxt Kirby offers two approaches:
-
-### For Complex Content Queries (KQL)
 ```vue
 <script setup lang="ts">
 const { data } = await useKql({
@@ -95,24 +69,4 @@ const { data } = await useKql({
 </template>
 ```
 
-### For Simple Data Fetching (Direct API)
-```vue
-<script setup lang="ts">
-const { data } = await useKirbyData('api/pages/blog')
-</script>
-
-<template>
-  <div>
-    <h1>{{ data?.result?.title }}</h1>
-    <div v-html="data?.result?.text" />
-  </div>
-</template>
-```
-
-## Next Steps
-
-- [Data Fetching Methods](/essentials/data-fetching-methods) – Choose between KQL and the REST API.
-- [Multi-Language Sites](/guides/multi-language-sites) – Fetch content per locale.
-- [Typed Query Results](/guides/typed-query-results) – Annotate a query so `data` carries its shape.
-- [Starter Kits](/essentials/starter-kits) – Ready-made templates to build on.
-- [API Reference](/api/) – Every composable and type.
+From here, fetch content per locale with [Multi-Language Sites](/guides/multi-language-sites), type a query's result with [Typed Query Results](/guides/typed-query-results), or look up every composable and type in the [API Reference](/api/).

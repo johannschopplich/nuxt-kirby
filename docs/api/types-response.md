@@ -4,9 +4,9 @@
 
 ## `KirbyApiResponse`
 
-Represents the standard structure of a response from the Kirby API. It includes the HTTP status code, a status message, and an optional result payload.
+The envelope of a Kirby API response: the HTTP status code, `status` as `'ok'` or `'error'`, and an optional result payload.
 
-**Examples:**
+**Examples**
 
 ```ts
 // Success response
@@ -31,18 +31,25 @@ const error: KirbyApiResponse = {
 ```ts
 export interface KirbyApiResponse<T = any> {
   code: number
-  status: string
+  status: 'ok' | 'error'
   result?: T
+  message?: string
+  key?: string | null
+  details?: Record<string, any> | any[]
+  exception?: string
+  file?: string
+  line?: number
+  route?: string | null
 }
 ```
 
 ## `KirbyQueryResponse`
 
-Represents the response structure for queries made using Kirby Query Language (KQL). It extends `KirbyApiResponse` and can optionally include pagination information.
+The response to a KQL query: a `KirbyApiResponse` whose result carries pagination when `Pagination` is `true`.
 
 See [Typed Query Results](/guides/typed-query-results) for the guide.
 
-**Examples:**
+**Examples**
 
 ```ts
 import type { KirbyQueryResponse } from 'kirby-types'

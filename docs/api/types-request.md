@@ -4,9 +4,9 @@
 
 ## `KirbyQueryRequest`
 
-Represents a structured request to the Kirby API using the Kirby Query Language (KQL). It includes the main query, optional field selections, and pagination settings.
+A KQL request: the main query, optional field selections, and pagination settings.
 
-**Examples:**
+**Examples**
 
 ```ts
 // Basic query
@@ -55,15 +55,20 @@ const arrayRequest: KirbyQueryRequest = {
 
 ```ts
 export interface KirbyQuerySchema {
-  query: KirbyQuery
+  /** Defaults to `site`. */
+  query?: KirbyQuery
   select?:
+    | string
     | string[]
-    | Record<string, string | number | boolean | KirbyQuerySchema>
+    | Record<string, string | boolean | KirbyQueryNestedRequest>
 }
 
 export interface KirbyQueryRequest extends KirbyQuerySchema {
+  queries?:
+    | Record<string, KirbyQuery | KirbyQueryRequest>
+    | (KirbyQuery | KirbyQueryRequest)[]
   pagination?: {
-    /** @default 100 */
+    /** Defaults to the `pagination.limit` option, or `20`. */
     limit?: number
     page?: number
   }

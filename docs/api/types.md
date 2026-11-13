@@ -35,4 +35,6 @@ Each type is documented on the page for its area:
 - [Request Types](/api/types-request) – what you hand to `useKql` and `$kql`.
 - [Response Types](/api/types-response) – what comes back, including pagination.
 
+The block and layout types (`KirbyBlock`, `KirbyLayout`, …) are covered by the [`kirby-types` README](https://github.com/johannschopplich/kirby-types#readme).
+
 To type the result of a query rather than the envelope around it, see [Typed Query Results](/guides/typed-query-results).

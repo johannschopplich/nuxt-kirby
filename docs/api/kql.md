@@ -37,16 +37,6 @@ const data = await $kql(
 </template>
 ```
 
-## Allow Client Requests
-
-<!--@include: ./parts/_client-requests.md-->
-
-Now, every `$kql` call reaches your Kirby instance directly, sent from the client:
-
-```ts
-const data = await $kql(query)
-```
-
 ## Type Declarations
 
 ```ts

@@ -1,17 +1,17 @@
 # Error Handling
 
-The [server proxy](/advanced/how-does-it-work) passes Kirby's error through untouched, so status code, message and body all reach your app while the credentials stay behind.
+The [server proxy](/essentials/how-it-works) passes Kirby's error through untouched, so status code, message and body all reach your app while the credentials stay behind.
 
-## Error Types
+## Returned and Thrown Errors
 
-### Composables – `useKql` and `useKirbyData`
+### `useKql` and `useKirbyData` Return the Error
 
-Both composables surface errors through the `error` property, as Nuxt's own [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data) does:
+Both composables surface errors through the `error` property, as Nuxt's own [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data) does. A page Kirby cannot find is not an error: it comes back as `result: null`.
 
 ```vue
 <script setup lang="ts">
 const { data, error } = await useKql({
-  query: 'page("nonexistent")',
+  query: 'page("about")',
   select: { title: true }
 })
 
@@ -26,7 +26,7 @@ if (error.value) {
   <div>
     <div v-if="error">
       <h3>Error: {{ error.statusMessage }}</h3>
-      <p>{{ error.data?.message || 'Something went wrong' }}</p>
+      <p>{{ (error.data as { message?: string } | undefined)?.message || 'Something went wrong' }}</p>
     </div>
 
     <div v-else-if="data?.result">
@@ -36,7 +36,7 @@ if (error.value) {
 </template>
 ```
 
-### Functions – `$kql` and `$kirby`
+### `$kql` and `$kirby` Throw
 
 The `$*` functions (`$kql`, `$kirby`) throw `FetchError` objects directly since they are designed for programmatic use (like form submissions or one-time actions):
 
@@ -64,54 +64,4 @@ async function fetchSite() {
 </script>
 ```
 
-## Error Information
-
-Both error types preserve essential information from the Kirby API response:
-
-- **Response Body** – Full error details from Kirby
-- **HTTP Status Code** – Standard HTTP status codes (401, 404, 500, etc.)
-- **HTTP Status Message** – Human-readable status text
-- **Headers** – Response headers from Kirby
-
-## Type Definitions
-
-### `FetchError` Interface
-
-The `FetchError` type from [ofetch](https://github.com/unjs/ofetch) is used for errors thrown by `$kql` and `$kirby`:
-
-```ts
-interface FetchError<T = any> extends Error {
-  request?: FetchRequest
-  options?: FetchOptions
-  response?: FetchResponse<T>
-  data?: T
-  status?: number
-  statusText?: string
-  statusCode?: number
-  statusMessage?: string
-}
-```
-
-### `NuxtError` Interface
-
-The `NuxtError` type is used for errors returned by `useKql` and `useKirbyData`:
-
-```ts
-interface NuxtError<DataT = unknown> extends H3Error<DataT> {
-  error?: true
-}
-
-declare class H3Error<DataT = unknown> extends Error {
-  static __h3_error__: boolean
-  statusCode: number
-  fatal: boolean
-  unhandled: boolean
-  statusMessage?: string
-  data?: DataT
-  cause?: unknown
-  constructor(message: string, opts?: {
-    cause?: unknown
-  })
-  toJSON(): Pick<H3Error<DataT>, 'message' | 'statusCode' | 'statusMessage' | 'data'>
-}
-```
+The composables' error is a [`NuxtError`](https://nuxt.com/docs/api/utils/create-error), which builds on h3's [`H3Error`](https://github.com/h3js/h3); the functions throw a [`FetchError`](https://github.com/unjs/ofetch) from ofetch.

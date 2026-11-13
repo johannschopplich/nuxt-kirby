@@ -37,16 +37,6 @@ if (!data?.result) {
 </template>
 ```
 
-## Allow Client Requests
-
-<!--@include: ./parts/_client-requests.md-->
-
-Now, every `$kirby` call reaches your Kirby instance directly, sent from the client:
-
-```ts
-const data = await $kirby('api/my-path')
-```
-
 ## Type Declarations
 
 ```ts

@@ -1,25 +1,8 @@
 # `useKql`
 
-Returns KQL query data. Uses an internal server route to proxy requests.
+Returns KQL query data. Uses an internal server route to proxy requests. `data`, `error`, `status`, `refresh` and `clear` work as for Nuxt's [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data#return-values).
 
-Query responses are cached by default between function calls for the same query based on a calculated hash.
-
-<!--@include: ./parts/_async-data-return-values.md-->
-
-## Caching
-
-Two call sites asking for the same query share one entry and one round trip – see [Caching Strategies](/guides/caching-strategies#payload-caching).
-
-Clear the cache for a specific query by calling the `clear` function. This will remove the cached data for the query and allow the next request to fetch the data from the server:
-
-```ts
-const { data, refresh, clear } = await useKql({ query: 'site' })
-
-async function invalidateAndRefresh() {
-  clear()
-  await refresh()
-}
-```
+Query responses are cached by default between function calls for the same query based on a calculated hash. Two call sites asking for the same query share one entry and one round trip – see [Caching Strategies](/guides/caching-strategies#payload-caching).
 
 ## Example
 
@@ -41,16 +24,6 @@ const { data, refresh, error, status, clear } = await useKql({
 </template>
 ```
 
-## Allow Client Requests
-
-<!--@include: ./parts/_client-requests.md-->
-
-Now, every `useKql` call reaches your Kirby instance directly, sent from the client:
-
-```ts
-const { data } = await useKql(query)
-```
-
 ## Type Declarations
 
 ```ts
@@ -66,5 +39,5 @@ function useKql<
 <<< @/../src/runtime/composables/useKql.ts#options
 
 ::: tip
-`useKql` infers all of Nuxt's [`useAsyncData` options](https://nuxt.com/docs/api/composables/use-async-data#params).
+`useKql` infers all of Nuxt's [`useAsyncData` options](https://nuxt.com/docs/api/composables/use-async-data#parameters).
 :::

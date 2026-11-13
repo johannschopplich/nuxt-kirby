@@ -4,9 +4,9 @@
 
 ## `KirbyQuery`
 
-Represents any valid Kirby Query Language (KQL) string. The union only admits strings that open with a known model, so a typo in the model name fails to compile – everything after the first `.` or `(` is unchecked. Pass `CustomModel` to add model names of your own.
+A Kirby Query Language (KQL) string. The union only admits strings that open with a known model, so a typo in the model name fails to compile – everything after the first `.` or `(` is unchecked. Pass `CustomModel` to add model names of your own.
 
-**Examples:**
+**Examples**
 
 ```ts
 // Simple model queries
@@ -28,19 +28,33 @@ const complex: KirbyQuery = 'site("home").children.sortBy("date", "desc").limit(
 **Type Declarations**
 
 ```ts
+type FunctionOnlyQueryModel = 'collection' | 't' | 'qr'
+
+type AccessibleQueryModel<M extends string = never>
+  = Exclude<KirbyQueryModel, FunctionOnlyQueryModel> | M
+
+type CallableQueryModel<M extends string = never>
+  = | Exclude<KirbyQueryModel, 'model' | 'item' | 'arrayItem' | 'structureItem' | 'block'>
+    | M
+
 type DotNotationQuery<M extends string = never>
-  = `${KirbyQueryModel<M>}.${string}`
+  = | `${AccessibleQueryModel<M>}.${string}`
+    | `${AccessibleQueryModel<M>}?.${string}`
 
 type FunctionNotationQuery<M extends string = never>
-  = | `${KirbyQueryModel<M>}(${string})`
-    | `${KirbyQueryModel<M>}(${string})${string}`
+  = | `${CallableQueryModel<M>}(${string})`
+    | `${CallableQueryModel<M>}(${string})${string}`
+
+type OperatorQuery<M extends string = never>
+  = `${AccessibleQueryModel<M>} ${'??' | '?:' | '?'} ${string}`
 
 export type KirbyQueryChain<M extends string = never>
   = | DotNotationQuery<M>
     | FunctionNotationQuery<M>
+    | OperatorQuery<M>
 
 export type KirbyQuery<CustomModel extends string = never>
-  = | KirbyQueryModel<CustomModel>
+  = | AccessibleQueryModel<CustomModel>
     | (string extends KirbyQueryChain<CustomModel>
       ? never
       : KirbyQueryChain<CustomModel>)
@@ -48,7 +62,7 @@ export type KirbyQuery<CustomModel extends string = never>
 
 ## `KirbyQueryModel`
 
-Represents all supported model names in Kirby Query Language.
+The model names a query may open with.
 
 ```ts
 export type KirbyQueryModel<CustomModel extends string = never>
@@ -57,8 +71,11 @@ export type KirbyQueryModel<CustomModel extends string = never>
     | 'site'
     | 'page'
     | 'user'
+    | 'users'
     | 'file'
-    | 'content'
+    | 'model'
+    | 't'
+    | 'qr'
     | 'item'
     | 'arrayItem'
     | 'structureItem'
