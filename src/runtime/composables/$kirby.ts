@@ -4,6 +4,7 @@ import type { ServerFetchOptions } from '../types'
 import { hash } from 'ohash'
 import { useRequestFetch, useRuntimeConfig } from '#imports'
 import { sendCachedRequest } from '../cache'
+import { assertPathBelowBase } from '../path'
 import { buildApiProxyPath, createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
 
 // #region options
@@ -86,6 +87,11 @@ export function sendKirbyRequest<T = any>(
     forwardCookies,
     ...fetchOptions
   } = opts
+
+  // `$fetch` would send a path that names a scheme to the host it names, credentials included. The
+  // proxy checks the path of a request it forwards itself.
+  if (kirby.client)
+    assertPathBelowBase(path)
 
   const sharedHeaders = {
     ...headersToObject(headers),

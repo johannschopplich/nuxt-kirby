@@ -2,6 +2,7 @@ import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
 import type { NitroFetchOptions } from 'nitropack'
 import type { ModuleOptions } from '../../module'
 import { useRuntimeConfig } from '#imports'
+import { assertPathBelowBase } from '../path'
 import { createAuthHeader, createLanguageHeader, headersToObject } from '../utils'
 
 export type NitroKirbyFetchOptions = Omit<
@@ -47,6 +48,9 @@ export async function $kirby<T = any>(
 ): Promise<T> {
   const { headers, language, ...fetchOptions } = opts
   const kirby = useRuntimeConfig().kirby as Required<ModuleOptions>
+
+  // `$fetch` would send a path that names a scheme to the host it names, credentials included.
+  assertPathBelowBase(path)
 
   return globalThis.$fetch<T, string>(path, {
     ...fetchOptions,

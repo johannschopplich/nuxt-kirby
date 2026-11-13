@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
 import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -39,29 +39,29 @@ await Promise.all([
 ])
 const foreignHost = new URL(foreign.url!).host
 
-describe('proxy', async () => {
-  await setup({
-    server: true,
-    rootDir: join(import.meta.dirname, 'fixture'),
-    nuxtConfig: {
-      kirby: {
-        url: new URL('base', kirby.url).href,
-      },
+await setup({
+  server: true,
+  rootDir: join(import.meta.dirname, 'fixture'),
+  nuxtConfig: {
+    kirby: {
+      url: new URL('base', kirby.url).href,
     },
-  })
+  },
+})
 
-  beforeEach(() => {
-    kirbyRequests = []
-    foreignRequests = []
-  })
+beforeEach(() => {
+  kirbyRequests = []
+  foreignRequests = []
+})
 
-  afterAll(async () => {
-    await Promise.all([
-      kirby.close(),
-      foreign.close(),
-    ])
-  })
+afterAll(async () => {
+  await Promise.all([
+    kirby.close(),
+    foreign.close(),
+  ])
+})
 
+describe('proxy', () => {
   function postToProxy(key: string, body?: Record<string, unknown>) {
     return fetch(`/api/__kirby__/${encodeURIComponent(key)}`, {
       method: 'POST',
@@ -155,5 +155,33 @@ describe('proxy', async () => {
     const status = await postToProxy('proxy-path', { path: 'pages/notes', headers: 'Bearer client' })
 
     expect(status).toBe(400)
+  })
+})
+
+describe('$kirby (server import)', () => {
+  function sendServerImport(path: string) {
+    return $fetch<{ outcome: string | number }>('/tests/server-imports/path', {
+      query: { path },
+    })
+  }
+
+  it.each([
+    'http://{host}/stolen',
+    '//{host}/stolen',
+  ])('rejects %j without contacting the host it names', async (pathTemplate) => {
+    const { outcome } = await sendServerImport(pathTemplate.replace('{host}', foreignHost))
+
+    expect(outcome).toBe(400)
+    expect(foreignRequests).toEqual([])
+    expect(kirbyRequests).toEqual([])
+  })
+
+  it.each(['pages/notes', './pages/notes'])('sends %s to /base/pages/notes with the Authorization header', async (path) => {
+    const { outcome } = await sendServerImport(path)
+
+    expect(outcome).toBe('resolved')
+    expect(kirbyRequests).toEqual([
+      { path: '/base/pages/notes', authorization: 'Bearer test' },
+    ])
   })
 })

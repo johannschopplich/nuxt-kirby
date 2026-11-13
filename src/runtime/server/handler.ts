@@ -7,8 +7,8 @@ import { defineCachedFunction } from 'nitropack/runtime'
 import { hash } from 'ohash'
 import { base64ToUint8Array, uint8ArrayToBase64, uint8ArrayToString } from 'uint8array-extras'
 import { useRuntimeConfig } from '#imports'
+import { assertPathBelowBase } from '../path'
 import { createAuthHeader, headersToObject } from '../utils'
-import { assertPathBelowBase } from './path'
 
 const EXCLUDED_HEADERS = new Set([
   // https://github.com/h3js/h3/blob/fe9800bbbe9bda2972cc5d11db7353f4ab70f0ba/src/utils/proxy.ts#L97
