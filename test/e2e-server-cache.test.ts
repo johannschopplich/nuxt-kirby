@@ -93,6 +93,29 @@ describe('server cache', async () => {
     expect(kirby.requests).toHaveLength(2)
   })
 
+  it('answers a repeated 404 without reaching Kirby again', async () => {
+    await fetch('/api/__kirby__/api/pages/missing')
+    const response = await fetch('/api/__kirby__/api/pages/missing')
+
+    expect(response.status).toBe(404)
+    expect(kirby.requests).toHaveLength(1)
+  })
+
+  it('reaches Kirby again after a 403', async () => {
+    await fetch('/api/__kirby__/api/pages/forbidden')
+    await fetch('/api/__kirby__/api/pages/forbidden')
+
+    expect(kirby.requests).toHaveLength(2)
+  })
+
+  it('reaches Kirby again after a query that failed with 500', async () => {
+    await postQuery('fail')
+    const response = await postQuery('fail')
+
+    expect(response.status).toBe(500)
+    expect(kirby.requests).toHaveLength(2)
+  })
+
   it('passes cache-control from Kirby on to the client', async () => {
     await postQuery('headed')
     const response = await postQuery('headed')

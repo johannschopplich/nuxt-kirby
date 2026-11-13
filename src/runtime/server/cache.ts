@@ -74,6 +74,9 @@ function createCachedFetcher(kirby: ServerKirbyConfig) {
         // Two spellings of one query share an entry.
         destr(body),
       ]),
+      // A 404 or 410 is stored, so that with `swr` a page Kirby no longer has replaces the stored one.
+      // Any other error would answer every visitor for as long as the entry lives.
+      validate: entry => entry.value !== undefined && (entry.value.status < 400 || entry.value.status === 404 || entry.value.status === 410),
     },
   )
 }

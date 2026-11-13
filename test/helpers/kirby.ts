@@ -29,9 +29,9 @@ export const KIRBY_REDIRECT_LOCATION = '/base/api/redirected'
  * Starts a stand-in for a Kirby instance that records every request. It answers a JSON KQL query
  * with the query string, the language and the number of the request, and any other request with
  * its URL, method and body. Every answer sets a session cookie and `cache-control`. The query
- * `fail` gets a 500, a path ending in `/missing` a 404, one ending in `/redirect` a 302 to
- * `KIRBY_REDIRECT_LOCATION`, one ending in `/gzip` `KIRBY_GZIP_BODY` compressed, and one ending in
- * `/reset` a closed connection.
+ * `fail` gets a 500, and a path ending in `/missing` a 404, in `/forbidden` a 403, in `/redirect`
+ * a 302 to `KIRBY_REDIRECT_LOCATION`, in `/gzip` `KIRBY_GZIP_BODY` compressed, and in `/reset` a
+ * closed connection.
  */
 export async function startKirbyStandIn({ delay = 0 } = {}): Promise<KirbyStandIn> {
   const requests: RecordedRequest[] = []
@@ -77,6 +77,12 @@ export async function startKirbyStandIn({ delay = 0 } = {}): Promise<KirbyStandI
     }
 
     response.setHeader('content-type', 'application/json')
+
+    if (pathname.endsWith('/forbidden')) {
+      response.statusCode = 403
+      response.end(JSON.stringify({ status: 'error', code: 403, message: 'Forbidden' }))
+      return
+    }
 
     if (pathname.endsWith('/missing')) {
       response.statusCode = 404
