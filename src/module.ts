@@ -15,6 +15,8 @@ export interface ModuleOptions {
    *
    * @remarks
    * `NUXT_KIRBY_URL` overrides it at runtime, in client mode `NUXT_PUBLIC_KIRBY_URL`.
+   *
+   * @default process.env.NUXT_KIRBY_URL
    */
   url?: string
 
@@ -45,6 +47,8 @@ export interface ModuleOptions {
    *
    * @remarks
    * `NUXT_KIRBY_TOKEN` overrides it at runtime, in client mode `NUXT_PUBLIC_KIRBY_TOKEN`.
+   *
+   * @default process.env.NUXT_KIRBY_TOKEN
    */
   token?: string
 
@@ -55,6 +59,8 @@ export interface ModuleOptions {
    * `NUXT_KIRBY_CREDENTIALS_USERNAME` and `NUXT_KIRBY_CREDENTIALS_PASSWORD` override them at
    * runtime, in client mode `NUXT_PUBLIC_KIRBY_CREDENTIALS_USERNAME` and
    * `NUXT_PUBLIC_KIRBY_CREDENTIALS_PASSWORD`.
+   *
+   * @default { username: process.env.NUXT_KIRBY_CREDENTIALS_USERNAME, password: process.env.NUXT_KIRBY_CREDENTIALS_PASSWORD }
    */
   credentials?: BasicCredentials
 
@@ -152,14 +158,16 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt: '>=4.6.0 <5',
     },
   },
-  defaults: {
-    url: '',
+  // Nuxt applies a `NUXT_KIRBY_*` variable to the runtime config only once the server runs. Read here
+  // as well, a variable set for the build alone reaches a server that is deployed without it.
+  defaults: () => ({
+    url: process.env.NUXT_KIRBY_URL || '',
     kqlPath: '',
     auth: 'basic',
-    token: '',
+    token: process.env.NUXT_KIRBY_TOKEN || '',
     credentials: {
-      username: '',
-      password: '',
+      username: process.env.NUXT_KIRBY_CREDENTIALS_USERNAME || '',
+      password: process.env.NUXT_KIRBY_CREDENTIALS_PASSWORD || '',
     },
     // Left unset, so that an explicit `false` survives `ssr: false`.
     client: undefined,
@@ -172,7 +180,7 @@ export default defineNuxtModule<ModuleOptions>({
       swr: false,
       maxAge: 1,
     },
-  },
+  }),
   setup(moduleOptions, nuxt) {
     const moduleName = name
     const runtimeOptions = nuxt.options.runtimeConfig.kirby as ModuleOptions | undefined

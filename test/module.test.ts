@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { loadNuxt } from '@nuxt/kit'
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
 
 const buildDir = await mkdtemp(join(tmpdir(), 'nuxt-kirby-module-'))
 
@@ -25,6 +25,18 @@ async function loadModule(overrides: NuxtConfig) {
 }
 
 describe('runtime config', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it('takes the URL from NUXT_KIRBY_URL set for the build', async () => {
+    vi.stubEnv('NUXT_KIRBY_URL', 'https://kirby.example.com')
+
+    const { runtimeConfig } = await loadModule({})
+
+    expect(runtimeConfig.kirby.url).toBe('https://kirby.example.com')
+  })
+
   it('publishes client and kqlPath alone with SSR', async () => {
     const { runtimeConfig } = await loadModule({})
 
