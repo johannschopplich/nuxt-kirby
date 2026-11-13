@@ -69,7 +69,7 @@ import type { KirbyQueryRequest } from 'kirby-types' // [!code ++]
 import type { KirbyQueryRequest } from '#nuxt-kql' // [!code --]
 ```
 
-`#nuxt-kirby` is the alias for [prefetched queries](/guides/prefetching-kql-queries) and re-exports the same types, so it works here as well.
+`#nuxt-kirby` is the alias for [prefetched queries](/guides/prefetching-kql-queries) and re-exports the same types, so it works here as well, without `kirby-types` in your project.
 
 ## v3.0.0
 

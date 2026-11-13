@@ -5,7 +5,7 @@ The types Nuxt Kirby ships for Kirby data and queries, and where each one applie
 ::: info
 These types belong to the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package – import them from there. The `#nuxt-kirby` alias re-exports the same names next to your [prefetched queries](/guides/prefetching-kql-queries), so both paths resolve to the same types.
 
-Nuxt Kirby depends on `kirby-types`, but a package manager that does not hoist – pnpm out of the box – keeps a dependency of a dependency out of your project's `node_modules`. Add it yourself so the import resolves:
+Nuxt Kirby depends on `kirby-types`, but a package manager that does not hoist – pnpm out of the box – keeps a dependency of a dependency out of your project's `node_modules`. `#nuxt-kirby` resolves the types through the module and needs nothing more; to import from `kirby-types` itself, add it to your project:
 
 ```bash
 pnpm add -D kirby-types
