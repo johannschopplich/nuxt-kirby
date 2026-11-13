@@ -223,6 +223,7 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     const { resolve } = createResolver(import.meta.url)
+    // Nuxt hands the transpiled directories on to Nitro to inline, so the server runtime is bundled as well.
     nuxt.options.build.transpile.push(resolve('runtime'))
 
     addServerHandler({
@@ -244,11 +245,6 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     nuxt.hooks.hook('nitro:config', (config) => {
-      // Inlined because Nitro would otherwise fail to resolve the `utils` import from the server handler.
-      config.externals ||= {}
-      config.externals.inline ||= []
-      config.externals.inline.push(resolve('runtime/utils'))
-
       config.imports = defu(config.imports, {
         presets: [
           {
