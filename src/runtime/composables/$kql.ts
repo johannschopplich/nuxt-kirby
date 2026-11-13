@@ -45,7 +45,7 @@ export type KqlOptions = Pick<
 }
 // #endregion options
 
-export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
+export async function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
   query: KirbyQueryRequest,
   opts: KqlOptions = {},
 ): Promise<T> {

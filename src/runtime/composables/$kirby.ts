@@ -51,7 +51,7 @@ export type KirbyFetchOptions = Pick<
 }
 // #endregion options
 
-export function $kirby<T = any>(
+export async function $kirby<T = any>(
   path: string,
   opts: KirbyFetchOptions = {},
 ): Promise<T> {

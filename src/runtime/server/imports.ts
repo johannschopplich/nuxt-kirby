@@ -41,7 +41,7 @@ export type NitroKqlFetchOptions = Pick<
   language?: string
 }
 
-export function $kirby<T = any>(
+export async function $kirby<T = any>(
   path: string,
   opts: NitroKirbyFetchOptions = {},
 ): Promise<T> {
@@ -59,7 +59,7 @@ export function $kirby<T = any>(
   }) as Promise<T>
 }
 
-export function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
+export async function $kql<T extends KirbyQueryResponse<any, boolean> = KirbyQueryResponse>(
   query: KirbyQueryRequest,
   opts: NitroKqlFetchOptions = {},
 ): Promise<T> {
