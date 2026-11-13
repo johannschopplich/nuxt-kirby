@@ -11,7 +11,17 @@ import { assertPathBelowBase } from '../path'
 import { createAuthHeader, headersToObject } from '../utils'
 
 const EXCLUDED_HEADERS = new Set([
-  // https://github.com/h3js/h3/blob/fe9800bbbe9bda2972cc5d11db7353f4ab70f0ba/src/utils/proxy.ts#L97
+  // Headers that describe a single connection rather than the message, so they end at the proxy.
+  'connection',
+  'keep-alive',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'proxy-connection',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+  // The body arrives decoded, so its original encoding and length no longer apply.
   'content-encoding',
   'content-length',
   // Reduce information leakage.
