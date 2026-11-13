@@ -43,6 +43,31 @@ describe('runtime config', () => {
     expect(publicConfig.kirby).toMatchObject({ client: true, token: 'test' })
   })
 
+  it('publishes only what a client request reads, with the credential `auth` names', async () => {
+    const { public: publicConfig } = await loadRuntimeConfig({
+      kirby: {
+        client: true,
+        auth: 'basic',
+        credentials: { username: 'user', password: 'secret' },
+      },
+    })
+
+    expect(publicConfig.kirby).toEqual({
+      url: 'http://127.0.0.1:9',
+      kqlPath: 'api/query',
+      auth: 'basic',
+      credentials: { username: 'user', password: 'secret' },
+      client: true,
+      forwardCookies: false,
+    })
+  })
+
+  it('leaves the build-time `prefetch` out of the private runtime config', async () => {
+    const { kirby } = await loadRuntimeConfig({})
+
+    expect(kirby).not.toHaveProperty('prefetch')
+  })
+
   it('publishes no credentials with `ssr: false` and `client: false`', async () => {
     const { public: publicConfig } = await loadRuntimeConfig({
       ssr: false,

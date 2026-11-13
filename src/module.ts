@@ -199,15 +199,26 @@ export default defineNuxtModule<ModuleOptions>({
       options.server.storage = withLeadingSlash(options.server.storage)
     }
 
+    const { prefetch, ...runtimeOptions } = options
+
     nuxt.options.runtimeConfig.kirby = defu(
       nuxt.options.runtimeConfig.kirby,
-      options,
+      runtimeOptions,
     )
 
+    // The browser reads the config only to send a request itself, so only what that request needs is published.
     nuxt.options.runtimeConfig.public.kirby = defu(
       nuxt.options.runtimeConfig.public.kirby as Required<ModuleOptions>,
       options.client
-        ? options
+        ? {
+            url: options.url,
+            kqlPath: options.kqlPath,
+            auth: options.auth,
+            ...(options.auth === 'bearer' && { token: options.token }),
+            ...(options.auth === 'basic' && { credentials: options.credentials }),
+            client: true,
+            forwardCookies: options.forwardCookies,
+          }
         : { client: false },
     )
 
