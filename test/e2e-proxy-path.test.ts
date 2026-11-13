@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
+import { destr } from 'destr'
 import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -45,6 +46,8 @@ await setup({
   nuxtConfig: {
     kirby: {
       url: new URL('base', kirby.url).href,
+      // Only the composables read `client`; the proxy and the server imports run as they would without it.
+      client: true,
     },
   },
 })
@@ -158,6 +161,34 @@ describe('$kirby (server import)', () => {
 
   it('sends pages/notes to /base/pages/notes with the Authorization header', async () => {
     const { outcome } = await sendServerImport('pages/notes')
+
+    expect(outcome).toBe('resolved')
+    expect(kirbyRequests).toEqual([
+      { path: '/base/pages/notes', authorization: 'Bearer test' },
+    ])
+  })
+})
+
+// The server-rendered pass sends a client-mode request the way the browser does, straight to Kirby.
+describe('$kirby (client mode)', () => {
+  async function sendFromPage(path: string) {
+    const html = await $fetch<string>('/tests/$kirby/path', {
+      query: { path },
+    })
+    const content = html.match(/<script\s+type="text\/test-result">(.*?)<\/script>/s)?.[1]
+    return destr<{ outcome: string | number }>(content)
+  }
+
+  it('rejects an absolute URL without contacting the host it names', async () => {
+    const { outcome } = await sendFromPage(`http://${foreignHost}/stolen`)
+
+    expect(outcome).toBe(400)
+    expect(foreignRequests).toEqual([])
+    expect(kirbyRequests).toEqual([])
+  })
+
+  it('sends pages/notes to /base/pages/notes with the Authorization header', async () => {
+    const { outcome } = await sendFromPage('pages/notes')
 
     expect(outcome).toBe('resolved')
     expect(kirbyRequests).toEqual([
