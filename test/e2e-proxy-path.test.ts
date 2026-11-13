@@ -1,9 +1,9 @@
 import { join } from 'node:path'
 import { gzipSync } from 'node:zlib'
-import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
-import { destr } from 'destr'
+import { $fetch, setup } from '@nuxt/test-utils/e2e'
 import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { fetchTestResult, postToProxy } from './utils'
 
 const GZIP_BODY = '{"result":"gzip"}'
 
@@ -82,14 +82,6 @@ afterAll(async () => {
 })
 
 describe('proxy', () => {
-  function postToProxy(key: string, body?: Record<string, unknown>) {
-    return fetch(`/api/__kirby__/${encodeURIComponent(key)}`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: body && JSON.stringify(body),
-    })
-  }
-
   it('rejects an absolute URL without contacting the host it names', async () => {
     const { status } = await postToProxy('proxy-path', {
       path: `http://${foreignHost}/stolen`,
@@ -201,12 +193,8 @@ describe('$kirby (server import)', () => {
 
 // The server-rendered pass sends a client-mode request the way the browser does, straight to Kirby.
 describe('$kirby (client mode)', () => {
-  async function sendFromPage(path: string) {
-    const html = await $fetch<string>('/tests/$kirby/path', {
-      query: { path },
-    })
-    const content = html.match(/<script\s+type="text\/test-result">(.*?)<\/script>/s)?.[1]
-    return destr<{ outcome: string | number }>(content)
+  function sendFromPage(path: string) {
+    return fetchTestResult<{ outcome: string | number }>('/tests/$kirby/path', { path })
   }
 
   it('rejects an absolute URL without contacting the host it names', async () => {

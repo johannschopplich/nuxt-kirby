@@ -1,7 +1,7 @@
 import { join } from 'node:path'
-import { $fetch, createPage, fetch, setup } from '@nuxt/test-utils/e2e'
-import { destr } from 'destr'
+import { $fetch, createPage, setup } from '@nuxt/test-utils/e2e'
 import { describe, expect, it } from 'vitest'
+import { fetchTestResult, postToProxy } from './utils'
 
 describe('nuxt-kirby', async () => {
   await setup({
@@ -299,18 +299,3 @@ describe('nuxt-kirby', async () => {
     })
   })
 })
-
-async function fetchTestResult<T = any>(path: string): Promise<T> {
-  const html = await $fetch<string>(path)
-  const content = html.match(/<script\s+type="text\/test-result">(.*?)<\/script>/s)?.[1]
-  return destr(content)
-}
-
-/** Addresses the proxy route directly, since a composable would swallow the status code. */
-function postToProxy(key: string, body: Record<string, unknown>): Promise<Response> {
-  return fetch(`/api/__kirby__/${encodeURIComponent(key)}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-}

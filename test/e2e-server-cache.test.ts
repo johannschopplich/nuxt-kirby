@@ -1,8 +1,9 @@
 import type { KirbyQueryRequest } from 'kirby-types'
 import { join } from 'node:path'
-import { fetch, setup } from '@nuxt/test-utils/e2e'
+import { setup } from '@nuxt/test-utils/e2e'
 import { serve } from 'srvx'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { postToProxy } from './utils'
 
 let upstreamRequestCount = 0
 
@@ -117,9 +118,5 @@ describe('server cache', async () => {
 })
 
 function postQuery(query: KirbyQueryRequest): Promise<Response> {
-  return fetch('/api/__kirby__/$kql-test', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ query }),
-  })
+  return postToProxy('$kql-test', { query })
 }
