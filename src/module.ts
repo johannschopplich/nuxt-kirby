@@ -153,13 +153,13 @@ export default defineNuxtModule<ModuleOptions>({
     },
   },
   defaults: {
-    url: process.env.KIRBY_BASE_URL || '',
+    url: '',
     kqlPath: '',
     auth: 'basic',
-    token: process.env.KIRBY_API_TOKEN || '',
+    token: '',
     credentials: {
-      username: process.env.KIRBY_API_USERNAME || '',
-      password: process.env.KIRBY_API_PASSWORD || '',
+      username: '',
+      password: '',
     },
     // Left unset, so that an explicit `false` survives `ssr: false`.
     client: undefined,
@@ -183,7 +183,7 @@ export default defineNuxtModule<ModuleOptions>({
       allowedRoutes: runtimeOptions?.allowedRoutes ?? moduleOptions.allowedRoutes,
     }
 
-    assertValidOptions(options)
+    assertValidOptions(options, process.env)
 
     const kqlPath = options.kqlPath || (options.auth === 'bearer'
       ? 'api/kql'

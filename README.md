@@ -30,9 +30,9 @@ npx nuxt module add kirby
 Set your Kirby credentials in `.env`. This example uses basic authentication with the [KQL plugin](https://github.com/getkirby/kql); [Getting Started](https://nuxt-kirby.byjohann.dev/essentials/getting-started) sets up token authentication instead:
 
 ```ini
-KIRBY_BASE_URL=https://kirby.example.com
-KIRBY_API_USERNAME=your-username
-KIRBY_API_PASSWORD=your-password
+NUXT_KIRBY_URL=https://kirby.example.com
+NUXT_KIRBY_CREDENTIALS_USERNAME=your-username
+NUXT_KIRBY_CREDENTIALS_PASSWORD=your-password
 ```
 
 And send queries in your template:
