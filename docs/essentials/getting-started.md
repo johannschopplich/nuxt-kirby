@@ -4,7 +4,7 @@ Nuxt Kirby is a [Nuxt](https://nuxt.com) module for reading and writing the cont
 
 ## Install Nuxt Kirby
 
-Nuxt Kirby requires Nuxt 4.6 or a later Nuxt 4 release. The command installs the package and adds `nuxt-kirby` to the modules in your `nuxt.config.ts`:
+The command installs the package and adds `nuxt-kirby` to the modules in your `nuxt.config.ts`:
 
 ```bash
 npx nuxt module add kirby
