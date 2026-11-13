@@ -19,19 +19,20 @@
 
 ## Setup
 
+Add the module to a project on Nuxt 4 or later:
+
 ```bash
 npx nuxt module add kirby
 ```
 
 ## Basic Usage
 
-Add Nuxt Kirby to your Nuxt configuration:
+Set your Kirby credentials in `.env`. This example uses basic authentication with the [KQL plugin](https://github.com/getkirby/kql); [Getting Started](https://nuxt-kirby.byjohann.dev/essentials/getting-started) sets up token authentication instead:
 
-```ts
-// `nuxt.config.ts`
-export default defineNuxtConfig({
-  modules: ['nuxt-kirby']
-})
+```ini
+KIRBY_BASE_URL=https://kirby.example.com
+KIRBY_API_USERNAME=your-username
+KIRBY_API_PASSWORD=your-password
 ```
 
 And send queries in your template:
