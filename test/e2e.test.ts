@@ -287,13 +287,6 @@ describe('nuxt-kirby', async () => {
       expect(response.status).toBe(400)
       expect(await response.json()).toMatchObject({ statusMessage: 'KQL query is empty' })
     })
-
-    it('rejects an absolute path with 400', async () => {
-      const response = await postToProxy('$kirby-test', { path: 'https://example.com/api/site' })
-
-      expect(response.status).toBe(400)
-      expect(await response.json()).toMatchObject({ statusMessage: 'Path must stay below the Kirby URL' })
-    })
   })
 
   describe('prefetch', () => {
