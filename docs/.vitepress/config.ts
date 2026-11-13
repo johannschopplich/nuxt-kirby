@@ -20,7 +20,7 @@ export default defineConfig({
   lang: 'en-US',
   title: name,
   description,
-  srcExclude: ['**/parts/*.md'],
+  srcExclude: ['**/parts/*.md', 'adr/**'],
   head: [
     [
       'link',
