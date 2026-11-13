@@ -95,14 +95,14 @@ export interface ModuleOptions {
     /**
      * Enable server-side caching of queries using the Nitro cache API.
      *
-     * @see https://nitro.unjs.io/guide/cache
+     * @see https://v2.nitro.build/guide/cache
      */
     cache?: boolean
 
     /**
      * Name of the storage mountpoint to use for caching.
      *
-     * @see https://nitro.unjs.io/guide/cache
+     * @see https://v2.nitro.build/guide/cache
      * @default 'cache'
      */
     storage?: string
@@ -110,7 +110,7 @@ export interface ModuleOptions {
     /**
      * Enable stale-while-revalidate behavior (cache is returned while it is being updated).
      *
-     * @see https://nitro.unjs.io/guide/cache#options
+     * @see https://v2.nitro.build/guide/cache#options
      * @default false
      */
     swr?: boolean
@@ -118,7 +118,7 @@ export interface ModuleOptions {
     /**
      * Number of seconds to cache the query response.
      *
-     * @see https://nitro.unjs.io/guide/cache#options
+     * @see https://v2.nitro.build/guide/cache#options
      * @default 1
      */
     maxAge?: number
