@@ -42,7 +42,7 @@ const { data } = await useKirbyData('about', {
 })
 ```
 
-Two conditions hold there and nowhere else. The request has to arrive at the language Kirby serves from the root, since a prefixed URL has already named its language and keeps that authority – on a site that prefixes every language, the header never gets a say. And a code no language matches is ignored rather than falling back to the default, because a catch-all answering in an unasked-for language is worse than answering in the one the URL named.
+Two conditions hold there and nowhere else. The request has to arrive at the language Kirby serves from the root: a prefixed URL keeps the language it names, so on a site that prefixes every language, the header has no effect. And a code no language matches is ignored rather than falling back to the default.
 
 Everywhere else the language belongs in the path, and `language` has nothing to act on:
 

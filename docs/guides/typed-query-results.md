@@ -1,10 +1,6 @@
 # Typed Query Results
 
-For better TypeScript support, define custom response types for [`useKql`](/api/use-kql) to catch errors in your templates.
-
-The [`KirbyQueryResponse<T = any, Pagination extends boolean = false>`](/api/types-response#kirbyqueryresponse) accepts a generic type parameter `T` for the query result.
-
-Pass a custom `KirbySite` type to `KirbyQueryResponse` as its first parameter, and `data` carries that shape:
+Pass [`KirbyQueryResponse`](/api/types-response#kirbyqueryresponse) with the shape of your query result as the type parameter of [`useKql`](/api/use-kql), and `data` carries that shape, which catches errors in your templates:
 
 ```vue
 <script setup lang="ts">

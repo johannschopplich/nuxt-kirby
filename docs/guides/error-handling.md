@@ -6,7 +6,7 @@ The [server proxy](/essentials/how-it-works) passes Kirby's error through untouc
 
 ### `useKql` and `useKirbyData` Return the Error
 
-Both composables surface errors through the `error` property, as Nuxt's own [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data) does. A page Kirby cannot find is not an error: it comes back as `result: null`.
+Both composables surface errors through the `error` property, as Nuxt's own [`useAsyncData`](https://nuxt.com/docs/api/composables/use-async-data) does; the error is a [`NuxtError`](https://nuxt.com/docs/api/utils/create-error). A page Kirby cannot find is not an error: it comes back as `result: null`.
 
 ```vue
 <script setup lang="ts">
@@ -63,5 +63,3 @@ async function fetchSite() {
 }
 </script>
 ```
-
-The composables' error is a [`NuxtError`](https://nuxt.com/docs/api/utils/create-error), which builds on h3's [`H3Error`](https://github.com/h3js/h3); the functions throw a [`FetchError`](https://github.com/unjs/ofetch) from ofetch.

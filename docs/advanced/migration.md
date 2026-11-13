@@ -29,7 +29,7 @@ A request used to carry its `cache` value to the proxy route, where it gated the
 
 ### `useKql` and `useKirbyData` Forward Every Async Data Option
 
-Both composables used to hand-pick which options reached `useAsyncData`, so `deep`, `dedupe`, `getCachedData`, `pick` and `transform` type-checked but did nothing. They now work as documented for Nuxt's own composables.
+`deep`, `dedupe`, `getCachedData`, `pick` and `transform` used to type-check and do nothing. They now reach `useAsyncData`.
 
 ### `language` Travels as a Header, Not a Path Prefix
 

@@ -1,14 +1,6 @@
 # Authentication
 
-Nuxt Kirby supports multiple authentication methods. Choose the one that fits your Kirby setup.
-
-## Overview
-
-| Method | Use Case | Security | Setup Complexity |
-|--------|----------|----------|------------------|
-| **Bearer Token** | Production, Kirby Headless | High ✅ | Easy |
-| **Basic Auth** | Development, existing Kirby | Medium ⚠️ | Medium |
-| **None** | Public APIs, read-only | Low ❌ | Minimal |
+Nuxt Kirby authenticates with a bearer token through Kirby Headless for production, with basic authentication for development or an existing Kirby, or not at all for a public, read-only API.
 
 ## Token-Based Authentication
 

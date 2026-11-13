@@ -44,7 +44,7 @@ const site = await $kql(query, {
 })
 ```
 
-The option governs repeated calls within one environment, not the handover between them. A response fetched during SSR always travels to the client in the payload, and the hydrating call reads it there – otherwise every query would cost a second round trip in the browser for no gain. Caching stops after that: the next call sends the query again.
+Even with `payloadCache: false`, a response fetched during SSR reaches the client in the payload and the hydrating call reads it there; only later calls send the query again.
 
 ### Refresh or Clear a Query
 
@@ -84,13 +84,7 @@ export default defineNuxtConfig({
 })
 ```
 
-The module will use the `cache` storage mountpoint by default. However, for better control over your cache, a custom storage mountpoint is best suited in production environments. For development purposes, you can use the built-in `fs` storage mountpoint.
-
-::: info
-For example, if you are deploying to Cloudflare, the Cloudflare KV storage would be a good choice.
-:::
-
-To define a custom storage mountpoint, set the `server.storage` option to the name of your custom mountpoint. Then, define the storage mountpoint in the `nitro.storage` section of your `nuxt.config.ts`:
+In production, set the `server.storage` option to the name of a custom storage mountpoint, such as Cloudflare KV when deploying to Cloudflare, and define that mountpoint in the `nitro.storage` section of your `nuxt.config.ts`:
 
 ```ts
 // `nuxt.config.ts`
