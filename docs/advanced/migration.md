@@ -82,6 +82,19 @@ const { data: site } = await useAsyncData('site', () => $kql(siteQuery)) // [!co
 
 A call in an event handler runs after hydration and needs no change.
 
+#### `#nuxt-kirby` No Longer Re-Exports `kirby-types`
+
+4.x re-exported the types of `kirby-types` from `#nuxt-kirby`. Import them from `kirby-types` instead:
+
+<!-- eslint-skip -->
+
+```ts
+import type { KirbyQueryRequest } from '#nuxt-kirby' // [!code --]
+import type { KirbyQueryRequest } from 'kirby-types' // [!code ++]
+```
+
+`#nuxt-kirby` exports the module's own option types, such as `UseKqlOptions` – see [Using Types](/api/types).
+
 #### `useKql` and `useKirbyData` Are Typed Like `useFetch`
 
 Both take [`useFetch`'s options](https://nuxt.com/docs/api/composables/use-fetch#parameters), and `data` follows `transform`, `pick` and `default` now, where 4.x typed it as the response alone.

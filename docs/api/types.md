@@ -1,9 +1,9 @@
 # Using Types
 
-The types Nuxt Kirby ships for Kirby data and queries, and where each one applies.
+The types for Kirby data and queries, and where each one applies.
 
 ::: info
-These types belong to the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package – import them from there. The `#nuxt-kirby` alias re-exports the same names next to the module's own option types – `AllowedRoute`, `KqlOptions`, `KirbyFetchOptions`, `UseKqlOptions`, `UseKirbyDataOptions`, `NitroKqlFetchOptions` and `NitroKirbyFetchOptions` – so both paths resolve to the same types.
+These types belong to the [`kirby-types`](https://github.com/johannschopplich/kirby-types) package – import them from there. The `#nuxt-kirby` alias exports the module's own option types: `AllowedRoute`, `KqlOptions`, `KirbyFetchOptions`, `UseKqlOptions`, `UseKirbyDataOptions`, `NitroKqlFetchOptions` and `NitroKirbyFetchOptions`.
 
 `kirby-types` is a peer dependency of Nuxt Kirby. Add it to your project – v2 for Kirby 6, published under the `next` tag, or v1 for Kirby 4 and 5:
 
