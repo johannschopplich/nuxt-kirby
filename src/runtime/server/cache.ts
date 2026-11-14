@@ -1,13 +1,13 @@
-import type { H3Event } from 'h3'
+import type { RequestEvent } from 'nuxt/server'
 import type { ServerKirbyConfig } from '../types'
 import type { ProxyRequest } from './proxy'
 import { destr } from 'destr'
-import { createError, defineEventHandler, readRawBody } from 'h3'
-import { defineCachedFunction, useRuntimeConfig } from 'nitropack/runtime'
+import { defineCachedFunction } from 'nitropack/runtime'
+import { createError, defineEventHandler, useRuntimeConfig } from 'nuxt/server'
 import { hash } from 'ohash'
 import { withLeadingSlash, withoutTrailingSlash } from 'ufo'
 import { base64ToUint8Array, uint8ArrayToBase64 } from 'uint8array-extras'
-import proxy, { relayResponseHead, resolveProxyRequest, WITHHELD_RESPONSE_HEADERS } from './proxy'
+import proxy, { resolveProxyRequest, toResponseHeaders, WITHHELD_RESPONSE_HEADERS } from './proxy'
 
 interface CachedRequest extends Pick<ProxyRequest, 'url' | 'headers'> {
   method: 'GET' | 'POST'
@@ -22,13 +22,15 @@ interface CachedResponse {
   data: string
 }
 
+const NULL_BODY_STATUSES = new Set([101, 204, 205, 304])
+
 // Nitro keeps the map of requests it already has in flight inside this closure, so a fresh instance
 // per request would send every concurrent caller of one cold key on to Kirby.
 let cachedFetcher: ReturnType<typeof createCachedFetcher> | undefined
 
 export default defineEventHandler(async (event) => {
-  const kirby = useRuntimeConfig(event).kirby as ServerKirbyConfig
-  const { method } = event
+  const kirby = useRuntimeConfig().kirby as ServerKirbyConfig
+  const { method } = event.req
 
   // The cache key cannot see the visitor's cookie, so with cookie forwarding nothing reads from or
   // writes to the shared store.
@@ -47,27 +49,32 @@ export default defineEventHandler(async (event) => {
     url,
     headers,
     body: method === 'POST'
-      ? await readRawBody(event)
+      ? await event.req.text()
       : undefined,
   })
 
-  relayResponseHead(event, response)
-
-  return base64ToUint8Array(response.data)
+  // A `Response` refuses any body, even an empty one, for these statuses.
+  return new Response(NULL_BODY_STATUSES.has(response.status)
+    ? null
+    : base64ToUint8Array(response.data), {
+    status: response.status,
+    statusText: response.statusText,
+    headers: toResponseHeaders(response.headers),
+  })
 })
 
 function createCachedFetcher(kirby: ServerKirbyConfig) {
   return defineCachedFunction(
     // Nitro reads the event from the first argument only, and hands the cache write to
     // `event.waitUntil()` – without it an edge worker is torn down before the entry reaches storage.
-    (_event: H3Event, request: CachedRequest) => fetchFromKirby(request),
+    (_event: RequestEvent, request: CachedRequest) => fetchFromKirby(request),
     {
       name: 'nuxt-kirby',
       base: kirby.server.storage,
       swr: kirby.server.swr,
       maxAge: kirby.server.maxAge,
       // The credentials are the same for every request, so they add nothing to the key.
-      getKey: (_event: H3Event, { method, url, headers, body }: CachedRequest) => hash([
+      getKey: (_event: RequestEvent, { method, url, headers, body }: CachedRequest) => hash([
         method,
         url,
         headers['x-language'],
@@ -96,8 +103,8 @@ async function fetchFromKirby({ method, url, headers, body }: CachedRequest): Pr
   catch (error) {
     console.error('[nuxt-kirby]', error)
     throw createError({
-      statusCode: 502,
-      statusMessage: 'Bad Gateway',
+      status: 502,
+      statusText: 'Bad Gateway',
     })
   }
 

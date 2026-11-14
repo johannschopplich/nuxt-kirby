@@ -1,16 +1,7 @@
-import type { H3Event } from 'h3'
+import type { RequestEvent } from 'nuxt/server'
 import type { ServerKirbyConfig } from '../types'
-import {
-  createError,
-  defineEventHandler,
-  getRequestHeader,
-  getRequestWebStream,
-  send,
-  setResponseHeader,
-  setResponseStatus,
-} from 'h3'
-import { useRuntimeConfig } from 'nitropack/runtime'
-import { getQuery, joinURL, withQuery } from 'ufo'
+import { createError, defineEventHandler, getRequestHeader, useRuntimeConfig } from 'nuxt/server'
+import { joinURL, withTrailingSlash } from 'ufo'
 import { createAuthHeader } from '../utils'
 import { isAllowedRoute, isPathBelowBase, resolveRoutePath } from './path'
 import { endOnAbort } from './stream'
@@ -53,102 +44,96 @@ export interface ProxyRequest {
 }
 
 export default defineEventHandler(async (event) => {
-  const kirby = useRuntimeConfig(event).kirby as ServerKirbyConfig
+  const kirby = useRuntimeConfig().kirby as ServerKirbyConfig
   const { url, headers } = resolveProxyRequest(event)
-
-  // A request from inside the app has no socket, and its response stream is handed back unread.
-  const abortController = new AbortController()
-  if (event.node.res.socket)
-    event.node.res.once('close', () => abortController.abort())
+  const { signal } = event.req
 
   let response
   try {
-    response = await globalThis.$fetch.raw<ReadableStream<Uint8Array>>(url, {
-      method: event.method,
+    response = await fetch(url, {
+      method: event.req.method,
       headers,
-      body: getRequestWebStream(event),
-      responseType: 'stream',
+      body: event.req.body,
+      // Node's `fetch` sends a streamed body only with it.
+      duplex: 'half',
       // The client decides whether to follow a redirect.
       redirect: 'manual',
-      ignoreResponseError: true,
-      signal: abortController.signal,
-    })
+      signal,
+    } as RequestInit)
   }
   catch (error) {
     // The client is gone, so nobody is left to answer.
-    if (abortController.signal.aborted)
+    if (signal.aborted)
       return null
 
     console.error('[nuxt-kirby]', error)
     throw createError({
-      statusCode: 502,
-      statusMessage: 'Bad Gateway',
+      status: 502,
+      statusText: 'Bad Gateway',
     })
   }
 
-  relayResponseHead(event, response)
+  const responseHeaders = toResponseHeaders(response.headers)
+  if (kirby.forwardCookies) {
+    for (const cookie of response.headers.getSetCookie())
+      responseHeaders.append('set-cookie', cookie)
+  }
 
-  const cookies = response.headers.getSetCookie()
-  if (kirby.forwardCookies && cookies.length)
-    setResponseHeader(event, 'set-cookie', cookies)
-
-  if (!response._data)
-    return send(event)
-
-  return event.node.res.socket
-    ? endOnAbort(response._data, abortController.signal)
-    : response._data
+  return new Response(response.body && endOnAbort(response.body, signal), {
+    status: response.status,
+    statusText: response.statusText,
+    headers: responseHeaders,
+  })
 })
 
-export function relayResponseHead(event: H3Event, { status, statusText, headers }: {
-  status: number
-  statusText: string
-  headers: Iterable<[string, string]>
-}) {
-  setResponseStatus(event, status, statusText)
+export function toResponseHeaders(headers: Iterable<[string, string]>) {
+  const responseHeaders = new Headers()
 
   for (const [name, value] of headers) {
     if (!WITHHELD_RESPONSE_HEADERS.has(name))
-      setResponseHeader(event, name, value)
+      responseHeaders.append(name, value)
   }
+
+  return responseHeaders
 }
 
 /**
  * Runs the checks every forwarded request has to pass and resolves what Kirby is sent: the URL and
  * the headers, with the Kirby credentials among them.
  */
-export function resolveProxyRequest(event: H3Event): ProxyRequest {
-  const kirby = useRuntimeConfig(event).kirby as ServerKirbyConfig
-  const path = getRawPath(event)
+export function resolveProxyRequest(event: RequestEvent): ProxyRequest {
+  const runtimeConfig = useRuntimeConfig()
+  const kirby = runtimeConfig.kirby as ServerKirbyConfig
+  const { path, search } = getRawTarget(event, joinURL(runtimeConfig.app.baseURL, kirby.proxyRoute))
 
   if (!kirby.url) {
     console.error('[nuxt-kirby] The Kirby URL is missing. Set `NUXT_KIRBY_URL` or the `url` option.')
     throw createError({
-      statusCode: 500,
-      statusMessage: 'Kirby URL is missing',
+      status: 500,
+      statusText: 'Kirby URL is missing',
     })
   }
 
   // A cross-site page could otherwise send requests that carry the visitor's cookie on to Kirby.
   if (kirby.forwardCookies && getRequestHeader(event, 'sec-fetch-site') === 'cross-site') {
     throw createError({
-      statusCode: 403,
-      statusMessage: 'Cross-site requests are refused with cookie forwarding',
+      status: 403,
+      statusText: 'Cross-site requests are refused with cookie forwarding',
     })
   }
 
   if (!isPathBelowBase(path))
     throw pathOutsideBaseError()
 
-  const url = withQuery(joinURL(kirby.url, path), getQuery(event.node.req.url!))
+  const url = joinURL(kirby.url, path) + search
   const routePath = resolveRoutePath(url, kirby.url)
   if (routePath === undefined)
     throw pathOutsideBaseError()
 
-  if (!isAllowedRoute(kirby.allowedRoutes, routePath, event.method)) {
+  if (!isAllowedRoute(kirby.allowedRoutes, routePath, event.req.method)) {
     throw createError({
-      statusCode: 403,
-      statusMessage: 'Route is not allowed',
+      status: 403,
+      statusText: 'Route is not allowed',
     })
   }
 
@@ -173,19 +158,25 @@ export function resolveProxyRequest(event: H3Event): ProxyRequest {
 
 export function pathOutsideBaseError() {
   return createError({
-    statusCode: 400,
-    statusMessage: 'Path must stay below the base URL',
+    status: 400,
+    statusText: 'Path must stay below the base URL',
   })
 }
 
 /**
- * Reads the path below the proxy route as the client sent it, so the checks and Kirby see every
- * percent-encoding. The router's own parameter comes decoded and without a trailing slash.
+ * Reads the path below `prefix` and the query as the client sent them, so the checks and Kirby see
+ * every percent-encoding. On Nitro 2 the router's own parameter comes decoded and ends at an encoded `?`.
  */
-function getRawPath(event: H3Event) {
-  // h3 leaves the undecoded request target here, less `app.baseURL`.
-  const pathname = event.node.req.url!.split('?', 1)[0]!
-  const pathIndex = event.context.matchedRoute!.path.split('/').indexOf('**:path')
+function getRawTarget(event: RequestEvent, prefix: string) {
+  // The URL keeps the encoding as sent and resolves dot segments, `%2E%2E` included, so a path
+  // that climbs out of the proxy route no longer starts with it.
+  const { pathname, search } = new URL(event.req.url)
 
-  return pathname.split('/').slice(pathIndex).join('/')
+  if (pathname !== prefix && !pathname.startsWith(withTrailingSlash(prefix)))
+    throw pathOutsideBaseError()
+
+  return {
+    path: pathname.slice(prefix.length + 1),
+    search,
+  }
 }

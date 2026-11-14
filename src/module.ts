@@ -154,7 +154,7 @@ export default defineNuxtModule<ModuleOptions>({
     name,
     configKey: 'kirby',
     compatibility: {
-      // The server proxy is written for Nitro 2, which Nuxt 5 replaces.
+      // The server cache is written for Nitro 2, which Nuxt 5 replaces.
       nuxt: '>=4.6.0 <5',
     },
   },
@@ -205,7 +205,11 @@ export default defineNuxtModule<ModuleOptions>({
     if (options.forwardCookies && options.server?.cache)
       logger.warn('Both `forwardCookies` and `server.cache` are set. Cookie forwarding turns the server cache off, because one stored response is shared between all visitors.')
 
+    // Nitro serves `server/api` below `apiBaseURL`, and the proxy joins it there.
+    const proxyRoute = joinURL(nuxt.options.nitro.apiBaseURL || '/api', '__kirby__')
+
     const serverConfig: ServerKirbyConfig = {
+      proxyRoute,
       url: options.url!,
       kqlPath,
       auth: options.auth!,
@@ -253,12 +257,11 @@ export default defineNuxtModule<ModuleOptions>({
     // Nuxt hands the transpiled directories on to Nitro to inline, so the server runtime is bundled as well.
     nuxt.options.build.transpile.push(resolve('runtime'))
 
-    // Nitro serves `server/api` below `apiBaseURL`, and the proxy joins it there.
-    const proxyRoute = joinURL(nuxt.options.nitro.apiBaseURL || '/api', '__kirby__')
-
     addServerHandler({
       route: joinURL(proxyRoute, '**:path'),
-      handler: resolve('runtime/server/cache'),
+      handler: {
+        nuxt: resolve('runtime/server/cache'),
+      },
     })
 
     const composables = [

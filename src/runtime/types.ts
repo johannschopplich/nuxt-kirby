@@ -39,6 +39,8 @@ export type KqlOptions = Omit<KirbyFetchOptions, 'method' | 'body' | 'query' | '
 
 /** The private runtime config, which `NUXT_KIRBY_*` variables override. */
 export interface ServerKirbyConfig {
+  /** Route of the server proxy, below `app.baseURL`. The build registers the handler there, so no variable may override it. */
+  proxyRoute: string
   url: string
   kqlPath: string
   auth: KirbyAuth

@@ -1,6 +1,6 @@
 import type { KirbyQueryRequest, KirbyQueryResponse } from 'kirby-types'
 import type { KirbyFetchOptions, KqlOptions, ServerKirbyConfig } from '../types'
-import { useRuntimeConfig } from 'nitropack/runtime'
+import { useRuntimeConfig } from 'nuxt/server'
 import { joinURL } from 'ufo'
 import { createAuthHeader, createLanguageHeader, mergeHeaders } from '../utils'
 import { isPathBelowBase } from './path'
