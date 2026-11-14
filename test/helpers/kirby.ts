@@ -5,6 +5,8 @@ import { createServer } from 'node:http'
 import { gzipSync } from 'node:zlib'
 
 export const KIRBY_GZIP_BODY = 'Hello, gzip'
+/** Bytes that no UTF-8 string round-trips. */
+export const KIRBY_BINARY_BODY = Uint8Array.from({ length: 256 }, (_, index) => index)
 
 export interface RecordedRequest {
   url: string
@@ -33,7 +35,8 @@ export const KIRBY_REDIRECT_LOCATION = '/base/api/redirected'
  * its URL, method and body. Every answer sets a session cookie and `cache-control`. The query
  * `fail` gets a 500, and a path ending in `/missing` a 404, in `/forbidden` a 403, in `/redirect`
  * a 302 to `KIRBY_REDIRECT_LOCATION`, in `/gzip` `KIRBY_GZIP_BODY` compressed, in `/reset` a
- * closed connection, and in `/stream` one chunk followed by a response that never completes.
+ * closed connection, in `/stream` one chunk and no end, in `/binary` `KIRBY_BINARY_BODY`, and in
+ * `/empty` a 204.
  */
 export async function startKirbyStandIn({ delay = 0 } = {}): Promise<KirbyStandIn> {
   const requests: RecordedRequest[] = []
@@ -78,6 +81,18 @@ export async function startKirbyStandIn({ delay = 0 } = {}): Promise<KirbyStandI
     response.setHeader('set-cookie', `kirby_session=${requestNumber}; Path=/; HttpOnly`)
     response.setHeader('x-powered-by', 'PHP')
     response.setHeader('cache-control', 'max-age=60')
+
+    if (pathname.endsWith('/empty')) {
+      response.statusCode = 204
+      response.end()
+      return
+    }
+
+    if (pathname.endsWith('/binary')) {
+      response.setHeader('content-type', 'application/octet-stream')
+      response.end(KIRBY_BINARY_BODY)
+      return
+    }
 
     if (pathname.endsWith('/stream')) {
       response.write('chunk')

@@ -1,7 +1,9 @@
+import { mkdtemp, readdir, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fetch, setup } from '@nuxt/test-utils/e2e'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
-import { startKirbyStandIn } from './helpers/kirby'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { KIRBY_BINARY_BODY, startKirbyStandIn } from './helpers/kirby'
 
 describe('server cache', async () => {
   // The delay holds a request open long enough for a second one to arrive while the first is in flight.
@@ -11,6 +13,8 @@ describe('server cache', async () => {
     kirby.requests.length = 0
   })
   afterAll(() => kirby.close())
+  const storageDir = await mkdtemp(join(tmpdir(), 'nuxt-kirby-cache-'))
+  afterAll(() => rm(storageDir, { recursive: true, force: true }))
 
   await setup({
     server: true,
@@ -20,8 +24,14 @@ describe('server cache', async () => {
         url: kirby.url,
         server: {
           cache: true,
+          storage: 'kirby',
           // Long enough that a repeated request within one test cannot expire.
           maxAge: 60,
+        },
+      },
+      nitro: {
+        storage: {
+          kirby: { driver: 'fs', base: storageDir },
         },
       },
     },
@@ -35,11 +45,27 @@ describe('server cache', async () => {
     })
   }
 
+  // First, so that the mount holds no entry of an earlier test.
+  it('keeps its entries in the Nitro storage mount that server.storage names', async () => {
+    await fetch('/api/__kirby__/api/pages/stored')
+
+    // The entry is written after the response is sent.
+    await vi.waitFor(async () => expect(await readdir(storageDir, { recursive: true })).not.toEqual([]))
+  })
+
   it('answers a repeated KQL query without reaching Kirby again', async () => {
     const first = await postQuery('repeated')
     const second = await postQuery('repeated')
 
     expect(await second.json()).toEqual(await first.json())
+    expect(kirby.requests).toHaveLength(1)
+  })
+
+  it('answers a repeated request for a binary body byte for byte without reaching Kirby again', async () => {
+    await fetch('/api/__kirby__/api/binary')
+    const response = await fetch('/api/__kirby__/api/binary')
+
+    expect(new Uint8Array(await response.arrayBuffer())).toEqual(KIRBY_BINARY_BODY)
     expect(kirby.requests).toHaveLength(1)
   })
 
@@ -91,6 +117,14 @@ describe('server cache', async () => {
       result: { language: 'de' },
     })
     expect(kirby.requests).toHaveLength(2)
+  })
+
+  it('answers a repeated 204 without reaching Kirby again', async () => {
+    await fetch('/api/__kirby__/api/empty')
+    const response = await fetch('/api/__kirby__/api/empty')
+
+    expect(response.status).toBe(204)
+    expect(kirby.requests).toHaveLength(1)
   })
 
   it('answers a repeated 404 without reaching Kirby again', async () => {
