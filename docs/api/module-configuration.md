@@ -122,7 +122,7 @@ The server proxy adds the Kirby credentials to every request it forwards, and ev
 
 ## `kirby.server.cache`
 
-Whether the server cache answers KQL queries and `GET` requests, through Nitro's cache API. A stored response is reused for every visitor, so avoid it for anything visitor-specific – see [Caching Strategies](/guides/caching-strategies#server-side-caching).
+Whether the server cache answers KQL queries and `GET` requests, through [ocache](https://ocache.unjs.io). A stored response is reused for every visitor, so avoid it for anything visitor-specific – see [Caching Strategies](/guides/caching-strategies#server-side-caching).
 
 **Default Value**: `false`
 

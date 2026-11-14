@@ -37,7 +37,7 @@ const { data, refresh, clear } = await useKql(query)
 
 ## Server-Side Caching
 
-The server cache answers KQL queries and `GET` requests through [Nitro's cache API](https://v2.nitro.build/guide/cache), for every visitor alike. It keys a response by method, URL, language and body, and of the errors stores a 404 or 410 alone, so any other failed request reaches Kirby again next time, while a page Kirby no longer has stops being served once its entry expires. Responses live in memory by default; any Nitro storage mountpoint persists them across restarts. [`forwardCookies`](/api/module-configuration#kirby-forwardcookies) turns the server cache off.
+The server cache answers KQL queries and `GET` requests through [ocache](https://ocache.unjs.io), for every visitor alike. It keys a response by method, URL, language and body, and of the errors stores a 404 or 410 alone, so any other failed request reaches Kirby again next time, while a page Kirby no longer has stops being served once its entry expires. Responses live in memory unless a storage mountpoint with a persistent driver keeps them across restarts. [`forwardCookies`](/api/module-configuration#kirby-forwardcookies) turns the server cache off.
 
 ::: tip
 All built-in storage mountpoints can be found in the [unstorage documentation](https://unstorage.unjs.io).
