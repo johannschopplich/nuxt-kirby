@@ -8,7 +8,7 @@ Three caches sit between a component and Kirby, each with a different lifetime.
 |------------|----------|-------|-------------|----------|
 | [**Payload**](#payload-caching) | Nuxt payload | Per call site | Until the page has hydrated | Every server-rendered query |
 | [**Server-side**](#server-side-caching) | Server cache | All visitors | Configurable TTL | Expensive operations |
-| [**Build-time**](/guides/prefetching-kql-queries) | `#nuxt-prepare` state | Permanent | Until rebuild | Stable content |
+| [**Build-time**](/guides/prefetching-kql-queries) | `#nuxt-prepare` data | Permanent | Until rebuild | Stable content |
 
 ## Payload Caching
 
