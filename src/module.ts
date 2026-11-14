@@ -1,6 +1,6 @@
 import type { AllowedRoute, BasicCredentials, KirbyAuth, PublicKirbyConfig, ServerKirbyConfig } from './runtime/types'
 import process from 'node:process'
-import { addImports, addServerHandler, addServerImports, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addImports, addServerHandler, addServerImports, addTemplate, createResolver, defineNuxtModule, resolveServerVariant } from '@nuxt/kit'
 import { defu } from 'defu'
 import { join, relative } from 'pathe'
 import { joinURL, withLeadingSlash } from 'ufo'
@@ -108,14 +108,14 @@ export interface ModuleOptions {
     /**
      * Whether KQL queries and `GET` requests are answered from the server cache.
      *
-     * @see https://v2.nitro.build/guide/cache
+     * @see https://ocache.unjs.io/functions
      */
     cache?: boolean
 
     /**
-     * Name of the storage mountpoint to use for caching.
+     * Name of the Nitro storage mountpoint to use for caching.
      *
-     * @see https://v2.nitro.build/guide/cache
+     * @see https://v2.nitro.build/guide/storage
      * @default 'cache'
      */
     storage?: string
@@ -123,7 +123,7 @@ export interface ModuleOptions {
     /**
      * Enable stale-while-revalidate behavior (cache is returned while it is being updated).
      *
-     * @see https://v2.nitro.build/guide/cache#options
+     * @see https://ocache.unjs.io/functions
      * @default false
      */
     swr?: boolean
@@ -131,7 +131,7 @@ export interface ModuleOptions {
     /**
      * Number of seconds a response stays in the server cache.
      *
-     * @see https://v2.nitro.build/guide/cache#options
+     * @see https://ocache.unjs.io/functions
      * @default 1
      */
     maxAge?: number
@@ -154,7 +154,7 @@ export default defineNuxtModule<ModuleOptions>({
     name,
     configKey: 'kirby',
     compatibility: {
-      // The server cache is written for Nitro 2, which Nuxt 5 replaces.
+      // TODO: Lift the cap once a `nitro3` cache storage variant exists.
       nuxt: '>=4.6.0 <5',
     },
   },
@@ -176,7 +176,8 @@ export default defineNuxtModule<ModuleOptions>({
     allowedRoutes: undefined,
     server: {
       cache: false,
-      storage: 'cache',
+      // Left unset, so that only a mountpoint the app names warns where no Nitro storage exists.
+      storage: undefined,
       swr: false,
       maxAge: 1,
     },
@@ -256,6 +257,16 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
     // Nuxt hands the transpiled directories on to Nitro to inline, so the server runtime is bundled as well.
     nuxt.options.build.transpile.push(resolve('runtime'))
+
+    const memoryCacheStorage = resolve('runtime/server/cache-storage')
+    const cacheStorage = resolveServerVariant({
+      nuxt: memoryCacheStorage,
+      nitro2: resolve('runtime/server/cache-storage.nitro2'),
+    })
+    if (cacheStorage)
+      nuxt.options.alias['#nuxt-kirby-cache-storage'] = cacheStorage
+    if (options.server!.cache && options.server!.storage && cacheStorage === memoryCacheStorage)
+      logger.warn('This server builder has no Nitro storage for `server.storage` to name, so the server cache stays in memory.')
 
     addServerHandler({
       route: joinURL(proxyRoute, '**:path'),

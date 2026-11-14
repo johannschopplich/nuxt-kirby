@@ -55,11 +55,11 @@
     "defu": "^6.1.7",
     "destr": "^2.0.5",
     "h3": "^1.15.11",
+    "ocache": "^0.3.2",
     "ofetch": "^1.5.1",
     "ohash": "^2.0.12",
     "pathe": "^2.0.3",
-    "ufo": "^1.6.4",
-    "uint8array-extras": "^1.6.0"
+    "ufo": "^1.6.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^10.0.0",
