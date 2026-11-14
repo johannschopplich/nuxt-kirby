@@ -4,8 +4,8 @@ import type { KirbyFetchOptions } from '../types'
 import { joinURL } from 'ufo'
 import { toValue } from 'vue'
 import { proxyRoute } from '#build/module/nuxt-kirby.config'
-import { useNuxtApp, useRequestEvent, useRequestHeaders, useRuntimeConfig } from '#imports'
-import { assertPathBelowBase } from '../server/path'
+import { createError, useNuxtApp, useRequestEvent, useRequestHeaders, useRuntimeConfig } from '#imports'
+import { isPathBelowBase } from '../server/path'
 import { createAuthHeader, createLanguageHeader, mergeHeaders } from '../utils'
 
 let hasWarnedAboutHydration = false
@@ -60,8 +60,12 @@ export function createKirbyFetch() {
 
     // Joining keeps the request on the Kirby host, but not below the Kirby URL. Without client
     // mode, the server proxy runs the check.
-    if (kirby.client)
-      assertPathBelowBase(path)
+    if (kirby.client && !isPathBelowBase(path)) {
+      throw createError({
+        status: 400,
+        statusText: 'Path must stay below the base URL',
+      })
+    }
 
     // During SSR, the proxy is called in-process, where nothing derives the content type from a form or
     // `Blob` body as `fetch` does on the wire, a multipart boundary included.

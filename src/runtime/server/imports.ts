@@ -3,7 +3,8 @@ import type { KirbyFetchOptions, KqlOptions, ServerKirbyConfig } from '../types'
 import { useRuntimeConfig } from 'nitropack/runtime'
 import { joinURL } from 'ufo'
 import { createAuthHeader, createLanguageHeader, mergeHeaders } from '../utils'
-import { assertPathBelowBase } from './path'
+import { isPathBelowBase } from './path'
+import { pathOutsideBaseError } from './proxy'
 
 export type NitroKirbyFetchOptions = KirbyFetchOptions
 export type NitroKqlFetchOptions = KqlOptions
@@ -15,7 +16,8 @@ export async function $kirby<T = any>(
   const { headers, language, ...fetchOptions } = opts
   const kirby = useRuntimeConfig().kirby as ServerKirbyConfig
 
-  assertPathBelowBase(path)
+  if (!isPathBelowBase(path))
+    throw pathOutsideBaseError()
 
   // Joined here rather than by `$fetch`, which sends a path that names a scheme to the host it names.
   return globalThis.$fetch<T, string>(joinURL(kirby.url, path), {

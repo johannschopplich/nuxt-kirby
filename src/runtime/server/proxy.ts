@@ -12,7 +12,7 @@ import {
 import { useRuntimeConfig } from 'nitropack/runtime'
 import { getQuery, joinURL, withQuery } from 'ufo'
 import { createAuthHeader } from '../utils'
-import { assertAllowedRoute, assertPathBelowBase, resolveRoutePath } from './path'
+import { isAllowedRoute, isPathBelowBase, resolveRoutePath } from './path'
 import { endOnAbort } from './stream'
 
 /** Headers that describe a single connection rather than the message, so they end at the proxy. */
@@ -137,11 +137,20 @@ export function resolveProxyRequest(event: H3Event): ProxyRequest {
     })
   }
 
-  assertPathBelowBase(path)
+  if (!isPathBelowBase(path))
+    throw pathOutsideBaseError()
 
   const url = withQuery(joinURL(kirby.url, path), getQuery(event.node.req.url!))
   const routePath = resolveRoutePath(url, kirby.url)
-  assertAllowedRoute(kirby.allowedRoutes, routePath, event.method)
+  if (routePath === undefined)
+    throw pathOutsideBaseError()
+
+  if (!isAllowedRoute(kirby.allowedRoutes, routePath, event.method)) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Route is not allowed',
+    })
+  }
 
   const headers: Record<string, string> = {}
   for (const name of kirby.forwardCookies
@@ -160,6 +169,13 @@ export function resolveProxyRequest(event: H3Event): ProxyRequest {
       ...createAuthHeader(kirby),
     },
   }
+}
+
+export function pathOutsideBaseError() {
+  return createError({
+    statusCode: 400,
+    statusMessage: 'Path must stay below the base URL',
+  })
 }
 
 /**
