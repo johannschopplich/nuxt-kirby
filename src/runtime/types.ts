@@ -1,11 +1,11 @@
-import type { RouterMethod } from 'h3'
-import type { NitroFetchOptions } from 'nitropack'
+import type { HTTPMethod } from 'h3'
+import type { FetchOptions } from 'ofetch'
 
 export const AUTH_METHODS = ['basic', 'bearer', 'none'] as const
 
 export type KirbyAuth = typeof AUTH_METHODS[number]
 
-export type RequestMethod = Uppercase<RouterMethod> | RouterMethod
+export type RequestMethod = HTTPMethod | Lowercase<HTTPMethod>
 
 export interface AllowedRoute {
   /** Pathname below the Kirby URL, where `*` matches one segment and a trailing `**` any number of them. */
@@ -20,7 +20,8 @@ export interface BasicCredentials {
 }
 
 // #region kirby-fetch-options
-export type KirbyFetchOptions = Omit<NitroFetchOptions<string>, 'baseURL'> & {
+export type KirbyFetchOptions = Omit<FetchOptions, 'baseURL' | 'method'> & {
+  method?: RequestMethod
   /**
    * Language to ask the content in.
    *
