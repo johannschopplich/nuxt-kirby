@@ -1,6 +1,7 @@
+import { request } from 'node:http'
 import { join } from 'node:path'
-import { $fetch, createPage, fetch, setup } from '@nuxt/test-utils/e2e'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { $fetch, createPage, fetch, setup, url } from '@nuxt/test-utils/e2e'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchTestResult } from './helpers/fixture'
 import { KIRBY_GZIP_BODY, KIRBY_REDIRECT_LOCATION, startKirbyStandIn } from './helpers/kirby'
 
@@ -93,6 +94,48 @@ describe('nuxt-kirby', async () => {
 
       expect(response.status).toBe(400)
       expect(kirby.requests).toEqual([])
+    })
+
+    it('rejects a path that climbs above the proxy route with backslashes without contacting Kirby', async () => {
+      const status = await requestRaw('/api/__kirby__/api\\..\\..\\..\\x')
+
+      expect(status).toBe(400)
+      expect(kirby.requests).toEqual([])
+    })
+
+    it('resolves %2e%2e below the proxy route before forwarding', async () => {
+      await requestRaw('/api/__kirby__/api/pages/%2e%2e/site')
+
+      expect(kirby.requests[0]!.url).toBe('/base/api/site')
+    })
+
+    it('stops the request to Kirby when the client disconnects', async () => {
+      const controller = new AbortController()
+      const response = await fetch('/api/__kirby__/api/stream', { signal: controller.signal })
+      await response.body!.getReader().read()
+      controller.abort()
+
+      await vi.waitFor(() => expect(kirby.requests[0]!.closedEarly).toBe(true))
+    })
+
+    it('stops the request to Kirby when the client disconnects during the upload', async () => {
+      const controller = new AbortController()
+      const body = new ReadableStream({
+        start: streamController => streamController.enqueue(new TextEncoder().encode('{"query":')),
+      })
+      const pending = fetch('/api/__kirby__/api/kql', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body,
+        duplex: 'half',
+        signal: controller.signal,
+      } as RequestInit).catch(() => {})
+
+      await vi.waitFor(() => expect(kirby.requests).toHaveLength(1))
+      controller.abort()
+      await pending
+
+      await vi.waitFor(() => expect(kirby.requests[0]!.closedEarly).toBe(true))
     })
 
     it('passes the status and the body of a failed request on', async () => {
@@ -266,3 +309,15 @@ describe('nuxt-kirby', async () => {
     })
   })
 })
+
+/** Sends `path` unparsed, since `fetch` and a URL string would resolve its dot segments and backslashes first. */
+function requestRaw(path: string) {
+  const { hostname, port } = new URL(url('/'))
+
+  return new Promise<number | undefined>((resolve, reject) => {
+    request({ hostname, port, path }, (response) => {
+      response.resume()
+      resolve(response.statusCode)
+    }).on('error', reject).end()
+  })
+}

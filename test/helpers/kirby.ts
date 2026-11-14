@@ -11,6 +11,8 @@ export interface RecordedRequest {
   method: string
   headers: IncomingHttpHeaders
   body: string
+  /** Whether the connection closed before the response was complete. */
+  closedEarly: boolean
 }
 
 export interface KirbyStandIn {
@@ -30,26 +32,39 @@ export const KIRBY_REDIRECT_LOCATION = '/base/api/redirected'
  * with the query string, the language and the number of the request, and any other request with
  * its URL, method and body. Every answer sets a session cookie and `cache-control`. The query
  * `fail` gets a 500, and a path ending in `/missing` a 404, in `/forbidden` a 403, in `/redirect`
- * a 302 to `KIRBY_REDIRECT_LOCATION`, in `/gzip` `KIRBY_GZIP_BODY` compressed, and in `/reset` a
- * closed connection.
+ * a 302 to `KIRBY_REDIRECT_LOCATION`, in `/gzip` `KIRBY_GZIP_BODY` compressed, in `/reset` a
+ * closed connection, and in `/stream` one chunk followed by a response that never completes.
  */
 export async function startKirbyStandIn({ delay = 0 } = {}): Promise<KirbyStandIn> {
   const requests: RecordedRequest[] = []
   const server = createServer(async (request, response) => {
-    const chunks: Buffer[] = []
-    for await (const chunk of request)
-      chunks.push(chunk)
-
-    const body = Buffer.concat(chunks).toString()
     const url = request.url!
     const { pathname } = new URL(url, 'http://kirby')
     const method = request.method!
-    const requestNumber = requests.push({
+    // Recorded before the body arrives, so that a request cut off during its upload shows up too.
+    const recorded: RecordedRequest = {
       url,
       method,
       headers: request.headers,
-      body,
+      body: '',
+      closedEarly: false,
+    }
+    const requestNumber = requests.push(recorded)
+    response.once('close', () => {
+      recorded.closedEarly = !response.writableFinished
     })
+
+    const chunks: Buffer[] = []
+    try {
+      for await (const chunk of request)
+        chunks.push(chunk)
+    }
+    catch {
+      return
+    }
+
+    const body = Buffer.concat(chunks).toString()
+    recorded.body = body
     const language = request.headers['x-language'] ?? null
 
     if (delay)
@@ -63,6 +78,11 @@ export async function startKirbyStandIn({ delay = 0 } = {}): Promise<KirbyStandI
     response.setHeader('set-cookie', `kirby_session=${requestNumber}; Path=/; HttpOnly`)
     response.setHeader('x-powered-by', 'PHP')
     response.setHeader('cache-control', 'max-age=60')
+
+    if (pathname.endsWith('/stream')) {
+      response.write('chunk')
+      return
+    }
 
     if (pathname.endsWith('/redirect')) {
       response.writeHead(302, { location: KIRBY_REDIRECT_LOCATION })
