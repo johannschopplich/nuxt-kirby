@@ -1,8 +1,8 @@
 # An HTTP-Native Server Proxy, Copied From Nuxt API Party
 
-Until 4.x the server proxy was one `POST` route that carried the real request as JSON: method and path came from the body, and a key chosen by the client told a KQL query from a REST request. 5.0 forwards method, path, query and body as they arrive, which removes the envelope with its types and checks, gives allowed routes real methods to match, and lets a body be something other than JSON. A KQL query stays a `POST`, so the change buys it no HTTP caching.
+The server proxy forwards method, path, query and body as they arrive. The alternative is one `POST` route that carries the real request as JSON, with method and path in the body and a key chosen by the client to tell a KQL query from a REST request. Without that envelope there are no types and checks for it, allowed routes have real methods to match, and a body can be something other than JSON. A KQL query stays a `POST`, so it gains no HTTP caching.
 
-The proxy is copied from Nuxt API Party. `path.ts` and `stream.ts`, the path checks and the stream helper, are identical in both repos, so a fix is the same patch in each. `proxy.ts`, the handler, differs on purpose.
+The proxy is copied from Nuxt API Party. `path.ts` and `stream.ts`, the path checks and the stream helper, are identical in both repos, so a fix is the same patch in each. `path.ts` imports no framework, because client mode's `$kirby` loads it into the Vue app as well: its checks return a result rather than throw, and each caller throws its own error. `proxy.ts`, the handler, differs on purpose: nuxt-kirby's runs on Nuxt's portable `nuxt/server`, while Nuxt API Party's stays on h3 and Nitro, whose runtime hooks it calls, and supports Nuxt below 4.6.
 
 ## Considered Options
 
@@ -12,4 +12,4 @@ The proxy is copied from Nuxt API Party. `path.ts` and `stream.ts`, the path che
 
 ## Consequences
 
-The handler calls no Nitro hooks, the server cache sits in a handler of its own in front of it, and it forwards less of a visitor's request – see [ADR 0002](./0002-configuration-decides-what-the-server-proxy-forwards.md).
+The handler calls no Nitro hooks, the server cache sits in a handler of its own in front of it and runs on `ocache` rather than Nitro's cache, and the handler forwards less of a visitor's request – see [ADR 0002](./0002-configuration-decides-what-the-server-proxy-forwards.md).
