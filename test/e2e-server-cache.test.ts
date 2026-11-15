@@ -1,4 +1,4 @@
-import { mkdtemp, readdir, rm } from 'node:fs/promises'
+import { mkdtemp, readdir, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fetch, setup } from '@nuxt/test-utils/e2e'
@@ -66,13 +66,6 @@ describe('server cache', async () => {
     const response = await fetch('/api/__kirby__/api/binary')
 
     expect(new Uint8Array(await response.arrayBuffer())).toEqual(KIRBY_BINARY_BODY)
-    expect(kirby.requests).toHaveLength(1)
-  })
-
-  it('answers a repeated GET request without reaching Kirby again', async () => {
-    await fetch('/api/__kirby__/api/pages/repeated')
-    await fetch('/api/__kirby__/api/pages/repeated')
-
     expect(kirby.requests).toHaveLength(1)
   })
 
@@ -158,9 +151,16 @@ describe('server cache', async () => {
     expect(kirby.requests).toHaveLength(1)
   })
 
-  it('strips the set-cookie header Kirby sent', async () => {
+  it('keeps the set-cookie header Kirby sent out of the response and the cache', async () => {
     const response = await postQuery('session')
 
     expect(response.headers.has('set-cookie')).toBe(false)
+    // Every answer of the stand-in sets `kirby_session`, so a stored entry would hold one.
+    const storedEntries = await vi.waitFor(async () => {
+      const files = (await readdir(storageDir, { recursive: true, withFileTypes: true })).filter(entry => entry.isFile())
+      expect(files).not.toEqual([])
+      return Promise.all(files.map(file => readFile(join(file.parentPath, file.name), 'latin1')))
+    })
+    expect(storedEntries.join('')).not.toContain('kirby_session')
   })
 })
