@@ -19,7 +19,7 @@
 
 ## Setup
 
-Add the module to a project on Nuxt 4.6 or a later Nuxt 4 release:
+Add the module to a project on Nuxt 4.6 or later:
 
 ```bash
 npx nuxt module add kirby

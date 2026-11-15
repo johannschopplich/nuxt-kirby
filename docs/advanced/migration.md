@@ -4,7 +4,7 @@
 
 ### Update the Dependencies
 
-Nuxt Kirby 5 requires Nuxt 4.6 or a later Nuxt 4 release. `kirby-types` is a peer dependency now, so add it to your project as [Using Types](/api/types) shows – v1 for Kirby 4 and 5, v2 for Kirby 6.
+Nuxt Kirby 5 requires Nuxt 4.6 or later. `kirby-types` is a peer dependency now, so add it to your project as [Using Types](/api/types) shows – v1 for Kirby 4 and 5, v2 for Kirby 6.
 
 In kirby-types 2, `KirbyQueryModel` is renamed `KirbyQueryRoot`, the result of `ParseKirbyQuery` names its root `root` instead of `model`, and block toggles such as `crop` or `autoplay` are `boolean` instead of `'true' | 'false'`.
 
