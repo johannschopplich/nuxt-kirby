@@ -19,8 +19,6 @@
 
 ## Setup
 
-Add the module to a project on Nuxt 4.6 or later:
-
 ```bash
 npx nuxt module add kirby
 ```
